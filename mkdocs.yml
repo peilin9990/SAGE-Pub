@@ -1,0 +1,51 @@
+site_name: SAGE 项目文档
+site_url: https://laughking.github.io/sage-page/
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.expand
+    - content.code.copy
+
+nav:
+  - 首页: index.md
+  - get start:
+      - Installation: get_start/install.md
+      - Quickstart: get_start/quickstart.md
+  - Guides:
+      - Components: guides/components.md
+      - Framework:
+          - Design Philosophy: framework/philosophy.md
+      - SAGE-dashboard:
+          - DAG Visualization: dashboard/dag_visualization.md
+          - Live Monitoring: dashboard/live_monitoring.md
+          - Drag-and-Drop DAG Construction: dashboard/dnd_construction.md
+  - Reference:
+      - SAGE:
+          - api:
+              - memory: reference/sage/api/memory.md
+              - model: reference/sage/api/model.md
+              - operator: reference/sage/api/operator.md
+              - pipeline: reference/sage/api/pipeline.md
+              - query: reference/sage/api/query.md
+          - core:
+              - compiler: reference/sage/core/compiler.md
+              - dag: reference/sage/core/dag.md
+              - engine: reference/sage/core/engine.md
+              - graph: reference/sage/core/graph.md
+              - io: reference/sage/core/io.md
+              - metrics: reference/sage/core/metrics.md
+              - model: reference/sage/core/model.md
+              - neuromem: reference/sage/core/neuromem.md
+              - operator: reference/sage/core/operator.md
+              - runtime: reference/sage/core/runtime.md
+          - sage_runtime: reference/sage/sage_runtime.md
+          - sage_commen_funs: reference/sage/sage_commen_funs.md
+          - sage_memory: reference/sage/sage_memory.md
+          - sage_tests: reference/sage/sage_tests.md
+          - sage_vectors: reference/sage/sage_vectors.md
+  - Example:
+      - minimal: examples/minimal.md
+      - advanced: examples/advanced.md
+      - integration: examples/integration.md
