@@ -1,4 +1,5 @@
 /site/
 /docs/
 /.idea/
-/docs_src/about.md
+*.pyc
+__pycache__/
