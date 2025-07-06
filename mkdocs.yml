@@ -10,10 +10,15 @@ theme:
     - navigation.tabs
     - navigation.expand
     - content.code.copy
-  
+
+plugins:
+  - search
+  - include-markdown
+
 nav:
   - 首页: index.md
-  - get start:
+  - 关于 SAGE: about.md
+  - 使用指南:
       - Installation: get_start/install.md
       - Quickstart: get_start/quickstart.md
   - Guides:

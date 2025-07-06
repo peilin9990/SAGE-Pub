@@ -1,0 +1,29 @@
+# .github/workflows/sync-readme.yml
+name: Sync README from private SAGE
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SAGE-Pub
+        uses: actions/checkout@v3
+
+      - name: Checkout private SAGE repo
+        uses: actions/checkout@v3
+        with:
+          repository: intellistream/SAGE
+          token: ${{ secrets.SAGE_REPO_TOKEN }}
+          path: SAGE
+
+      - name: Copy README
+        run: |
+          cp SAGE/README.md docs_src/about.md
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs_src/about.md
+          git commit -m "sync: update about.md from SAGE README" || echo "No changes"
+          git push
