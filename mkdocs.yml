@@ -1,5 +1,8 @@
 site_name: SAGE 项目文档
 site_url: https://intellistream.github.io/SAGE-Pub/
+extra:
+  base_url: /SAGE-Pub/
+  
 theme:
   name: material
   language: zh
@@ -7,10 +10,6 @@ theme:
     - navigation.tabs
     - navigation.expand
     - content.code.copy
-
-# 关键：添加这一项确保资源路径正确
-extra:
-  base_url: /SAGE-Pub/
   
 nav:
   - 首页: index.md
