@@ -1,12 +1,14 @@
-name: Deploy MkDocs
+name: Deploy MkDocs to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,6 +18,9 @@ jobs:
         with:
           python-version: '3.x'
 
-      - run: pip install mkdocs mkdocs-material
+      - name: Install dependencies
+        run: |
+          pip install mkdocs mkdocs-material mkdocs-include-markdown-plugin
 
-      - run: mkdocs gh-deploy --force
+      - name: Build and deploy
+        run: mkdocs gh-deploy --force
