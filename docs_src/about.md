@@ -1,7 +1,28 @@
-# <div align="center">🧠 SAGE: A Dataflow-Native Framework for LLM Reasoning<div>
+<!-- 英文版内容已备注 -->
+# <div align="center">🧬 SAGE: 用于大模型推理的原生流计算框架<div>
+
+SAGE 是一个原生支持数据流的数据推理框架，从底层设计上就旨在为大语言模型（LLMs）提供模块化、可控、透明的工作流程。它解决了现有基于 LLM 的系统（如 RAG 和智能体）中常见的问题，比如硬编码的编排逻辑、不透明的执行路径，以及有限的运行时控制能力。SAGE 引入了一种以数据流为中心的抽象方式，将推理流程建模为由类型化算子组成的有向无环图（DAG）。
+
+## 如何使用 SAGE 框架？
+
+请查阅 [安装指南](get_start/install.md) 和 [快速开始](get_start/quickstart.md)。
+
+## ✨ Features
+
+- **声明式与模块化组合**: 使用类型化、可复用的算子构建复杂推理流水线。数据流图清晰分离计算内容与执行方式。
+
+- **统一的数据与控制流**: 在图结构中声明式表达条件分支、工具路由和回退逻辑，消除脆弱的命令式控制代码。
+
+- **原生有状态算子**: 记忆是一等公民。可将会话、任务和长期记忆建模为图中的有状态节点，实现持久的上下文感知计算。
+
+- **异步且弹性的运行时**: 引擎以非阻塞、数据驱动方式异步执行 DAG，具备流感知队列、事件驱动调度和内建背压，稳健处理复杂负载。
+
+- **内建可观测性与自省能力**: 提供交互式仪表盘，开箱即用的运行时监控。支持可视化执行图、算子级指标监控和实时流水线调试。
 
 
-SAGE is a dataflow-native reasoning framework built from the ground up to support modular, controllable, and transparent workflows over Large Language Models (LLMs). It addresses common problems in existing LLM-augmented systems (like RAG and Agents), such as hard-coded orchestration logic, opaque execution paths, and limited runtime control. SAGE introduces a dataflow-centric abstraction, modeling reasoning workflows as directed acyclic graphs (DAGs) composed of typed operators.
+
+<!-- # <div align="center">🧬 SAGE: A Dataflow-Native Framework for LLM Reasoning<div> -->
+<!-- SAGE is a dataflow-native reasoning framework built from the ground up to support modular, controllable, and transparent workflows over Large Language Models (LLMs). It addresses common problems in existing LLM-augmented systems (like RAG and Agents), such as hard-coded orchestration logic, opaque execution paths, and limited runtime control. SAGE introduces a dataflow-centric abstraction, modeling reasoning workflows as directed acyclic graphs (DAGs) composed of typed operators.
 
 ![](./asset/framework.png)
 
@@ -276,4 +297,4 @@ npm start
 ```
 
 ## 🔖 License
-SAGE is licensed under the [MIT License](./LICENSE).
+SAGE is licensed under the [MIT License](./LICENSE). -->
