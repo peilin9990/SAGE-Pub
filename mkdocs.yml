@@ -18,10 +18,10 @@ plugins:
 nav:
   - 首页: index.md
   - 关于 SAGE: about.md
-  - 使用指南:
-      - Installation: get_start/install.md
-      - Quickstart: get_start/quickstart.md
-  - Guides:
+  - 快速开始:
+      - 安装与部署: get_start/install.md
+      - 快速入门: get_start/quickstart.md
+  - 接口文档:
       - Components: guides/components.md
       - Framework:
           - Design Philosophy: framework/philosophy.md
@@ -29,7 +29,7 @@ nav:
           - DAG Visualization: dashboard/dag_visualization.md
           - Live Monitoring: dashboard/live_monitoring.md
           - Drag-and-Drop DAG Construction: dashboard/dnd_construction.md
-  - Reference:
+  - SAGE Lib:
       - SAGE:
           - api:
               - memory: reference/sage/api/memory.md
@@ -53,7 +53,7 @@ nav:
           - sage_memory: reference/sage/sage_memory.md
           - sage_tests: reference/sage/sage_tests.md
           - sage_vectors: reference/sage/sage_vectors.md
-  - Example:
+  - 加入 SAGE:
       - minimal: examples/minimal.md
       - advanced: examples/advanced.md
       - integration: examples/integration.md
