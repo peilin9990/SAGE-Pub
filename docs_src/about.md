@@ -13,13 +13,11 @@ SAGE 是一个原生支持数据流的数据推理框架，从底层设计上就
 
 - **统一的数据与控制流**: 在图结构中声明式表达条件分支、工具路由和回退逻辑，消除脆弱的命令式控制代码。
 
-- **原生有状态算子**: 记忆是一等公民。可将会话、任务和长期记忆建模为图中的有状态节点，实现持久的上下文感知计算。
+- **原生有状态算子**: 可将会话、任务和长期记忆建模为图中的有状态节点，实现持久的上下文感知计算。
 
 - **异步且弹性的运行时**: 引擎以非阻塞、数据驱动方式异步执行 DAG，具备流感知队列、事件驱动调度和内建背压，稳健处理复杂负载。
 
 - **内建可观测性与自省能力**: 提供交互式仪表盘，开箱即用的运行时监控。支持可视化执行图、算子级指标监控和实时流水线调试。
-
-
 
 <!-- # <div align="center">🧬 SAGE: A Dataflow-Native Framework for LLM Reasoning<div> -->
 <!-- SAGE is a dataflow-native reasoning framework built from the ground up to support modular, controllable, and transparent workflows over Large Language Models (LLMs). It addresses common problems in existing LLM-augmented systems (like RAG and Agents), such as hard-coded orchestration logic, opaque execution paths, and limited runtime control. SAGE introduces a dataflow-centric abstraction, modeling reasoning workflows as directed acyclic graphs (DAGs) composed of typed operators.
@@ -60,7 +58,7 @@ You will be prompted to select one of the following modes:
 <!-- 2. **Setup with Ray**  
    Includes the minimal setup and additionally installs [Ray](https://www.ray.io/), a distributed computing framework. -->
 
-2. **Setup with Docker**  
+<!-- 2. **Setup with Docker**  
    Launches a pre-configured Docker container and sets up the Conda environment inside it.
 
 3. **Full Setup**  
@@ -283,7 +281,7 @@ The Engine operates in four main phases:
 <summary>Show more</summary>
 
  <!-- ![](./asset/UI.png) -->
- <img src="./asset/UI.png" alt="sage-dashboard" width="505"/>
+ <!-- <img src="./asset/UI.png" alt="sage-dashboard" width="505"/>
 </details>
 
 #### Experience our meticulously designed Sage -Dashboard both user-friendly and powerful::
@@ -294,7 +292,7 @@ python main.py --host 127.0.0.1 --port 8080 --log-level debug
 cd ../dashboard
 npm i 
 npm start
-```
+``` -->
 
 ## 🔖 License
-SAGE is licensed under the [MIT License](./LICENSE). -->
+SAGE is licensed under the [MIT License](./LICENSE). --> -->

@@ -8,60 +8,58 @@
 
 在开始安装之前，请确保您的开发环境满足以下要求：
 
-* **操作系统 (OS)**:
+* **支持的操作系统 (OS)**:
     * Linux
     * macOS
-    * Windows (推荐在 WSL2 环境下使用)
-* **Python**: 版本 **≥ 3.11**。您可以通过以下命令检查：
-    ```bash
-    python --version
-    # 或者 python3 --version
-    ```
-* **PIP**: Python 包管理工具。通常随 Python 一起安装。您可以通过以下命令检查：
-    ```bash
-    pip --version
-    # 或者 pip3 --version
-    ```
+    * Windows 
+* **Python**：建议使用版本 **≥ 3.11.10** 的 Python 解释器。例如使用 Conda 在虚拟环境中创建并激活环境：
+
+```bash
+conda create -n sage python=3.11.10
+conda activate sage
+```
+
+*温馨提示：若 Conda 创建失败，可能是网络问题导致，请及时更换 Conda 源。*
 
 ---
 
-## 🚀 安装方法 (Installation Methods)
+## 🚀 下载安装 (Installation)
 
-我们提供两种主要的安装方式。对于大多数用户，我们推荐直接使用 `.whl` 文件进行安装。
+SAGE 提供简单的安装方式，您只需通过 `.whl` 文件即可完成安装，无需下载源码，适合快速部署和使用。
 
-### 方式一：通过 Wheel 文件安装 (推荐)
+### 安装步骤
 
-这是最快捷、最简单的安装方式，无需下载源码，适合直接部署和使用 SAGE。
+**第 1 步：下载 Wheel 文件**
 
-**第1步：下载 Wheel 文件**
+前往 SAGE 的官方发布仓库下载最新的 `.whl` 安装包，在当前版本中，该安装包名称如下：`sage-0.1.0-py3-none-any.whl`：
 
-前往 SAGE 的官方发布页面下载最新的 `.whl` 文件。
+- 下载地址：[https://github.com/IntelliStream/SAGE-Pub](https://github.com/IntelliStream/SAGE-Pub)
 
-* **下载地址**: [https://github.com/IntelliStream/SAGE-Pub](https://github.com/IntelliStream/SAGE-Pub)
 
-请下载与项目版本对应的文件，例如 `sage-0.1.0-py3-none-any.whl`。
+**第 2 步：使用 pip 安装**
 
-**第2步：使用 pip 安装**
-
-打开您的终端（Terminal 或命令提示符），进入 `.whl` 文件所在的目录，然后执行以下命令进行安装：
+在终端中切换到 `.whl` 文件所在目录，执行以下命令完成安装：
 
 ```bash
-# 将文件名替换为您下载的实际版本
+# 安装前请确保您处在正确的目录以及Python环境下
+# (sage) user-name:~/download_path/SAGE-Pub$
 pip install sage-0.1.0-py3-none-any.whl
 ```
-安装命令执行完毕后，所有在 requirements.txt 中声明的依赖项也会被自动安装。
+
 
 ## ✅ 验证安装 (Verify Installation)
 安装完成后，您可以通过以下任一方式来验证 SAGE 是否已成功安装。
 
 ### 方法1：查看包信息
 
-运行 pip show 命令，如果能看到 SAGE 的信息，则说明安装成功。
+运行 `pip show` 以检查 SAGE 的安装情况。
 
 ```Bash
 pip show sage
 ```
-您应该会看到类似以下的输出：
+
+您将会看到以下的类似输出：
+
 ```
 Name: sage
 Version: 0.1.0
@@ -71,15 +69,32 @@ Author: IntelliStream
 Author-email: intellistream@outlook.com
 License: 
 Location: /path/to/your/python/site-packages
-Requires: ...
+Requires: accelerate, aioboto3, ...
 Required-by: 
 ```
-### 方法2：在 Python 中导入
+### 方法2：运行 SAGE HelloWorld 程序
 
-执行以下命令，如果没有报错，则说明安装成功。
+执行 SAGE 官方发布仓库下 `hello_world.py` Python 文件。
 
 ```Python
-
-python -c "import sage; print('✅ SAGE package imported successfully!')"
+python hello_world.py
 ```
-至此，您已成功安装 SAGE。祝您使用愉快！
+
+您将会看到一系列的终端输出，表明您顺利完成 SAGE 的安装。
+
+```
+Waiting for batch processing to complete...
+HELLO, WORLD! #1
+HELLO, WORLD! #2
+HELLO, WORLD! #3
+HELLO, WORLD! #4
+HELLO, WORLD! #5
+HELLO, WORLD! #6
+HELLO, WORLD! #7
+HELLO, WORLD! #8
+HELLO, WORLD! #9
+HELLO, WORLD! #10
+Hello World 批处理示例结束
+```
+
+至此，您已成功安装 SAGE，祝您使用愉快！
