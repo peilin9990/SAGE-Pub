@@ -26,37 +26,42 @@ nav:
               - 有关 RAG: get_start/naive_rag/you_know_rag.md
   - 接口文档:
       - DataStream API: guides/components.md
-      - Framework:
+      - Service API:
+          - Memory API: framework/philosophy.md
           - Design Philosophy: framework/philosophy.md
-      - SAGE-dashboard:
           - DAG Visualization: dashboard/dag_visualization.md
           - Live Monitoring: dashboard/live_monitoring.md
           - Drag-and-Drop DAG Construction: dashboard/dnd_construction.md
+      - SAGE CIL API:
+          - compiler: reference/sage/core/compiler.md
+      - SAGE Lib API:
+          - Source API: framework/philosophy.md
   - SAGE Lib:
-      - SAGE:
-          - api:
-              - memory: reference/sage/api/memory.md
-              - model: reference/sage/api/model.md
-              - operator: reference/sage/api/operator.md
-              - pipeline: reference/sage/api/pipeline.md
-              - query: reference/sage/api/query.md
-          - core:
-              - compiler: reference/sage/core/compiler.md
-              - dag: reference/sage/core/dag.md
-              - engine: reference/sage/core/engine.md
-              - graph: reference/sage/core/graph.md
-              - io: reference/sage/core/io.md
-              - metrics: reference/sage/core/metrics.md
-              - model: reference/sage/core/model.md
-              - neuromem: reference/sage/core/neuromem.md
-              - operator: reference/sage/core/operator.md
-              - runtime: reference/sage/core/runtime.md
-          - sage_runtime: reference/sage/sage_runtime.md
-          - sage_commen_funs: reference/sage/sage_commen_funs.md
-          - sage_memory: reference/sage/sage_memory.md
-          - sage_tests: reference/sage/sage_tests.md
-          - sage_vectors: reference/sage/sage_vectors.md
-  - 加入 SAGE:
-      - minimal: examples/minimal.md
-      - advanced: examples/advanced.md
-      - integration: examples/integration.md
+      - Source: framework/philosophy.md
+      # - SAGE:
+      #     - api:
+          #     - memory: reference/sage/api/memory.md
+          #     - model: reference/sage/api/model.md
+          #     - operator: reference/sage/api/operator.md
+          #     - pipeline: reference/sage/api/pipeline.md
+          #     - query: reference/sage/api/query.md
+          # - core:
+          #     - compiler: reference/sage/core/compiler.md
+          #     - dag: reference/sage/core/dag.md
+          #     - engine: reference/sage/core/engine.md
+          #     - graph: reference/sage/core/graph.md
+          #     - io: reference/sage/core/io.md
+          #     - metrics: reference/sage/core/metrics.md
+          #     - model: reference/sage/core/model.md
+          #     - neuromem: reference/sage/core/neuromem.md
+          #     - operator: reference/sage/core/operator.md
+          #     - runtime: reference/sage/core/runtime.md
+          # - sage_runtime: reference/sage/sage_runtime.md
+          # - sage_commen_funs: reference/sage/sage_commen_funs.md
+          # - sage_memory: reference/sage/sage_memory.md
+          # - sage_tests: reference/sage/sage_tests.md
+          # - sage_vectors: reference/sage/sage_vectors.md
+  - 加入 SAGE: join_sage/intellistream.md
+      # - minimal: examples/minimal.md
+      # - advanced: examples/advanced.md
+      # - integration: examples/integration.md
