@@ -20,7 +20,10 @@ nav:
   - 关于 SAGE: about.md
   - 快速开始:
       - 安装与部署: get_start/install.md
-      - 快速入门: get_start/quickstart.md
+      - 快速入门: 
+          - Naive RAG:
+              - SAGE RAG: get_start/naive_rag/sage_naive_rag.md
+              - 有关 RAG: get_start/naive_rag/you_know_rag.md
   - 接口文档:
       - DataStream API: guides/components.md
       - Framework:
