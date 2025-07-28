@@ -25,7 +25,7 @@ nav:
               - SAGE RAG: get_start/naive_rag/sage_naive_rag.md
               - 有关 RAG: get_start/naive_rag/you_know_rag.md
   - 接口文档:
-      - DataStream API: api_guides/datastream_api.md
+      - DataStream API: api_guides/datastream/datastream_api.md
       - Service API:
           - Memory API: framework/philosophy.md
           - Design Philosophy: framework/philosophy.md
