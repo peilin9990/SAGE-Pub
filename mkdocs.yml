@@ -34,7 +34,8 @@ nav:
   - 接口文档:
       - DataStream API:
           - DataStream 概览: api_guides/datastream/datastream_intro.md
-          - DataStream 算子: api_guides/datastream/datastream_api.md
+          - DataStream 转换: api_guides/datastream/datastream_trans.md
+          - Operator 与 Function: api_guides/datastream/datastream_function.md
       - Service API:
           - Memory API: framework/philosophy.md
           - Design Philosophy: framework/philosophy.md
