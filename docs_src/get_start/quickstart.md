@@ -137,4 +137,4 @@ pipeline.submit(config={"is_long_running": True})
 
 ---
 
-如需获取更多示例，请前往 [Examples](../examples/minimal.md) 页面。
+<!-- 如需获取更多示例，请前往 [Examples](../examples/minimal.md) 页面。 -->
