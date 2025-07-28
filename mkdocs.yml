@@ -11,6 +11,13 @@ theme:
     - navigation.expand
     - content.code.copy
 
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - pymdownx.highlight
+  - pymdownx.superfences
+
 plugins:
   - search
   - include-markdown
