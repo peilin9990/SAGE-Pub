@@ -1,6 +1,6 @@
 # 加入我们 · IntelliStream SAGE 项目组
 
-我们是华中科技大学 IntelliStream 课题组，长期致力于分布式系统与智能数据流处理方向的研究。现在，我们围绕大模型系统化落地的新范式，正在构建下一代科研基础设施——SAGE（System-Aware Generation Environment）。
+我们是华中科技大学 IntelliStream 课题组，长期致力于分布式系统与智能数据流处理方向的研究。现在，我们围绕大模型系统化落地的新范式，正在构建下一代科研基础设施——SAGE（Streaming-Augmented Generative Execution）。
 
 ---
 
