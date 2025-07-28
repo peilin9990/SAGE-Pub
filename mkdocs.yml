@@ -26,7 +26,7 @@ nav:
               - 有关 RAG: get_start/naive_rag/you_know_rag.md
   - 接口文档:
       - DataStream API:
-          - DataStream 概览: api_guides/datastream/datastream_intro.mds
+          - DataStream 概览: api_guides/datastream/datastream_intro.md
           - DataStream 算子: api_guides/datastream/datastream_api.md
       - Service API:
           - Memory API: framework/philosophy.md
