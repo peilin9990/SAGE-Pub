@@ -4,7 +4,7 @@ SAGE 中的 DataStream 是对数据流进行转换处理的应用程序。如图
 
 ![DataStream Processing](../../assets/img/streaming.png)
 
-为了创建自己的 SAGE 程序，我们建议您从 Hello World 程序剖析开始，然后逐渐添加自己的 stream transformation。
+为了创建自己的 SAGE 程序，我们建议您从 Hello World 程序剖析开始，然后逐渐添加自定义的DataStream。
 
 ---
 
@@ -139,7 +139,7 @@ class PrintSink(SinkFunction):
 
 ---
 
-### `main()`函数：环境和数据流搭建
+### `main`函数：环境和数据流搭建
 
 ```python
 def main():
@@ -173,7 +173,7 @@ def main():
 ---
 
 
-### 运行效果展示
+### 运行效果
 
 控制台输出效果：
 

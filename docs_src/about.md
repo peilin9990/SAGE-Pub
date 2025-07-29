@@ -295,4 +295,4 @@ npm start
 ``` -->
 
 ## 🔖 License
-SAGE is licensed under the [MIT License](./LICENSE). 
+SAGE is licensed under the [MIT License](LICENSE). 

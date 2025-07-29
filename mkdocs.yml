@@ -14,13 +14,39 @@ theme:
 
 extra_javascript:
   - overrides/hide_sidebar.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 markdown_extensions:
-  - admonition
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - codehilite:
       guess_lang: false
-  - pymdownx.highlight
+  - admonition
+  - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.caret
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - footnotes
+  - abbr
+  - tables
+  - pymdownx.arithmatex:
+      generic: true
+
 
 plugins:
   - search
@@ -40,18 +66,28 @@ nav:
           - 有界流与无界流:
               - 有界流案例: get_start/streaming/limited_streaming.md
               - 无界流案例: get_start/streaming/unlimited_streaming.md
-
+          - 分布式流处理:
+              - SAGE 分布式简介: get_start/remote_mode/sage_remote.md
+              - 远程提交任务: get_start/remote_mode/remote_job_submit.md
   - 接口文档:
       - DataStream API:
           - DataStream 概览: api_guides/datastream/datastream_intro.md
           - Operator 与 Function: api_guides/datastream/datastream_function.md
           - Transformation: api_guides/datastream/datastream_trans.md
       - Service API:
-          - Drag-and-Drop DAG Construction: dashboard/dnd_construction.md
-      # - SAGE CIL API:
-      #     - compiler: dashboard/dnd_construction.md
-      # - SAGE Lib API:
-      #     - Source API: dashboard/dnd_construction.md
+          - Service 概览: api_guides/service/service_intro.md
+          - Service API: api_guides/service/service_api.md
+          - Memory:
+              - Memory 概览: api_guides/service/memory/memory_intro.md
+              - Memory API: api_guides/service/memory/memory_api.md
+      - SAGE CIL: get_start/remote_mode/sage_cil.md
   - SAGE Lib:
-      - Source: dashboard/dnd_construction.md
-  - 加入 SAGE: join_sage/intellistream.md
+      - SAGE Lib: sage_lib/lib_intro.md
+  - 加入 SAGE:
+    - 我们是谁: join_sage/intellistream.md
+    - md 模板: template.md
+    # - 贡献指南:
+    #     - 贡献指南: contribute/contribute_guide.md
+    #     - 开发环境: contribute/dev_env.md
+    #     - 开发流程: contribute/dev_process.md
+    #     - 测试流程: contribute/test_process.md
