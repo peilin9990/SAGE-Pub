@@ -1,209 +1,165 @@
-# 无界流处理 (Unlimited Streaming)
+# 无界流处理 (Unlimited Streaming) :material-infinity:
 
-> 无界流处理是SAGE框架的核心能力之一，用于处理持续产生的数据流，支持实时数据分析、监控和交互式应用。
+> :fontawesome-solid-stream: 处理持续产生的数据流，支持实时数据分析、监控和交互式应用。
 
-## 什么是无界流处理？
+## 核心概念 :material-lightbulb:
 
-无界流处理是一种数据处理模式，其特点是数据源会持续不断地产生新数据，没有预定义的结束点。这种模式特别适合：
+- **数据源持续性** :octicons-sync-16: ：继承 `SourceFunction`，`execute()` 被框架循环调用
+- **流式管道** :material-pipe: ：使用 `.from_source()` 启动，链式调用实现转换
+- **状态管理** :material-database: ：闭包或类属性维护跨数据项状态，如累积统计、窗口计算
+- **生命周期控制** :material-lifecycle: ：`env.submit()` 启动，`KeyboardInterrupt` 或 `env.close()` 停止
 
-- **实时数据监控**：如网站访问日志、传感器数据流
-- **用户交互应用**：如聊天机器人、问答系统
-- **事件驱动系统**：如消息队列处理、实时通知
+!!! info "设计理念"
+    无界流处理模拟真实世界中的**连续数据流**，如传感器数据、用户点击流、消息队列等。它强调==实时性==和==响应性==，是构建现代数据驱动应用的核心模式。
 
-### 核心设计理念
-
-SAGE的无界流处理基于以下核心概念：
-
-1. **数据源持续性**：通过 `SourceFunction` 基类，`execute()` 方法被框架持续调用
-2. **流式管道**：使用 `.from_source()` 启动，支持链式数据转换操作
-3. **状态管理**：支持跨数据项的状态维护，如累积计算、窗口统计
-4. **生命周期控制**：通过异常处理和用户中断实现优雅的启动和停止
-
----
-
-## 示例1：WordCount流处理 - 无大模型参与
-
-### 业务场景描述
-
-构建一个实时词频统计系统，能够：
-- 持续接收文本数据流
-- 实时统计每个词的出现频次
-- 定期输出统计结果
-- 支持用户随时停止处理
-
-这是典型的流式数据聚合场景，展示了SAGE处理持续数据流的基本能力。
-
-### 技术架构设计
+## 技术架构 :material-sitemap:
 
 ```mermaid
 graph LR
-    A[SentenceSource] --> B[数据标准化]
-    B --> C[分词处理]
-    C --> D[数据过滤]
-    D --> E[状态聚合]
-    E --> F[实时输出]
-```
-
-### 核心组件实现
-
-#### 1. 无界流数据源设计
-
-```python
-from sage.core.function.source_function import SourceFunction
-
-class SentenceSource(SourceFunction):
-    """文本数据无界流源 - 模拟持续的文本数据输入"""
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.sentences = [
-            "hello world sage framework",
-            "this is a streaming data processing example",
-            "lambda functions make the code much cleaner",
-            "word count is a classic big data example",
-            "sage provides powerful stream processing capabilities"
-        ]
-        self.counter = 0
+    A[SourceFunction] --> B[map/filter/flatmap]
+    B --> C[stateful operator]
+    C --> D[sink/print]
     
-    def execute(self):
-        """
-        核心执行方法 - 被SAGE框架持续调用
-        每次调用返回一个数据项，模拟持续的数据流
-        """
-        sentence = self.sentences[self.counter % len(self.sentences)]
-        self.counter += 1
-        return sentence
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#fff3e0
+    style D fill:#e8f5e8
 ```
 
-**设计关键点**：
-- **继承 `SourceFunction`**：这是创建无界流数据源的必要条件
-- **`execute()` 方法**：框架会持续调用此方法获取新数据
-- **循环数据生成**：使用取模运算实现数据的循环产生，模拟真实的无界数据流
-- **状态维护**：通过 `self.counter` 维护数据源的内部状态
+---
 
-#### 2. 流式数据处理管道
+## 示例1：WordCount 实时统计 :material-counter:
 
-```python
-from sage.core.api.local_environment import LocalEnvironment
-from collections import Counter
-import time
+!!! example "使用场景"
+    实时分析社交媒体数据流、监控系统日志、统计网站访问词频等场景。
 
-def create_wordcount_pipeline():
-    """创建WordCount无界流处理管道"""
-    # 1. 创建流处理环境
+### 核心管道代码（重点） :octicons-code-16:
+
+=== "完整管道"
+    ```python linenums="1" hl_lines="17-26" title="无界流WordCount核心管道"
+    from sage.core.api.local_environment import LocalEnvironment
+    from collections import Counter
+    import time
+
     env = LocalEnvironment("wordcount_streaming")
-    
-    # 2. 定义全局状态管理
     word_counts = Counter()
     total_processed = 0
-    
+
     def update_word_count(word_count_tuple):
-        """
-        状态聚合函数 - 维护全局词频统计
-        这是流处理中状态管理的核心模式
-        """
         nonlocal word_counts, total_processed
         word, count = word_count_tuple
         word_counts[word] += count
         total_processed += count
         
-        # 定期输出统计结果 - 流处理的实时反馈机制
         if total_processed % 10 == 0:
-            print(f"\n=== 实时词频统计 (已处理: {total_processed}) ===")
-            for word, count in word_counts.most_common(10):
-                print(f"{word:20}: {count:3d}")
-            print("=" * 50)
-        
+            print(f"实时统计(已{total_processed}):", word_counts.most_common(5))
         return word_count_tuple
-    
-    # 3. 构建流式处理管道
+
     (env
-        .from_source(SentenceSource, delay=1.0)          # 启动无界流，控制数据频率
-        .map(lambda sentence: sentence.lower())           # 数据标准化
-        .filter(lambda sentence: len(sentence) > 0)       # 数据质量保证
-        .flatmap(lambda sentence: sentence.split())       # 数据解构（一对多转换）
-        .filter(lambda word: len(word) > 2)              # 业务规则过滤
-        .map(lambda word: word.replace(",", "").replace(".", ""))  # 数据清洗
-        .map(lambda word: (word, 1))                     # 数据格式转换
-        .map(update_word_count)                          # 状态聚合
-        .print()                                         # 流式输出
+        .from_source(SentenceSource, delay=1.0)     # 每秒一条数据
+        .map(lambda s: s.lower().strip())           # 标准化
+        .filter(lambda s: len(s) > 0)               # 过滤空行
+        .flatmap(lambda s: s.split())               # 分词
+        .filter(lambda w: len(w) > 2)               # 过滤短词
+        .map(lambda w: (w.replace(",", "").replace(".", ""), 1))  # 清洗计数
+        .map(update_word_count)                     # 累积统计
+        .print()                                    # 实时输出
     )
-    
-    # 4. 启动和生命周期管理
-    print("🚀 启动WordCount流处理系统")
-    print("📊 系统将实时统计词频，每处理10个词显示一次结果")
-    print("⏹️  按 Ctrl+C 停止处理")
-    
-    try:
-        env.submit()                    # 启动流处理管道
-        time.sleep(60)                  # 运行60秒
-    except KeyboardInterrupt:
-        print("\n🛑 用户终止处理")
-        # 输出最终统计结果
-        print("\n📈 最终词频统计:")
-        for word, count in word_counts.most_common():
-            print(f"{word:20}: {count:3d}")
-    finally:
-        env.close()                     # 资源清理
+
+    env.submit()                                    # 启动流处理
+    time.sleep(60)                                  # 运行60秒
+    env.close()
+    ```
+
+=== "数据源定义"
+    ```python linenums="1" title="SentenceSource数据源"
+    from sage.core.function.source_function import SourceFunction
+
+    class SentenceSource(SourceFunction):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.sentences = [
+                "hello world sage framework",
+                "this is a streaming data processing example",
+                "lambda functions make the code much cleaner",
+                "word count is a classic big data example",
+                "sage provides powerful stream processing capabilities"
+            ]
+            self.counter = 0
+
+        def execute(self):
+            # 模拟持续数据流，循环返回
+            text = self.sentences[self.counter % len(self.sentences)]
+            self.counter += 1
+            return text
+    ```
+
+!!! tip "关键参数说明"
+    - `delay=1.0` :material-timer: ：控制数据产生频率，防止系统过载
+    - `update_word_count` :material-function: ：维护全局状态，定期输出统计结果
+    - `env.submit()` :material-play: ：启动并持续调用数据源的 `execute()` 方法
+
+### 代码关键细节解析 :material-magnify:
+
+#### 1. 无界数据源的循环机制
+```python title="持续数据生成的实现"
+def execute(self):
+    text = self.sentences[self.counter % len(self.sentences)]  # 取模运算实现循环
+    self.counter += 1
+    return text  # 永远不返回None，保持数据流持续
 ```
 
-### 流处理核心概念解析
+!!! note "设计要点"
+    - 使用 `%` 取模运算实现数据的循环产生
+    - **永远不返回 `None`**，这是无界流与有界流的核心区别
+    - `self.counter` 可以无限增长，取模运算保证索引有效
 
-#### 数据流转换链路
-1. **数据源** → **标准化** → **分词** → **过滤** → **聚合** → **输出**
-2. 每个环节都是流式处理，数据逐条通过整个管道
-3. 状态在 `update_word_count` 函数中累积，实现跨数据项的聚合计算
-
-#### delay参数的作用
-```python
-.from_source(SentenceSource, delay=1.0)  # 每秒产生一个数据项
+#### 2. delay 参数的节流作用
+```python title="流量控制机制"
+.from_source(SentenceSource, delay=1.0)  # 每秒产生一条数据
 ```
-- **控制数据频率**：防止数据源产生过快导致系统过载
-- **模拟真实场景**：真实环境中数据通常有自然的时间间隔
-- **便于观察调试**：慢速数据流便于观察处理效果和调试问题
 
-#### 状态管理模式
-无界流处理中的状态管理是核心挑战，SAGE通过以下方式解决：
-- **全局状态变量**：使用 `nonlocal` 或全局变量维护跨调用状态
-- **函数闭包**：利用Python闭包特性封装状态更新逻辑
-- **实时输出**：定期输出中间结果，提供处理进度反馈
+!!! warning "性能控制"
+    - `delay` 参数在框架内部控制 `execute()` 的调用频率
+    - 避免数据源过快产生数据导致系统过载
+    - 模拟真实世界中数据的自然间隔
+
+#### 3. 实时状态更新策略
+```python title="增量统计与定期输出"
+def update_word_count(word_count_tuple):
+    nonlocal word_counts, total_processed
+    word_counts[word] += count
+    total_processed += count
+    
+    if total_processed % 10 == 0:  # 每处理10个词输出一次
+        print(f"实时统计:", word_counts.most_common(5))
+    return word_count_tuple
+```
+
+!!! tip "实时处理技巧"
+    - 使用计数器控制输出频率，避免输出过于频繁
+    - 只显示 Top5 高频词，保持输出简洁
+    - 状态实时更新但输出有节制
 
 ---
 
-## 示例2：QA终端交互 - 有大模型参与
+## 示例2：终端交互问答（重点） :material-chat: 
 
-### 业务场景描述
+!!! success "应用亮点"
+    这是 SAGE 框架的==明星功能==，展示了用户驱动的实时AI交互能力！ :star:
 
-构建一个智能问答系统，具备以下能力：
-- 用户在终端持续输入问题
-- 系统调用大语言模型生成回答
-- 实时返回格式化的答案
-- 支持多轮对话直到用户退出
+### 场景说明 :material-scenario:
 
-这是典型的交互式AI应用场景，展示了SAGE集成大模型的流处理能力。
+构建一个智能问答系统，用户通过终端输入问题，系统实时调用大模型生成回答。这是典型的**交互式无界流应用**，展示了用户驱动的数据流处理模式。
 
-### 技术架构设计
+### 1. 交互式数据源设计 :material-account-voice:
 
-```mermaid
-graph LR
-    A[用户输入] --> B[问题处理]
-    B --> C[提示词构造]
-    C --> D[大模型生成]
-    D --> E[回答格式化]
-    E --> F[控制台输出]
-```
+```python linenums="1" title="TerminalInputSource - 用户输入驱动的数据源"
+from sage.core.function.source_function import SourceFunction
 
-### 核心组件实现
-
-#### 1. 交互式无界流数据源
-
-```python
 class TerminalInputSource(SourceFunction):
-    """终端交互输入源 - 用户驱动的无界流"""
+    """终端输入数据源 - 等待用户输入驱动数据流"""
     def execute(self, data=None):
-        """
-        等待用户输入的阻塞式数据源
-        这种模式适合交互式应用场景
-        """
         try:
             user_input = input("💬 请输入问题: ").strip()
             if user_input:
@@ -211,333 +167,226 @@ class TerminalInputSource(SourceFunction):
             # 空输入时递归等待，确保数据流连续性
             return self.execute(data)
         except (EOFError, KeyboardInterrupt):
-            # 正确传播用户中断信号
-            raise
+            raise  # 正确传播用户中断信号
 ```
 
-**设计特点**：
-- **用户驱动**：不同于定时数据源，这里由用户输入驱动数据流
-- **自然阻塞**：`input()` 函数提供天然的阻塞等待机制
-- **异常处理**：正确处理用户中断和输入结束信号
+!!! note "设计特点"
+    - **用户驱动** :material-account: ：不同于定时数据源，这里由用户输入驱动数据流
+    - **自然阻塞** :material-pause: ：`input()` 函数提供天然的阻塞等待机制
+    - **中断处理** :material-stop: ：正确处理用户 ++ctrl+c++ 中断信号
 
-#### 2. 智能处理组件
+### 2. 问题处理组件 :material-cog:
 
-```python
-from sage.core.function.map_function import MapFunction
-from sage.core.function.sink_function import SinkFunction
+=== "问题预处理器"
+    ```python linenums="1" title="QuestionProcessor - 智能问题处理"
+    from sage.core.function.map_function import MapFunction
 
-class QuestionProcessor(MapFunction):
-    """问题预处理组件"""
-    def execute(self, data):
-        """
-        对用户输入进行标准化处理
-        确保下游组件接收到的数据质量
-        """
-        if not data or data.strip() == "":
-            return None
-        return data.strip()
+    class QuestionProcessor(MapFunction):
+        """问题预处理器 - 清洗用户输入并构造提示词"""
+        def execute(self, data):
+            if not data:
+                return None
+            
+            # 对用户输入进行标准化处理
+            question = data.strip()
+            if len(question) < 2:
+                return None
+            
+            # 构造适合大模型的提示词格式
+            prompt = f"请回答以下问题：{question}"
+            return prompt
+    ```
 
-class AnswerFormatter(MapFunction):
-    """回答格式化组件"""
-    def execute(self, data):
-        """
-        格式化大模型的输出结果
-        OpenAIGenerator返回格式: (user_query, generated_text)
-        """
-        if not data:
-            return None
-        
-        if isinstance(data, tuple) and len(data) >= 2:
-            user_query, answer = data[0], data[1]
-            return {
-                "question": user_query,
-                "answer": answer,
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "model": "OpenAI GPT"
-            }
-        else:
-            return {
-                "answer": str(data),
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "model": "Unknown"
-            }
+=== "回答格式化器"
+    ```python linenums="1" title="AnswerFormatter - 美化AI回答"
+    class AnswerFormatter(MapFunction):
+        """回答格式化组件"""
+        def execute(self, data):
+            if not data:
+                return None
+            
+            # OpenAIGenerator返回格式: (user_query, generated_text)
+            if isinstance(data, tuple) and len(data) == 2:
+                user_query, generated_text = data
+                return {
+                    "question": user_query,
+                    "answer": generated_text,
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+                }
+            else:
+                return {
+                    "answer": str(data),
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "model": "Unknown"
+                }
+    ```
 
-class ConsoleSink(SinkFunction):
-    """美化的控制台输出组件"""
-    def execute(self, data):
-        """
-        提供用户友好的输出格式
-        这是用户体验的重要组成部分
-        """
-        if isinstance(data, dict):
+=== "控制台输出器"
+    ```python linenums="1" title="ConsoleSink - 用户友好的输出"
+    from sage.core.function.sink_function import SinkFunction
+
+    class ConsoleSink(SinkFunction):
+        """控制台输出组件"""
+        def execute(self, data):
+            if not data:
+                return
+            
+            # 提供用户友好的输出格式
             print(f"\n{'='*60}")
             print(f"🤖 AI助手回答:")
             print(f"{data.get('answer', 'N/A')}")
             print(f"{'='*60}")
             print(f"⏰ 时间: {data.get('timestamp', 'N/A')}")
             print()
-        else:
-            print(f"\n🤖 {data}\n")
-        return data
-```
+    ```
 
-#### 3. 大模型集成管道
+### 3. 完整交互问答管道（重点） :material-rocket:
 
-```python
+```python linenums="1" hl_lines="13-19" title="智能问答系统 - 完整实现"
+from sage.core.api.local_environment import LocalEnvironment
 from sage.lib.rag.generator import OpenAIGenerator
-from sage.lib.rag.promptor import QAPromptor
 from dotenv import load_dotenv
 from sage.utils.config_loader import load_config
 
-def create_qa_pipeline():
+def create_interactive_qa():
     """创建智能问答无界流处理管道"""
     # 1. 环境和配置初始化
     load_dotenv(override=False)
-    config = load_config("config_source.yaml")
+    config = load_config("config.yaml")
     env = LocalEnvironment("interactive_qa")
-    
-    # 2. 用户界面初始化
-    print("🎯 SAGE智能问答系统")
+
+    # 2. 构建交互式问答管道
+    (env
+        .from_source(TerminalInputSource)              # 用户交互输入
+        .map(QuestionProcessor)                        # 问题预处理
+        .filter(lambda q: q is not None)              # 数据质量保证
+        .map(OpenAIGenerator, config["generator"]["vllm"])  # 大模型推理
+        .map(AnswerFormatter)                          # 结果格式化
+        .sink(ConsoleSink)                            # 用户界面输出
+    )
+
     print("💡 输入问题获得AI回答，按Ctrl+C退出")
     print("-" * 50)
-    
+
     try:
-        # 3. 构建大模型集成管道
-        (env
-            .from_source(TerminalInputSource)              # 用户交互输入
-            .map(QuestionProcessor)                        # 问题预处理
-            .filter(lambda q: q is not None)              # 数据质量保证
-            .map(QAPromptor, config["promptor"])           # 提示词工程
-            .map(OpenAIGenerator, config["generator"]["vllm"])  # 大模型推理
-            .map(AnswerFormatter)                          # 结果格式化
-            .sink(ConsoleSink)                            # 用户界面输出
-        )
+        # 3. 启动交互式服务
+        env.submit()                                   # 启动并阻塞等待用户输入
         
-        # 4. 启动交互式服务
-        env.submit()
-        
-        # 5. 保持服务运行直到用户退出
+        # 4. 保持服务运行直到用户退出
         while True:
-            time.sleep(1)
-            
+            time.sleep(1)                              # 保持主线程存活
     except KeyboardInterrupt:
         print("\n\n👋 感谢使用SAGE问答系统！")
     except Exception as e:
         print(f"❌ 系统错误: {str(e)}")
     finally:
         env.close()
+
+if __name__ == '__main__':
+    create_interactive_qa()
 ```
 
-### 大模型集成核心概念
+### 4. 交互问答核心概念解析 :material-brain:
 
-#### 提示词工程 (QAPromptor)
-- **功能**：将用户问题转换为适合大模型的提示词格式
-- **配置**：通过 `config["promptor"]` 配置模板和参数
-- **输出**：格式化的提示词字符串
+#### 用户驱动的数据流 :material-account-arrow-right:
+!!! abstract "设计哲学"
+    - **按需触发** :material-gesture-tap: ：只有用户输入时产生数据，避免无效计算
+    - **自然节流** :material-speedometer: ：用户思考和输入时间天然控制了数据流速度
+    - **响应式设计** :material-responsive: ：系统始终准备响应用户的下一个输入
 
-#### 大模型推理 (OpenAIGenerator)
-- **功能**：调用OpenAI API进行文本生成
-- **输入**：提示词字符串
-- **输出**：`(原始问题, 生成答案)` 元组
-- **配置**：模型类型、温度、最大长度等参数
+#### 代码关键细节解析 :material-code-braces:
 
-#### 数据流转换模式
-```
-用户输入 → 问题清洗 → 提示词构造 → 大模型推理 → 答案格式化 → 界面展示
-```
-
-#### 无需delay参数的原因
-```python
-.from_source(TerminalInputSource)  # 无delay参数
-```
-- **自然节流**：用户输入本身就是最好的流量控制机制
-- **按需触发**：只有用户输入时才产生数据，避免资源浪费
-- **响应式设计**：符合交互式应用的响应式设计理念
-
----
-
-## 无界流处理最佳实践
-
-### 1. 数据源设计模式
-
-#### 定时数据源模式
-```python
-class TimerSource(SourceFunction):
-    def execute(self):
-        return generate_time_series_data()  # 定时产生数据
+##### 1. 交互式数据源的阻塞机制
+```python title="用户输入的自然节流"
+def execute(self, data=None):
+    user_input = input("💬 请输入问题: ").strip()  # 自然阻塞
+    if user_input:
+        return user_input
+    return self.execute(data)  # 空输入时递归等待
 ```
 
-#### 事件驱动数据源模式
-```python
-class EventSource(SourceFunction):
-    def execute(self):
-        return wait_for_external_event()    # 等待外部事件
+!!! note "阻塞原理"
+    - `input()` 函数天然提供阻塞等待，无需 `delay` 参数
+    - 用户输入速度天然控制了数据流的频率
+    - 递归调用处理空输入，保持数据流连续性
+
+##### 2. 中断信号的正确处理
+```python title="优雅的中断处理"
+except (EOFError, KeyboardInterrupt):
+    raise  # 关键：向上传播中断信号
 ```
 
-#### 队列消费数据源模式
-```python
-class QueueSource(SourceFunction):
-    def execute(self):
-        return consume_from_message_queue()  # 从消息队列消费
+!!! warning "重要细节"
+    必须使用 `raise` 向上传播中断信号，让框架能够正确捕获用户的退出意图。
+
+##### 3. 数据质量保证机制
+```python title="多层数据验证"
+.filter(lambda q: q is not None)  # 管道层面的质量保证
+
+# 组件内部验证
+if len(question) < 2:
+    return None  # 过滤过短的输入
 ```
 
-### 2. 状态管理策略
+!!! tip "质量控制"
+    - 管道层面使用 `filter` 过滤无效数据
+    - 组件内部进行详细的数据验证
+    - 双重保护确保下游组件接收到有效数据
 
-#### 简单累积状态
-```python
-def create_accumulator():
-    total = 0
-    def accumulate(value):
-        nonlocal total
-        total += value
-        return total
-    return accumulate
+##### 4. 主线程保活机制
+```python title="保持服务运行的技巧"
+while True:
+    time.sleep(1)  # 保持主线程存活
 ```
 
-#### 滑动窗口状态
-```python
-from collections import deque
+!!! info "运行原理"
+    - `env.submit()` 启动后台处理线程
+    - 主线程需要保持活跃，否则程序会立即退出
+    - `time.sleep(1)` 是最简单的保活方式
 
-def create_sliding_window(window_size):
-    window = deque(maxlen=window_size)
-    def add_to_window(value):
-        window.append(value)
-        return list(window)
-    return add_to_window
+#### 大模型集成模式 :material-robot:
+```python title="配置驱动的AI集成"
+.map(OpenAIGenerator, config["generator"]["vllm"])
 ```
 
-#### 复杂状态对象
-```python
-class StatefulProcessor(MapFunction):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.state = {"count": 0, "sum": 0, "history": []}
-    
-    def execute(self, data):
-        self.state["count"] += 1
-        self.state["sum"] += data
-        self.state["history"].append(data)
-        return self.state.copy()
-```
+- **配置驱动** :material-cog-outline: ：通过配置文件灵活切换不同的大模型
+- **异步处理** :material-sync: ：大模型API调用在流式管道中异步执行
+- **错误容错** :material-shield-check: ：单次调用失败不会中断整个交互会话
 
-### 3. 错误处理和恢复
+#### 流式用户体验 :material-account-heart:
 
-#### 数据源错误处理
-```python
-class RobustSource(SourceFunction):
-    def execute(self):
-        try:
-            return self.get_data()
-        except Exception as e:
-            print(f"数据源错误: {e}")
-            time.sleep(1)  # 错误恢复延迟
-            return self.get_fallback_data()
-```
+| 步骤 | 组件 | 功能 | 状态 |
+|------|------|------|------|
+| 1️⃣ | `TerminalInputSource` | 等待用户输入 | :material-timer: 阻塞等待 |
+| 2️⃣ | `QuestionProcessor` | 清洗和预处理问题 | :material-filter: 数据清理 |
+| 3️⃣ | `OpenAIGenerator` | 调用大模型生成回答 | :material-cloud: AI推理 |
+| 4️⃣ | `AnswerFormatter` | 格式化输出结果 | :material-format-text: 美化输出 |
+| 5️⃣ | `ConsoleSink` | 美化显示给用户 | :material-eye: 用户可见 |
 
-#### 处理函数错误恢复
-```python
-def robust_processor(data):
-    try:
-        return process_data(data)
-    except Exception as e:
-        print(f"处理错误: {e}")
-        return None  # 跳过错误数据
-```
-
-### 4. 性能优化建议
-
-#### 合理设置delay参数
-```python
-# 高频数据源
-.from_source(HighFreqSource, delay=0.1)    # 100ms间隔
-
-# 中频数据源  
-.from_source(MediumFreqSource, delay=1.0)  # 1秒间隔
-
-# 低频数据源
-.from_source(LowFreqSource, delay=10.0)    # 10秒间隔
-```
-
-#### 避免阻塞操作
-```python
-# 错误：在流处理中进行耗时操作
-def bad_processor(data):
-    time.sleep(5)  # 阻塞整个流
-    return process(data)
-
-# 正确：使用异步或快速处理
-def good_processor(data):
-    # 快速处理或异步提交
-    return quick_process(data)
-```
-
-#### 批量优化
-```python
-class BatchProcessor(MapFunction):
-    def __init__(self, batch_size=10, **kwargs):
-        super().__init__(**kwargs)
-        self.batch = []
-        self.batch_size = batch_size
-    
-    def execute(self, data):
-        self.batch.append(data)
-        if len(self.batch) >= self.batch_size:
-            result = process_batch(self.batch)
-            self.batch = []
-            return result
-        return None
+#### 生命周期管理 :material-lifecycle:
+```python title="优雅的服务管理" linenums="1" hl_lines="2 4 6"
+try:
+    env.submit()                    # 启动交互服务
+    while True: time.sleep(1)       # 保持服务运行
+except KeyboardInterrupt:           # 用户主动退出
+    print("感谢使用！")
+finally:
+    env.close()                     # 清理资源
 ```
 
 ---
 
-## 运行示例和验证
+## 小结 :material-check-all:
 
-### WordCount流处理运行
-```bash
-cd app/api_examples
-python wordcount_lambda_example.py
-```
+!!! quote "核心价值"
+    无界流处理通过**持续数据源**、**链式转换**和**状态管理**，支持实时分析与交互式应用。核心在于正确使用 `.from_source()` 启动管道，通过 `submit()` 执行，通过中断或 `close()` 停止。
 
-**预期行为**：
-1. 系统启动并显示欢迎信息
-2. 每秒处理一个句子，实时分词和统计
-3. 每处理10个词显示一次统计结果
-4. 用户按Ctrl+C可随时停止并查看最终结果
-
-### QA交互系统运行
-```bash
-cd app
-python qa_source.py
-```
-
-**预期行为**：
-1. 系统启动并提示用户输入
-2. 用户输入问题后系统调用大模型生成回答
-3. 回答以美化格式显示在终端
-4. 支持多轮对话直到用户退出
-
-### 验证系统行为
-- **数据流连续性**：确认数据能够持续处理
-- **状态正确性**：验证累积统计结果正确
-- **异常恢复**：测试各种异常情况的处理
-- **性能表现**：观察系统资源使用情况
+!!! success "应用场景"
+    **交互式应用**是无界流的重要应用场景，展现了框架在用户驱动场景下的==灵活性==和==实时响应能力==。 :rocket:
 
 ---
 
-## 总结
-
-无界流处理是SAGE框架的核心能力，通过以下关键特性支持实时数据处理：
-
-### 技术特性
-- **持续数据流**：通过 `SourceFunction` 实现持续的数据产生
-- **流式管道**：支持复杂的数据转换和处理链路
-- **状态管理**：提供灵活的跨数据项状态维护机制
-- **大模型集成**：无缝集成各种AI服务和大模型API
-
-### 应用价值
-- **实时性**：支持毫秒级的数据处理响应
-- **可扩展**：模块化设计便于功能扩展和性能优化
-- **易用性**：链式API降低开发复杂度
-- **鲁棒性**：完善的错误处理和恢复机制
-
-通过WordCount和QA两个示例，您可以掌握SAGE无界流处理的核心概念和实践模式，为构建各种实时数据处理应用奠定基础。
+<center>
+[:material-rocket: 开始构建你的第一个无界流应用](){ .md-button .md-button--primary }
+[:material-book: 查看更多示例](){ .md-button }
+</center>
