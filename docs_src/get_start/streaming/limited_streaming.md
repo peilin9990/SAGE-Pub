@@ -1,17 +1,10 @@
-# 有界流处理 (Limited Streaming) :material-database:
+# 有界流处理 (Limited Streaming)
 
-> :material-package-variant: 处理固定大小的数据集，适合离线批量分析和一次性计算任务。
+> 处理固定大小的数据集，适合离线批量分析和一次性计算任务。
 
-## 核心概念 :material-lightbulb:
+有界流处理模拟真实世界中的**批量数据分析**场景，如日志分析、报表生成、数据迁移等。它强调完整性和确定性，是构建可靠数据处理系统的基础模式。
 
-- **确定性边界** :material-border-all: ：数据集大小固定，每次执行结果一致
-- **生命周期管理** :material-lifecycle: ：初始化 → 数据处理 → 自动结束 → 结果汇总
-- **框架约定** :material-handshake: ：返回 `None` 表示数据源结束，必须使用 `.sink()` 触发执行
-
-!!! info "应用场景"
-    有界流处理特别适合==数据分析==、==批量处理==、==离线计算==等需要**完整性保证**和**可重复执行**的场景。
-
-## 技术架构 :material-sitemap:
+## 技术架构
 
 ```mermaid
 graph LR
@@ -19,141 +12,163 @@ graph LR
     B --> C[stateful operator]
     C --> D[sink]
     D --> E[自动结束]
-    
-    style A fill:#e3f2fd
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style D fill:#e8f5e8
-    style E fill:#ffebee
 ```
 
 ---
 
-## 示例1：WordCount 批处理（无大模型参与） :material-counter:
+## 示例1：WordCount 批处理
 
-!!! example "典型用例"
-    文档词频分析、日志统计、数据清洗等需要完整处理所有数据的场景。
+WordCount（词频统计）是大数据处理领域的经典示例，它通过统计文本中每个单词出现的次数，展示了完整的数据处理流程：数据读取、清洗、转换、聚合和输出。
 
-### 批处理管道核心代码（重点） :octicons-code-16:
+在批处理模式下，WordCount处理固定的文本数据集，非常适合离线分析、报告生成和数据挖掘等场景。
 
-以下是该示例的核心，重点关注 `env.` 后的操作链：
+### 数据源定义
 
-=== "核心管道"
-    ```python linenums="1" hl_lines="18-26" title="有界流WordCount批处理管道"
-    from sage.core.api.local_environment import LocalEnvironment
-    from collections import Counter
-    import time
+```python
+from sage.core.function.batch_function import BatchFunction
 
-    # 1. 创建本地执行环境
+class TextDataBatch(BatchFunction):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.sentences = [
+            "hello world sage framework",
+            "this is a streaming data processing example",
+            "lambda functions make the code much cleaner",
+            "word count is a classic big data example",
+            "sage provides powerful stream processing capabilities"
+        ]
+        self.counter = 0
+
+    def execute(self):
+        if self.counter >= len(self.sentences):
+            return None  # 返回None表示批处理完成
+        
+        sentence = self.sentences[self.counter]
+        self.counter += 1
+        return sentence
+```
+
+### 批处理管道
+
+```python
+from sage.core.api.local_environment import LocalEnvironment
+from collections import Counter
+import time
+
+def main():
+    # 创建本地执行环境
     env = LocalEnvironment("batch_wordcount")
 
-    # 2. 准备状态管理
+    # 准备状态管理
     word_counts = Counter()
     total_processed = 0
 
-    def accumulate_word(pair):
+    def update_word_count(words_with_count):
+        """更新全局词汇计数"""
         nonlocal word_counts, total_processed
-        word, count = pair
+        word, count = words_with_count
         word_counts[word] += count
         total_processed += count
-        return pair
+        return words_with_count
 
-    # 3. 构建并绑定管道
+    # 构建批处理管道
     (env
-        .from_batch(TextDataBatch)                   # 有界流数据源
-        .map(lambda s: s.lower().strip())            # 标准化文本
-        .filter(lambda s: bool(s))                   # 过滤空字符串
-        .flatmap(lambda s: s.split())                # 按空格分词
-        .filter(lambda w: len(w) > 2)                # 过滤短词
-        .map(lambda w: (w.replace(',', '').replace('.', ''), 1))  # 清洗并计数
-        .map(accumulate_word)                        # 累积统计
-        .sink(lambda _: None)                        # 必需：触发执行
+        .from_batch(TextDataBatch)                        # 批数据源
+        
+        # 数据清洗和预处理
+        .map(lambda sentence: sentence.lower())           # 转小写
+        .map(lambda sentence: sentence.strip())           # 去除首尾空白
+        .filter(lambda sentence: len(sentence) > 0)       # 过滤空字符串
+        
+        # 分词处理
+        .flatmap(lambda sentence: sentence.split())       # 按空格分词
+        .filter(lambda word: len(word) > 2)               # 过滤长度小于3的词
+        .map(lambda word: word.replace(",", "").replace(".", ""))  # 去除标点
+        
+        # 词汇统计
+        .map(lambda word: (word, 1))                      # 转换为(word, count)格式
+        .map(update_word_count)                           # 更新计数器
+        .sink(lambda x: None)                            # 添加sink确保数据流完整
     )
 
-    # 4. 提交作业并等待完成
-    env.submit()                  # 提交作业
-    time.sleep(2)                 # 等待执行完成
-    env.close()
-    ```
+    print("🚀 Starting Batch WordCount Example")
 
-=== "数据源定义"
-    ```python linenums="1" title="TextDataBatch - 固定数据集源"
-    from sage.core.function.batch_function import BatchFunction
+    try:
+        # 提交并运行批处理作业
+        env.submit()
+        time.sleep(2)  # 等待批处理完成
 
-    class TextDataBatch(BatchFunction):
-        def __init__(self, **kwargs):
-            super().__init__(**kwargs)
-            self.sentences = [
-                "hello world sage framework",
-                "this is a streaming data processing example",
-                "lambda functions make the code much cleaner",
-                "word count is a classic big data example",
-                "sage provides powerful stream processing capabilities"
-            ]
-            self.counter = 0
+        # 打印最终统计结果
+        print("\n📊 Final Word Count Results:")
+        print("=" * 60)
+        for word, count in word_counts.most_common():
+            print(f"{word:20}: {count:3d}")
+        print("=" * 60)
+        print(f"Total words processed: {total_processed}")
 
-        def execute(self):
-            if self.counter >= len(self.sentences):
-                return None  # 关键：返回None标志批处理结束
-            
-            sentence = self.sentences[self.counter]
-            self.counter += 1
-            return sentence
-    ```
+    except Exception as e:
+        print(f"❌ 批处理执行失败: {str(e)}")
+    finally:
+        env.close()
 
-!!! tip "关键说明"
-    - `.from_batch()` :material-database-import: ：启动有界流处理模式
-    - `.sink()` :material-database-export: ：声明数据下沉，SAGE 才会执行整个管道
-    - `time.sleep(2)` :material-timer: ：等待批处理完成，实战中可用事件或回调替代
-    - 返回 `None` :material-null: ：批处理结束的唯一信号，框架检测到后自动停止管道
-
-### 代码关键细节解析 :material-magnify:
-
-#### 1. 状态管理机制
-```python title="状态变量的作用域控制"
-def accumulate_word(pair):
-    nonlocal word_counts, total_processed  # 关键：访问外部作用域变量
-    word, count = pair
-    word_counts[word] += count              # Counter对象自动处理键不存在的情况
-    total_processed += count
-    return pair                             # 重要：必须返回数据继续流转
+if __name__ == "__main__":
+    main()
 ```
 
-!!! note "设计要点"
-    - `nonlocal` 声明允许修改外部作用域的变量
-    - `Counter()` 对象在键不存在时自动初始化为0
-    - 函数必须返回数据以保持流式处理的连续性
+### 关键技术特点
 
-#### 2. 数据源生命周期
-```python title="批处理结束的判断逻辑"
-def execute(self):
-    if self.counter >= len(self.sentences):
-        return None  # 这是唯一的结束信号
-    # ...处理逻辑
+#### 1. **批量状态累积**
+```python
+word_counts = Counter()  # 全局词频计数器
+total_processed = 0      # 处理总数计数器
 ```
+- 使用 `nonlocal` 关键字访问外部作用域变量
+- `Counter` 对象自动处理词频统计
+- 所有数据处理完成后才输出最终结果
 
-!!! warning "重要约定"
-    返回 `None` 是告诉 SAGE 框架批处理已完成的**唯一方式**，任何其他返回值都会被视为有效数据。
+#### 2. **确定性处理流程**
+```python
+.from_batch(TextDataBatch)  # 固定数据集
+.sink(lambda x: None)       # 必须添加sink触发执行
+```
+- 与无界流不同，批处理有明确的开始和结束
+- 数据源返回 `None` 时自动结束处理
+- 必须使用 `.sink()` 确保管道完整执行
 
 ---
 
-## 示例2：RAG问答批处理（有大模型参与） :material-robot:
+## 示例2：RAG问答批处理
 
-!!! success "企业级应用"
-    这是 SAGE 框架在==知识库问答==场景的典型应用，展示了批量AI处理的强大能力！ :star:
+在第一个WordCount示例展示了基础的文本处理和统计功能后，我们进入一个更复杂的应用场景：基于检索增强生成（RAG）的问答系统。
 
-### 场景说明 :material-scenario:
+这个示例演示了如何使用SAGE框架构建智能问答管道，包括问题批量处理、知识检索、提示词生成和大模型回答等关键组件的协作。
 
-从文件读取问题列表，批量调用知识库检索和大模型生成，完成所有问题后自动结束。这是典型的**批量RAG处理场景**。
+### 技术架构
 
-### 核心组件实现 :material-puzzle:
+```mermaid
+graph LR
+    A[问题文件] --> B[QABatch]
+    B --> C[BiologyRetriever]
+    C --> D[知识库检索]
+    D --> E[QAPromptor]
+    E --> F[OpenAIGenerator]
+    F --> G[TerminalSink]
+    
+    H[MemoryService] --> D
+    I[配置文件] --> C
+    I --> E
+    I --> F
+```
 
-#### 1. 问题批处理数据源 :material-file-question:
+### 数据源定义
 
-```python linenums="1" title="QABatch - 智能问题批处理源"
+基于实际的qa_batch.py代码，从文件读取问题进行批处理：
+
+```python
 from sage.core.function.batch_function import BatchFunction
 
 class QABatch(BatchFunction):
+    """QA批处理数据源：从配置文件中读取数据文件并逐行返回"""
     def __init__(self, config, **kwargs):
         super().__init__(**kwargs)
         self.data_path = config["data_path"]
@@ -162,33 +177,38 @@ class QABatch(BatchFunction):
         self._load_questions()
 
     def _load_questions(self):
-        with open(self.data_path, 'r', encoding='utf-8') as file:
-            self.questions = [line.strip() for line in file.readlines() if line.strip()]
-        print(f"📚 成功加载 {len(self.questions)} 个问题")
+        """从文件加载问题"""
+        try:
+            with open(self.data_path, 'r', encoding='utf-8') as file:
+                self.questions = [line.strip() for line in file.readlines() if line.strip()]
+        except Exception as e:
+            print(f"Error loading file {self.data_path}: {e}")
+            self.questions = []
 
     def execute(self):
+        """返回下一个问题，如果没有更多问题则返回None"""
         if self.counter >= len(self.questions):
-            print("✅ 所有问题处理完成")
-            return None  # 批处理结束标志
+            return None  # 返回None表示批处理完成
 
         question = self.questions[self.counter]
-        progress = ((self.counter + 1) / len(self.questions)) * 100
-        print(f"📝 处理问题 {self.counter + 1}/{len(self.questions)} ({progress:.1f}%)")
-        
         self.counter += 1
         return question
 ```
 
-#### 2. 知识检索组件 :material-magnify:
+### 知识检索组件
 
-```python linenums="1" title="BiologyRetriever - 智能知识检索器"
+知识检索是RAG系统的核心组件之一，负责从向量数据库中检索与用户问题相关的知识片段。以下是检索器的配置：
+
+```python
 from sage.core.function.map_function import MapFunction
 
 class BiologyRetriever(MapFunction):
+    """生物学知识检索器"""
     def __init__(self, config, **kwargs):
         super().__init__(**kwargs)
         self.config = config
         self.collection_name = config.get("collection_name", "biology_rag_knowledge")
+        self.index_name = config.get("index_name", "biology_index")
         self.topk = config.get("ltm", {}).get("topk", 3)
 
     def execute(self, data):
@@ -196,146 +216,148 @@ class BiologyRetriever(MapFunction):
             return None
 
         query = data
+        # 从生物学知识库检索相关知识
         try:
-            # 调用内存服务进行向量检索
             result = self.call_service["memory_service"].retrieve_data(
                 collection_name=self.collection_name,
                 query_text=query,
                 topk=self.topk,
+                index_name=self.index_name,
                 with_metadata=True
             )
 
-            if result['status'] == 'success' and result['results']:
+            if result['status'] == 'success':
+                # 返回包含查询和检索结果的元组
                 retrieved_texts = [item.get('text', '') for item in result['results']]
-                print(f"🔍 为问题检索到 {len(retrieved_texts)} 条相关知识")
                 return (query, retrieved_texts)
             else:
                 return (query, [])
 
         except Exception as e:
-            print(f"❌ 检索过程异常: {str(e)}")
             return (query, [])
 ```
 
-#### 3. RAG批处理管道（重点） :material-rocket:
+### RAG批处理管道
 
-```python linenums="1" hl_lines="14-19" title="企业级RAG批处理系统"
+RAG管道将问题处理、知识检索、提示词构造和答案生成串联成完整的问答流程。与WordCount的简单文本处理不同，这里涉及复杂的服务依赖和AI模型调用：
+
+```python
+from sage.core.api.local_environment import LocalEnvironment
 from sage.lib.rag.generator import OpenAIGenerator
 from sage.lib.rag.promptor import QAPromptor
 from sage.lib.io.sink import TerminalSink
 from sage.service.memory.memory_service import MemoryService
 from sage.utils.embedding_methods.embedding_api import apply_embedding_model
 
-def create_rag_pipeline():
-    """创建完整的RAG批处理管道"""
-    # 1. 环境和配置初始化
-    config = load_config("config_batch.yaml")
-    env = LocalEnvironment("rag_batch_pipeline")
+def pipeline_run(config: dict) -> None:
+    """创建并运行数据处理管道"""
+    env = LocalEnvironment()
 
-    # 2. 注册知识库服务
+    # 注册memory service并连接到生物学知识库
     def memory_service_factory():
+        # 创建memory service实例
         embedding_model = apply_embedding_model("default")
         memory_service = MemoryService()
-        # 连接到现有知识库
-        collection = memory_service.manager.connect_collection(
-            "biology_rag_knowledge", embedding_model
-        )
+
+        # 检查生物学知识库是否存在
+        try:
+            collections = memory_service.list_collections()
+            if collections["status"] != "success":
+                return None
+
+            collection_names = [c["name"] for c in collections["collections"]]
+            if "biology_rag_knowledge" not in collection_names:
+                return None
+
+            # 连接到现有的知识库
+            collection = memory_service.manager.connect_collection(
+                "biology_rag_knowledge", embedding_model
+            )
+            if not collection:
+                return None
+
+        except Exception as e:
+            return None
+
         return memory_service
 
+    # 注册服务到环境中
     env.register_service("memory_service", memory_service_factory)
 
-    # 3. 构建RAG数据处理流程（核心管道）
+    # 构建数据处理流程 - 使用自定义的生物学检索器
     (env
-        .from_batch(QABatch, config["source"])           # 批量问题源
-        .map(BiologyRetriever, config["retriever"])      # 知识检索
-        .map(QAPromptor, config["promptor"])             # 提示词构造
-        .map(OpenAIGenerator, config["generator"]["vllm"]) # 大模型生成
-        .sink(TerminalSink, config["sink"])              # 结果输出
+        .from_batch(QABatch, config["source"])
+        .map(BiologyRetriever, config["retriever"])
+        .map(QAPromptor, config["promptor"])
+        .map(OpenAIGenerator, config["generator"]["vllm"])
+        .sink(TerminalSink, config["sink"])
     )
 
-    # 4. 执行批处理作业
     env.submit()
-    time.sleep(10)  # 等待批处理完成（RAG处理需要更多时间）
+    time.sleep(10)  # 增加等待时间确保处理完成
     env.close()
-
-if __name__ == '__main__':
-    create_rag_pipeline()
 ```
 
-### RAG批处理核心概念解析 :material-brain:
+### 关键说明
 
-#### 服务注册模式 :material-api:
-```python title="依赖注入的优雅实现"
+- `.from_batch(QABatch, config["source"])`：从文件批量读取问题
+- `BiologyRetriever`：从知识库检索相关生物学知识
+- `QAPromptor`：将问题和知识组合成提示词
+- `OpenAIGenerator`：调用大模型生成答案
+- `TerminalSink`：将结果输出到终端
+
+---
+
+## 代码关键细节解析
+
+前面展示了两个不同复杂度的批处理示例，现在我们深入分析实现这些功能的关键技术细节。
+
+#### 1. 状态管理机制
+```python
+def update_word_count(words_with_count):
+    nonlocal word_counts, total_processed  # 关键：访问外部作用域变量
+    word, count = words_with_count
+    word_counts[word] += count              # Counter对象自动处理键不存在的情况
+    total_processed += count
+    return words_with_count                 # 重要：必须返回数据继续流转
+```
+
+设计要点：
+- `nonlocal` 声明允许修改外部作用域的变量
+- `Counter()` 对象在键不存在时自动初始化为0
+- 函数必须返回数据以保持流式处理的连续性
+
+#### 2. 数据源生命周期
+```python
+def execute(self):
+    if self.counter >= len(self.questions):
+        return None  # 这是唯一的结束信号
+    # ...处理逻辑
+```
+
+重要约定：返回 `None` 是告诉 SAGE 框架批处理已完成的**唯一方式**，任何其他返回值都会被视为有效数据。
+
+#### 3. 服务注册机制
+```python
 env.register_service("memory_service", memory_service_factory)
 ```
 
-!!! abstract "架构优势"
-    - **依赖注入** :material-injection-syringe: ：RAG组件需要访问知识库，通过服务注册实现解耦
-    - **资源共享** :material-share: ：多个处理步骤共享同一个内存服务实例
-
-#### RAG处理流程 :material-flow-chart:
-
-| 步骤 | 组件 | 输入 | 输出 | 功能描述 |
-|------|------|------|------|----------|
-| 1️⃣ | `QABatch` | 文件 | 问题字符串 | :material-file-document: 逐个读取问题 |
-| 2️⃣ | `BiologyRetriever` | 问题 | (问题, 知识列表) | :material-magnify: 检索相关知识 |
-| 3️⃣ | `QAPromptor` | (问题, 知识) | 提示词 | :material-message-text: 组合成提示词 |
-| 4️⃣ | `OpenAIGenerator` | 提示词 | AI回答 | :material-robot: 大模型生成 |
-| 5️⃣ | `TerminalSink` | AI回答 | 控制台输出 | :material-monitor: 格式化输出 |
-
-#### 代码关键细节解析 :material-code-braces:
-
-##### 1. 服务调用机制
-```python title="通过框架注入的服务调用"
-result = self.call_service["memory_service"].retrieve_data(...)
-```
-
-!!! note "调用原理"
-    `self.call_service` 是 SAGE 框架自动注入的服务字典，通过 `env.register_service()` 注册的服务都可以通过这种方式访问。
-
-##### 2. 数据传递格式
-```python title="组件间的数据格式约定"
-# BiologyRetriever 输出
-return (query, retrieved_texts)  # 元组格式
-
-# QAPromptor 期望输入
-def execute(self, data):
-    query, contexts = data  # 自动解包
-```
-
-!!! tip "设计模式"
-    RAG管道中使用元组传递多个相关数据，下游组件可以方便地解包使用。
-
-##### 3. 批处理等待时间
-```python title="为什么需要更长的等待时间？"
-time.sleep(10)  # RAG处理需要更多时间
-```
-
-!!! warning "性能考虑"
-    - **网络延迟** :material-network: ：大模型API调用需要网络传输时间
-    - **计算复杂度** :material-cpu-64-bit: ：向量检索和文本生成比简单计算耗时更多
-    - **数据量影响** :material-database-settings: ：问题数量越多，总处理时间越长
+框架特性：
+- SAGE支持服务注册，实现组件间的依赖注入
+- `self.call_service["memory_service"]` 可访问注册的服务
+- memory_service_factory负责创建和配置知识库连接
 
 ---
 
-## 小结 :material-check-all:
+## 小结
 
-!!! quote "核心价值"
-    有界流处理通过**固定数据源**、**明确结束信号**和**状态累积**机制，实现**可复现**、**自动结束**的批量数据处理流程。
+有界流处理通过**固定数据源**、**明确结束信号**和**状态累积**机制，实现**可复现**、**自动结束**的批量数据处理流程。
 
-!!! success "技术优势"
-    - **完整性保证** :material-shield-check: ：确保所有数据都被处理
-    - **可重复执行** :material-repeat: ：相同输入产生相同输出
-    - **资源可控** :material-chart-line: ：明确的开始和结束，便于资源管理
-    - **易于调试** :material-bug: ：固定数据集便于问题定位和修复
+关键特点：
+- **确定性**：相同输入产生相同输出，便于调试和测试
+- **完整性**：确保所有数据都被处理，不会遗漏
+- **自动结束**：数据源返回 `None` 时管道自动停止
+- **状态聚合**：支持跨数据项的状态累积和最终结果汇总
+- **服务集成**：支持复杂的依赖注入和组件协作
 
-!!! info "适用场景"
-    特别适合==数据分析==、==报表生成==、==模型训练==、==批量AI处理==等需要处理完整数据集的场景。
-
----
-
-<center>
-[:material-rocket: 开始你的第一个批处理任务](){ .md-button .md-button--primary }
-[:material-book: 学习更多批处理模式](){ .md-button }
-[:material-compare: 对比无界流处理](unlimited_streaming.md){ .md-button }
-</center>
+适用场景：数据分析、报表生成、模型训练、批量数据处理、批量RAG问答等需要处理完整数据集的场景。
