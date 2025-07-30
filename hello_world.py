@@ -41,7 +41,7 @@ def main():
         env.submit()
         # 让主线程睡眠，让批处理自动完成并停止
 
-        time.sleep(3)  # 等待3秒
+        time.sleep(1)  # 等待1秒
     except KeyboardInterrupt:
         print("停止运行")
     finally:
