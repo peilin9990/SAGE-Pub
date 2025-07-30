@@ -131,9 +131,23 @@ nav:
           - Memory:
               - Memory 概览: api_guides/service/memory/memory_intro.md
               - Memory API: api_guides/service/memory/memory_api.md
+      - Config 配置: api_guides/config/config.md
       - SAGE CIL: get_start/remote_mode/sage_cil.md
   - SAGE Lib:
-      - SAGE Lib: sage_lib/lib_intro.md
+        - SAGE Lib: sage_lib/lib_intro.md
+        - agents: sage_lib/agents.md
+        - tools:
+            - 工具概览: sage_lib/tools_intro.md
+            - 工具列表:
+                - Arxiv Paper Searcher: sage_lib/tools/arxiv_paper_searcher.md
+                - Image Captioner: sage_lib/tools/image_captioner.md
+                - Nature News Fetcher: sage_lib/tools/nature_news_fetcher.md
+                - Searcher Tool: sage_lib/tools/searcher_tool.md
+                - Text Detector: sage_lib/tools/text_detector.md
+                - URL Text Extractor: sage_lib/tools/url_text_extractor.md
+        - rag: sage_lib/rag.md
+        - io: sage_lib/io.md
+        - context: sage_lib/context.md
   - 加入 SAGE:
     - 我们是谁: join_sage/intellistream.md
     - md 模板: template.md
