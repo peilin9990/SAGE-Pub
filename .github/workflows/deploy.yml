@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install mkdocs mkdocs-material mkdocs-include-markdown-plugin
+          pip install mkdocs mkdocs-material mkdocs-include-markdown-plugin mkdocstrings[python]
 
       - name: Build and deploy
         run: mkdocs gh-deploy --force
