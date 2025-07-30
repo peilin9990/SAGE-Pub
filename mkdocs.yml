@@ -148,6 +148,7 @@ nav:
         - rag: sage_lib/rag.md
         - io: sage_lib/io.md
         - context: sage_lib/context.md
+        - embedding: sage_lib/embedding.md
   - 加入 SAGE:
     - 我们是谁: join_sage/intellistream.md
     - md 模板: template.md
