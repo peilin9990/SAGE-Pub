@@ -34,15 +34,14 @@ class BaseQuestionSource(BatchFunction):
 
 
 class TerminalInputSource(SourceFunction):
-    """终端输入源函数"""
+    """终端输入源函数 - 简化版"""
     
     def execute(self, data=None):
         try:
-            # 显示美化的输入提示符
+            # 显示美化的输入提示符并获取输入
             user_input = input(UIHelper.format_input_prompt()).strip()
+            
             if user_input:
-                # 显示处理状态
-                print(UIHelper.format_thinking())
                 return user_input
             return self.execute(data)
         except (EOFError, KeyboardInterrupt):
@@ -56,6 +55,9 @@ class QuestionProcessor(MapFunction):
     def execute(self, data):
         if not data or data.strip() == "":
             return None
+        
+        # 显示处理状态
+        print(UIHelper.format_thinking())
         return data.strip()
 
 
@@ -84,7 +86,7 @@ class AnswerFormatter(MapFunction):
 
 
 class ConsoleSink(SinkFunction):
-    """控制台输出"""
+    """控制台输出 - 改进版，控制输入时机"""
     
     def execute(self, data):
         if not data:
@@ -98,6 +100,7 @@ class ConsoleSink(SinkFunction):
             # 使用UIHelper的格式化输出
             output = UIHelper.format_answer_output(question, answer, timestamp)
             print(output)
+            
         else:
             print(f"\n{UIHelper.COLORS['GREEN']}🤖 {data}{UIHelper.COLORS['END']}\n")
 

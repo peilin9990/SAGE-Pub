@@ -125,8 +125,9 @@ class UIHelper:
     
     @staticmethod
     def format_input_prompt():
-        """格式化输入提示符"""
-        return f"{UIHelper.COLORS['BOLD']}{UIHelper.COLORS['CYAN']}❓ 请输入您的问题: {UIHelper.COLORS['END']}"
+        """格式化输入提示符 - 同步版本"""
+        prompt = f"{UIHelper.COLORS['BOLD']}{UIHelper.COLORS['CYAN']}❓ 请输入您的问题: {UIHelper.COLORS['END']}"
+        return prompt
     
     @staticmethod
     def format_success(msg: str):
