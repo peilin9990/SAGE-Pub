@@ -28,7 +28,7 @@ generator:
     seed: 42
 
   remote:
-    api_key: ""
+    api_key: "sk-8298f15945af41988281d7348b008c96"
     method: "openai"
     model_name: "qwen-turbo-2025-07-15"
     base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"

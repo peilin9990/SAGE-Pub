@@ -6,7 +6,27 @@ SAGE 是一个模块化、高性能的推理框架，支持向量增强、流数
 
 ---
 
-## 📘 文档入口
+## � 快速体验
+
+体验 SAGE 系统的各种 QA 功能：
+
+```bash
+# 激活环境
+conda activate tsage  # 或你的SAGE环境
+
+# 运行示例工厂
+python example_factory.py
+```
+
+选择要体验的系统类型：
+1. 简单QA系统（无记忆）
+2. 批量RAG系统（私密信息）  
+3. 交互式RAG系统
+4. 自定义知识库（科技公司）
+
+---
+
+## �📘 文档入口
 
 👉 [在线文档地址](https://intellistream.github.io/SAGE-Pub/)
 
