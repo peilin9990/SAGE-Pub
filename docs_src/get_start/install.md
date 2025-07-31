@@ -31,7 +31,7 @@ SAGE 提供简单的安装方式，您只需通过 `.whl` 文件即可完成安�
 
 **第 1 步：下载 Wheel 文件**
 
-前往 SAGE 的官方发布仓库下载最新的 `.whl` 安装包，在当前版本中，该安装包名称如下：`sage-0.1.0-py3-none-any.whl`：
+前往 SAGE 的官方发布仓库下载最新的 `.whl` 安装包，在当前版本中，该安装包名称如下：`sage-0.1.2-cp311-cp311-linux_x86_64.whl`：
 
 - 下载地址：[https://github.com/IntelliStream/SAGE-Pub](https://github.com/IntelliStream/SAGE-Pub)
 
@@ -43,7 +43,7 @@ SAGE 提供简单的安装方式，您只需通过 `.whl` 文件即可完成安�
 ```bash
 # 安装前请确保您处在正确的目录以及Python环境下
 # (sage) user-name:~/download_path/SAGE-Pub$
-pip install sage-0.1.0-py3-none-any.whl
+pip install sage-0.1.2-cp311-cp311-linux_x86_64.whl
 ```
 
 
