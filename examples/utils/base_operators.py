@@ -34,19 +34,38 @@ class BaseQuestionSource(BatchFunction):
 
 
 class TerminalInputSource(SourceFunction):
-    """终端输入源函数 - 简化版"""
+    """终端输入源函数 - 改进版，控制输入时机"""
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.first_run = True
     
     def execute(self, data=None):
-        try:
-            # 显示美化的输入提示符并获取输入
-            user_input = input(UIHelper.format_input_prompt()).strip()
+        # 如果不是第一次运行，添加一个小延迟让用户有时间阅读答案
+        if not self.first_run:
+            time.sleep(1.5)  # 给用户1.5秒时间阅读答案
+            print()  # 添加空行分隔
+        else:
+            self.first_run = False
             
-            if user_input:
-                return user_input
-            return self.execute(data)
-        except (EOFError, KeyboardInterrupt):
-            print(f"\n{UIHelper.format_success('感谢使用，再见！')}")
-            sys.exit(0)
+        while True:
+            try:
+                # 显示美化的输入提示符并获取输入
+                user_input = input(UIHelper.format_input_prompt()).strip()
+                
+                if user_input:
+                    return user_input
+                else:
+                    # 空输入时给予提示，继续等待
+                    print(f"{UIHelper.COLORS['YELLOW']}⚠️  请输入有效问题{UIHelper.COLORS['END']}")
+                    continue
+                    
+            except KeyboardInterrupt:
+                print(UIHelper.format_success("\n✅ 感谢使用，再见！"))
+                sys.exit(0)
+            except EOFError:
+                print(UIHelper.format_success("\n✅ 感谢使用，再见！"))
+                sys.exit(0)
 
 
 class QuestionProcessor(MapFunction):
@@ -86,7 +105,7 @@ class AnswerFormatter(MapFunction):
 
 
 class ConsoleSink(SinkFunction):
-    """控制台输出 - 改进版，控制输入时机"""
+    """控制台输出 - 改进版，提供更好的用户体验"""
     
     def execute(self, data):
         if not data:
@@ -101,8 +120,13 @@ class ConsoleSink(SinkFunction):
             output = UIHelper.format_answer_output(question, answer, timestamp)
             print(output)
             
+            # 添加分隔线，表示当前回答完成
+            print(f"{UIHelper.COLORS['CYAN']}{'─' * 60}{UIHelper.COLORS['END']}")
+            
         else:
-            print(f"\n{UIHelper.COLORS['GREEN']}🤖 {data}{UIHelper.COLORS['END']}\n")
+            print(f"\n{UIHelper.COLORS['GREEN']}🤖 {data}{UIHelper.COLORS['END']}")
+            # 添加分隔线，表示当前回答完成
+            print(f"{UIHelper.COLORS['CYAN']}{'─' * 60}{UIHelper.COLORS['END']}")
 
         return data
 
