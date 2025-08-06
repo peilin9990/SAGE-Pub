@@ -120,35 +120,51 @@ nav:
           - 分布式流处理:
               - SAGE 分布式简介: get_start/remote_mode/sage_remote.md
               - 远程提交任务: get_start/remote_mode/remote_job_submit.md
-  - 接口文档:
+  - 🏗️ SAGE Kernel:
+      - Kernel 概览: kernel/README.md
+      - 架构设计: kernel/architecture.md
+      - 核心概念: kernel/concepts.md
       - DataStream API:
-          - DataStream 概览: api_guides/datastream/datastream_intro.md
-          - Operator 与 Function: api_guides/datastream/datastream_function.md
-          - Transformation: api_guides/datastream/datastream_trans.md
+          - DataStream 概览: kernel/datastream/datastream_intro.md
+          - Operator 与 Function: kernel/datastream/datastream_function.md
+          - Transformation: kernel/datastream/datastream_trans.md
+      - 执行环境 API:
+          - Environments API: kernel/api/environments.md
+          - DataStreams API: kernel/api/datastreams.md
+          - Functions API: kernel/api/functions.md
+          - Connected Streams API: kernel/api/connected-streams.md
+      - 开发指南:
+          - 快速入门: kernel/guides/quickstart.md
+          - 最佳实践: kernel/best-practices.md
+          - CLI 工具: kernel/components/cli.md
+          - 示例代码: kernel/examples/README.md
+          - FAQ: kernel/faq.md
+      - 系统配置: kernel/config/config.md
+  - 🔧 Middleware:
+      - Middleware 概览: middleware/README.md
       - Service API:
-          - Service 概览: api_guides/service/service_intro.md
-          - Service API: api_guides/service/service_api.md
+          - Service 概览: middleware/service/service_intro.md
+          - Service API: middleware/service/service_api.md
           - Memory:
-              - Memory 概览: api_guides/service/memory/memory_intro.md
-              - Memory API: api_guides/service/memory/memory_api.md
-      - Config 配置: api_guides/config/config.md
-      - SAGE CIL: get_start/remote_mode/sage_cil.md
-  - SAGE Lib:
-        - SAGE Lib: sage_lib/lib_intro.md
-        - agents: sage_lib/agents.md
-        - tools:
-            - 工具概览: sage_lib/tools_intro.md
-            - 工具列表:
-                - Arxiv Paper Searcher: sage_lib/tools/arxiv_paper_searcher.md
-                - Image Captioner: sage_lib/tools/image_captioner.md
-                - Nature News Fetcher: sage_lib/tools/nature_news_fetcher.md
-                - Searcher Tool: sage_lib/tools/searcher_tool.md
-                - Text Detector: sage_lib/tools/text_detector.md
-                - URL Text Extractor: sage_lib/tools/url_text_extractor.md
-        - rag: sage_lib/rag.md
-        - io: sage_lib/io.md
-        - context: sage_lib/context.md
-        - embedding: sage_lib/embedding.md
+              - Memory 概览: middleware/service/memory/memory_intro.md
+              - Memory API: middleware/service/memory/memory_api.md
+  - 🚀 Applications:
+      - Applications 概览: applications/README.md
+      - RAG 应用: applications/rag.md
+      - 智能代理: applications/agents.md
+      - IO 模块: applications/io.md
+      - Context 管理: applications/context.md
+      - Embedding 服务: applications/embedding.md
+      - 工具生态:
+          - 工具概览: applications/tools_intro.md
+          - 工具列表:
+              - Arxiv Paper Searcher: applications/tools/arxiv_paper_searcher.md
+              - Image Captioner: applications/tools/image_captioner.md
+              - Nature News Fetcher: applications/tools/nature_news_fetcher.md
+              - Searcher Tool: applications/tools/searcher_tool.md
+              - Text Detector: applications/tools/text_detector.md
+              - URL Text Extractor: applications/tools/url_text_extractor.md
+  - 🔄 SAGE CLI: get_start/remote_mode/sage_cil.md
   - 加入 SAGE:
     - 我们是谁: join_sage/intellistream.md
     - md 模板: template.md
