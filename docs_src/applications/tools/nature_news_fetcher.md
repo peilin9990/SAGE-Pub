@@ -113,7 +113,7 @@
     - [x] `logging`: 用于记录程序运行信息和错误。
     - [x] `random`: 用于随机选择 User-Agent。
 * **内部模块**:
-    - [x] `sage.lib.tools.base.base_tool.BaseTool`: 工具的基类。
+    - [x] `sage.apps.lib.tools.base.base_tool.BaseTool`: 工具的基类。
 
 ---
 

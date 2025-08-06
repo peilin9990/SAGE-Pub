@@ -29,7 +29,7 @@ WordCount在无界流模式下展现了实时数据处理的魅力。与批处�
 ### 数据源定义
 
 ```python
-from sage.core.function.source_function import SourceFunction
+from sage.kernel.api.function.source_function import SourceFunction
 
 class SentenceSource(SourceFunction):
     def __init__(self, **kwargs):
@@ -53,7 +53,7 @@ class SentenceSource(SourceFunction):
 ### 核心管道代码
 
 ```python
-from sage.core.api.local_environment import LocalEnvironment
+from sage.kernel.api.local_environment import LocalEnvironment
 from collections import Counter
 import time
 
@@ -174,7 +174,7 @@ hello               :   1
 基于实际的QA源设计，模拟持续的问答数据流：
 
 ```python
-from sage.core.function.source_function import SourceFunction
+from sage.kernel.api.function.source_function import SourceFunction
 
 class QASource(SourceFunction):
     def __init__(self, **kwargs):
@@ -200,7 +200,7 @@ class QASource(SourceFunction):
 这里的知识检索组件与批处理版本完全相同，体现了SAGE框架组件的良好复用性：
 
 ```python
-from sage.core.function.map_function import MapFunction
+from sage.kernel.api.function.map_function import MapFunction
 
 class BiologyRetriever(MapFunction):
     """生物学知识检索器"""
@@ -242,10 +242,10 @@ class BiologyRetriever(MapFunction):
 无界流的QA处理管道持续运行，实时响应用户问题。相比批处理，这里更注重服务的持续性和响应速度：
 
 ```python
-from sage.core.api.local_environment import LocalEnvironment
+from sage.kernel.api.local_environment import LocalEnvironment
 from sage.apps.lib.rag.generator import OpenAIGenerator
 from sage.apps.lib.rag.promptor import QAPromptor
-from sage.service.memory.memory_service import MemoryService
+from sage.middleware.services.memory.memory_service import MemoryService
 from sage.utils.embedding_methods.embedding_api import apply_embedding_model
 
 def create_qa_streaming():

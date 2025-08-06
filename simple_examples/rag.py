@@ -1,14 +1,14 @@
 import time
 from dotenv import load_dotenv
 from sage.utils.custom_logger import CustomLogger
-from sage.core.api.local_environment import LocalEnvironment
-from sage.core.function.batch_function import BatchFunction
-from sage.core.function.map_function import MapFunction
+from sage.kernel.api.local_environment import LocalEnvironment
+from sage.kernel.api.function.batch_function import BatchFunction
+from sage.kernel.api.function.map_function import MapFunction
 from sage.apps.lib.io.sink import TerminalSink
 from sage.apps.lib.rag.promptor import QAPromptor
 from sage.utils.config_loader import load_config
 from my_operator.open_ai_generator import OpenAIGenerator
-from sage.service.memory.memory_service import MemoryService
+from sage.middleware.services.memory.memory_service import MemoryService
 
 
 # ========== 界面美化工具函数 ==========

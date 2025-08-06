@@ -25,7 +25,7 @@ WordCount（词频统计）是大数据处理领域的经典示例，它通过�
 ### 数据源定义
 
 ```python
-from sage.core.function.batch_function import BatchFunction
+from sage.kernel.api.function.batch_function import BatchFunction
 
 class TextDataBatch(BatchFunction):
     def __init__(self, **kwargs):
@@ -51,7 +51,7 @@ class TextDataBatch(BatchFunction):
 ### 批处理管道
 
 ```python
-from sage.core.api.local_environment import LocalEnvironment
+from sage.kernel.api.local_environment import LocalEnvironment
 from collections import Counter
 import time
 
@@ -165,7 +165,7 @@ graph LR
 基于实际的qa_batch.py代码，从文件读取问题进行批处理：
 
 ```python
-from sage.core.function.batch_function import BatchFunction
+from sage.kernel.api.function.batch_function import BatchFunction
 
 class QABatch(BatchFunction):
     """QA批处理数据源：从配置文件中读取数据文件并逐行返回"""
@@ -200,7 +200,7 @@ class QABatch(BatchFunction):
 知识检索是RAG系统的核心组件之一，负责从向量数据库中检索与用户问题相关的知识片段。以下是检索器的配置：
 
 ```python
-from sage.core.function.map_function import MapFunction
+from sage.kernel.api.function.map_function import MapFunction
 
 class BiologyRetriever(MapFunction):
     """生物学知识检索器"""
@@ -242,11 +242,11 @@ class BiologyRetriever(MapFunction):
 RAG管道将问题处理、知识检索、提示词构造和答案生成串联成完整的问答流程。与WordCount的简单文本处理不同，这里涉及复杂的服务依赖和AI模型调用：
 
 ```python
-from sage.core.api.local_environment import LocalEnvironment
+from sage.kernel.api.local_environment import LocalEnvironment
 from sage.apps.lib.rag.generator import OpenAIGenerator
 from sage.apps.lib.rag.promptor import QAPromptor
 from sage.apps.lib.io.sink import TerminalSink
-from sage.service.memory.memory_service import MemoryService
+from sage.middleware.services.memory.memory_service import MemoryService
 from sage.utils.embedding_methods.embedding_api import apply_embedding_model
 
 def pipeline_run(config: dict) -> None:

@@ -3,7 +3,7 @@ import json
 import time
 import requests
 from typing import Any, List, Tuple
-from sage.core.function.map_function import MapFunction
+from sage.kernel.api.function.map_function import MapFunction
 
 class OpenAIGenerator(MapFunction):
     """
