@@ -16,7 +16,7 @@ from sage.core.function.sink_function import SinkFunction
 from sage.core.function.source_function import SourceFunction
 
 # 加载SAGE Lib或自行实现的算子
-from sage.lib.rag.promptor import QAPromptor
+from sage.apps.lib.rag.promptor import QAPromptor
 from my_operator.open_ai_generator import OpenAIGenerator
 
 

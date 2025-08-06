@@ -243,8 +243,8 @@ class BiologyRetriever(MapFunction):
 
 ```python
 from sage.core.api.local_environment import LocalEnvironment
-from sage.lib.rag.generator import OpenAIGenerator
-from sage.lib.rag.promptor import QAPromptor
+from sage.apps.lib.rag.generator import OpenAIGenerator
+from sage.apps.lib.rag.promptor import QAPromptor
 from sage.service.memory.memory_service import MemoryService
 from sage.utils.embedding_methods.embedding_api import apply_embedding_model
 
