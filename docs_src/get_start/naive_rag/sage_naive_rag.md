@@ -16,7 +16,7 @@ SAGE流处理框架为RAG系统提供了强大的技术基础：
 我们将通过 SAGE Lib 中预定义的算子向您展示一个完整的 Naive RAG 查询处理流水线的创建：
 
 ```python
-from sage.kernel.api.local_environment import LocalEnvironment
+from sage.core.api.local_environment import LocalEnvironment
 from sage.middleware.services.memory.memory_service import MemoryService
 from sage.apps.lib.io.source import QuerySource
 from sage.apps.lib.rag.retriever import DenseRetriever

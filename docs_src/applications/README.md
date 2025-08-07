@@ -114,7 +114,7 @@ print(result)
 
 ```python
 from sage.applications.tools import URLTextExtractor, TextDetector
-from sage.kernel.api import LocalEnvironment
+from sage.core.api import LocalEnvironment
 
 # 创建处理管道
 env = LocalEnvironment("text_analysis")
@@ -240,7 +240,7 @@ result = agent.execute("""
 ### 流水线处理
 
 ```python
-from sage.kernel.api import LocalEnvironment
+from sage.core.api import LocalEnvironment
 from sage.applications.io import FileSource, FileSink
 
 env = LocalEnvironment("document_processing")

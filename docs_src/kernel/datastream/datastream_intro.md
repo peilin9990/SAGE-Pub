@@ -25,10 +25,10 @@ SAGE 中的 DataStream 是对数据流进行转换处理的应用程序。如图
 import time
 from sage.utils.custom_logger import CustomLogger
 
-from sage.kernel.api.local_environment import LocalEnvironment
-from sage.kernel.api.function.batch_function import BatchFunction
-from sage.kernel.api.function.map_function import MapFunction
-from sage.kernel.api.function.sink_function import SinkFunction
+from sage.core.api.local_environment import LocalEnvironment
+from sage.core.api.function.batch_function import BatchFunction
+from sage.core.api.function.map_function import MapFunction
+from sage.core.api.function.sink_function import SinkFunction
 
 # 声明数据源，数据在此生成
 class HelloBatch(BatchFunction):

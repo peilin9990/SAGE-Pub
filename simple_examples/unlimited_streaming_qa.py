@@ -10,10 +10,10 @@ from sage.utils.config_loader import load_config
 from sage.utils.custom_logger import CustomLogger
 
 # 加载SAGE核心组件
-from sage.kernel.api.local_environment import LocalEnvironment
-from sage.kernel.api.function.map_function import MapFunction
-from sage.kernel.api.function.sink_function import SinkFunction
-from sage.kernel.api.function.source_function import SourceFunction
+from sage.core.api.local_environment import LocalEnvironment
+from sage.core.api.function.map_function import MapFunction
+from sage.core.api.function.sink_function import SinkFunction
+from sage.core.api.function.source_function import SourceFunction
 
 # 加载SAGE Lib或自行实现的算子
 from sage.apps.lib.rag.promptor import QAPromptor

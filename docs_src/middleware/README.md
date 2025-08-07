@@ -66,7 +66,7 @@ user = kv.get("user:123")
 ### 与 Kernel 集成
 
 ```python
-from sage.kernel.api import LocalEnvironment
+from sage.core.api import LocalEnvironment
 from sage.middleware.services import VDBService
 
 # 在流处理中使用向量数据库
