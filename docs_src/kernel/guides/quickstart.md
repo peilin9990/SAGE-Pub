@@ -320,12 +320,12 @@ class TimedMapFunction(MapFunction[str, str]):
 恭喜！你已经掌握了 SAGE Kernel 的基础用法。现在可以：
 
 1. 📖 阅读 [API 详细文档](../api/README.md)
-2. 🌐 学习 [分布式部署](distributed-deployment.md)
-3. ⚡ 了解 [性能优化](performance.md)
-4. 🔍 查看 [更多示例](../examples/basic.md)
+2. 🌐 学习 [核心概念](../concepts.md)
+3. ⚡ 了解 [数据流开发](./dataflow_development.md)
+4. 🔍 查看 [更多示例](../examples/basic_tutorials.md)
 
 ## 📞 获取帮助
 
 - [GitHub Issues](https://github.com/intellistream/SAGE/issues) - 报告问题
 - [文档中心](../README.md) - 完整文档
-- [示例代码](../examples/) - 更多示例
+- [示例代码](../examples/README.md) - 更多示例

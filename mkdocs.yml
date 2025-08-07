@@ -120,26 +120,61 @@ nav:
           - 分布式流处理:
               - SAGE 分布式简介: get_start/remote_mode/sage_remote.md
               - 远程提交任务: get_start/remote_mode/remote_job_submit.md
-  - 🏗️ SAGE Kernel:
-      - Kernel 概览: kernel/README.md
+  - 🏗️ SAGE Core & Kernel:
+      - 总览: kernel/README.md
       - 架构设计: kernel/architecture.md
       - 核心概念: kernel/concepts.md
-      - DataStream API:
-          - DataStream 概览: kernel/datastream/datastream_intro.md
-          - Operator 与 Function: kernel/datastream/datastream_function.md
-          - Transformation: kernel/datastream/datastream_trans.md
-      - 执行环境 API:
-          - Environments API: kernel/api/environments.md
-          - DataStreams API: kernel/api/datastreams.md
-          - Functions API: kernel/api/functions.md
-          - Connected Streams API: kernel/api/connected-streams.md
-      - 开发指南:
+      
+      - 🔧 SAGE Core 层:
+          - Core 概览: kernel/core/core_overview.md
+          - 数据流编程模型: kernel/core/dataflow_model.md
+          - 流水线编排系统: kernel/core/pipeline_orchestration.md
+          
+          - API 模块:
+              - Environments API: kernel/api/environments.md
+              - DataStream API: kernel/api/datastreams.md
+              - Connected Streams API: kernel/api/connected-streams.md
+              - Functions API: kernel/api/functions.md
+          
+          - 核心组件:
+              - "Operator 算子系统": "kernel/core/operators/operators_overview.md"
+              - "Function 函数系统": "kernel/core/functions/functions_overview.md"
+          
+          - 执行引擎:
+              - 本地执行环境: kernel/core/execution/local_environment.md
+              - 远程执行环境: kernel/core/execution/remote_environment.md
+              - 分布式调度: kernel/core/execution/distributed_scheduling.md
+              - 状态管理: kernel/core/execution/state_management.md
+      
+      - 🛠️ 开发指南:
           - 快速入门: kernel/guides/quickstart.md
+          - 数据流开发指南: kernel/guides/dataflow_development.md
+          - 自定义算子开发: kernel/guides/custom_operators.md
+          - 流水线调试与优化: kernel/guides/pipeline_debugging.md
+          - 性能调优: kernel/guides/performance_tuning.md
           - 最佳实践: kernel/best-practices.md
-          - CLI 工具: kernel/components/cli.md
+          
+      - 📚 示例与教程:
           - 示例代码: kernel/examples/README.md
+          - 基础教程: kernel/examples/basic_tutorials.md
+          - 高级用例: kernel/examples/advanced_examples.md
+          - 集成示例: kernel/examples/integration_examples.md
+          
+      - ⚙️ 系统配置:
+          - 配置指南: kernel/config/config.md
+          - 环境变量: kernel/config/environment_variables.md
+          - 性能配置: kernel/config/performance_config.md
+          - 监控配置: kernel/config/monitoring_config.md
+          
+      - 🔍 工具与调试:
+          - CLI 工具: kernel/components/cli.md
+          - 调试工具: kernel/components/debugging_tools.md
+          - 监控仪表盘: kernel/components/monitoring_dashboard.md
+          
+      - ❓ 问题解决:
           - FAQ: kernel/faq.md
-      - 系统配置: kernel/config/config.md
+          - 故障排除: kernel/troubleshooting.md
+          - 已知问题: kernel/known_issues.md
   - 🔧 Middleware:
       - Middleware 概览: middleware/README.md
       - Service API:
