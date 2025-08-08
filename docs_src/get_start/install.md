@@ -10,8 +10,8 @@
 
 * **支持的操作系统 (OS)**:
     * Linux
-    * macOS
-    * Windows 
+    * macOS(docker ubuntu 22.04+)
+    * Windows(WSL ubuntu 22.04+)
 * **Python**：建议使用版本 **≥ 3.11.10** 的 Python 解释器。例如使用 Conda 在虚拟环境中创建并激活环境：
 
 ```bash
