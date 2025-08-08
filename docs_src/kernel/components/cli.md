@@ -98,35 +98,6 @@ sage deploy validate my_app.sage
 sage deploy extract my_app.sage --target ./extracted/
 ```
 
-### 容器化部署
-
-```bash
-# 生成Dockerfile
-sage deploy docker-file my_app/ --base-image python:3.11
-
-# 构建Docker镜像
-sage deploy docker-build my_app/ --tag my-sage-app:latest
-
-# 推送到镜像仓库
-sage deploy docker-push my-sage-app:latest --registry docker.io/myorg/
-```
-
-### Kubernetes部署
-
-```bash
-# 生成K8s配置
-sage deploy k8s-manifest my_app/ --namespace sage-apps
-
-# 部署到K8s
-sage deploy k8s-deploy my_app.yaml --cluster production
-
-# 查看部署状态
-sage deploy k8s-status --namespace sage-apps
-
-# 更新部署
-sage deploy k8s-update my_app/ --replicas 3
-```
-
 ## 🛠️ 开发工具
 
 ### 项目脚手架
