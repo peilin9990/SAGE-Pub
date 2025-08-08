@@ -97,7 +97,7 @@
     - [x] `os`: 用于处理文件路径。
     - [x] `time`: 用于在重试之间实现延迟。
 * **内部模块**:
-    - [x] `sage.apps.lib.tools.base.base_tool.BaseTool`: 工具的基类。
+    - [x] `sage.lib.tools.base.base_tool.BaseTool`: 工具的基类。
     - [x] `..utils.openaiclient.OpenAIClient`: 用于与 LLM 引擎交互的客户端。
 
 ---

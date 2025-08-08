@@ -243,9 +243,9 @@ RAG管道将问题处理、知识检索、提示词构造和答案生成串联�
 
 ```python
 from sage.core.api.local_environment import LocalEnvironment
-from sage.apps.lib.rag.generator import OpenAIGenerator
-from sage.apps.lib.rag.promptor import QAPromptor
-from sage.apps.lib.io.sink import TerminalSink
+from sage.lib.rag.generator import OpenAIGenerator
+from sage.lib.rag.promptor import QAPromptor
+from sage.lib.io.sink import TerminalSink
 from sage.middleware.services.memory.memory_service import MemoryService
 from sage.utils.embedding_methods.embedding_api import apply_embedding_model
 

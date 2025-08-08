@@ -4,8 +4,8 @@ from sage.utils.custom_logger import CustomLogger
 from sage.core.api.local_environment import LocalEnvironment
 from sage.core.api.function.batch_function import BatchFunction
 from sage.core.api.function.map_function import MapFunction
-from sage.apps.lib.io.sink import TerminalSink
-from sage.apps.lib.rag.promptor import QAPromptor
+from sage.lib.io.sink import TerminalSink
+from sage.lib.rag.promptor import QAPromptor
 from sage.utils.config_loader import load_config
 from my_operator.open_ai_generator import OpenAIGenerator
 from sage.middleware.services.memory.memory_service import MemoryService

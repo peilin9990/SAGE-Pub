@@ -23,8 +23,8 @@ pip install sage-framework
 ```python
 from sage.core.api.local_environment import LocalEnvironment
 from sage.core.api.remote_environment import RemoteEnvironment
-from sage.apps.lib.io_utils.source import FileSource, ListSource
-from sage.apps.lib.io_utils.sink import FileSink, ConsoleSink
+from sage.lib.io_utils.source import FileSource, ListSource
+from sage.lib.io_utils.sink import FileSink, ConsoleSink
 import time
 ```
 
