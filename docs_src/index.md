@@ -1,10 +1,12 @@
-# 欢迎使用 SAGE 系统！
+---
+template: index.html
+title: SAGE - 高性能流处理平台
+hide:
+  - navigation
+  - toc
+---
 
-SAGE 是一个高效、模块化的推理管道引擎，支持多模态数据、流式处理和向量增强推理。
+# SAGE Landing Page
 
-## 项目介绍视频
-
-下面是我们的项目介绍视频：
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/RCyH8CCPGTg?si=v7NNJYucEbezAR26" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+这个页面使用自定义的index.html模板来显示landing page。
 
