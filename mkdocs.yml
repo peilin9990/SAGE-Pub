@@ -28,10 +28,11 @@ theme:
     - content.tooltips
     - navigation.indexes
     - navigation.footer
-    - navigation.instant
+    # 禁用即时导航以修复自定义首页显示问题
+    # - navigation.instant
     - navigation.sections
-    - navigation.instant.prefetch
-    - navigation.instant.progress
+    # - navigation.instant.prefetch
+    # - navigation.instant.progress
     - navigation.path
     - navigation.tabs
     - navigation.top
