@@ -235,13 +235,13 @@ SAGE 是一个很棒的项目，HTML 和 CSS 是网页开发的基础。
 ## 12. 图片
 
 ### 基本图片
-![SAGE Logo](assets/img/function.png)
+![SAGE Logo](../assets/img/function.png)
 
 ### 带标题的图片
-![数据流处理示意图](assets/img/streaming.png "数据流处理流程")
+![数据流处理示意图](../assets/img/streaming.png "数据流处理流程")
 
 ### 可点击的图片
-[![点击查看大图](assets/img/transformation.png)](assets/img/transformation.png)
+[![点击查看大图](../assets/img/transformation.png)](../assets/img/transformation.png)
 
 ---
 
@@ -399,7 +399,7 @@ def hidden_function():
 使用 `attr_list` 扩展可以给元素添加属性：
 
 ### 图片属性
-![示例图片](assets/img/function.png){ width="300" }
+![示例图片](../assets/img/function.png){ width="300" }
 
 ### 链接属性
 [这是一个在新窗口打开的链接](https://github.com){ target="_blank" }
@@ -576,5 +576,3 @@ extra_javascript:
 4. **HTML 中的 Markdown** - 在 HTML 标签中使用 Markdown
 5. **更丰富的表情符号** - FontAwesome 和 Octicons 图标
 6. **数学公式支持** - 需要额外的 JavaScript 库
-
-这个更新后的模板现在包含了你配置的所有扩展的使用示例，可以帮助你充分利用 MkDocs Material 的强大功能！

@@ -28,11 +28,7 @@ theme:
     - content.tooltips
     - navigation.indexes
     - navigation.footer
-    # 禁用即时导航以修复自定义首页显示问题
-    # - navigation.instant
     - navigation.sections
-    # - navigation.instant.prefetch
-    # - navigation.instant.progress
     - navigation.path
     - navigation.tabs
     - navigation.top
@@ -105,7 +101,6 @@ plugins:
 
 nav:
   - 首页: index.md
-  - 关于 SAGE: about.md
   - 快速开始:
       - 安装与部署: get_start/install.md
       - 快速入门: 
@@ -120,7 +115,8 @@ nav:
           - 分布式流处理:
               - SAGE 分布式简介: get_start/remote_mode/sage_remote.md
               - 远程提交任务: get_start/remote_mode/remote_job_submit.md
-  - 🏗️ SAGE Core & Kernel:
+  - 编程指南: core/hello_world.md
+  - Kernel:
       - 总览: kernel/README.md
       - 架构设计: kernel/architecture.md
       - 核心概念: kernel/concepts.md
@@ -175,7 +171,7 @@ nav:
           - FAQ: kernel/faq.md
           - 故障排除: kernel/troubleshooting.md
           - 已知问题: kernel/known_issues.md
-  - 🔧 Middleware:
+  - Middleware:
       - Middleware 概览: middleware/README.md
       - Service API:
           - Service 概览: middleware/service/service_intro.md
@@ -183,7 +179,7 @@ nav:
           - Memory:
               - Memory 概览: middleware/service/memory/memory_intro.md
               - Memory API: middleware/service/memory/memory_api.md
-  - 🚀 Applications:
+  - Applications:
       - Applications 概览: applications/README.md
       - RAG 应用: applications/rag.md
       - 智能代理: applications/agents.md
@@ -199,23 +195,17 @@ nav:
               - Searcher Tool: applications/tools/searcher_tool.md
               - Text Detector: applications/tools/text_detector.md
               - URL Text Extractor: applications/tools/url_text_extractor.md
-  - 🔄 SAGE CLI: get_start/remote_mode/sage_cil.md
+  - Extensions: get_start/remote_mode/sage_cil.md
   - 加入 SAGE:
     - 我们是谁: join_sage/intellistream.md
-    - md 模板: template.md
-    # - 贡献指南:
-    #     - 贡献指南: contribute/contribute_guide.md
-    #     - 开发环境: contribute/dev_env.md
-    #     - 开发流程: contribute/dev_process.md
-    #     - 测试流程: contribute/test_process.md
-
+    - md 模板: join_sage/template.md
+    - 导言模板: join_sage/overview_template.md
+    - 章节模板: join_sage/detail_template.md
+    - 快速入门模板: join_sage/quick_start.md
 
 validation:
-  # https://www.mkdocs.org/user-guide/configuration/
-  # We are still raising for omitted files because they determine the breadcrumbs for pages.
   omitted_files: info 
   absolute_links: warn
   unrecognized_links: warn
   anchors: warn
-  # this is needed to handle headers with anchors for nav
   not_found: info
