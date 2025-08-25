@@ -181,6 +181,8 @@ nav:
               - Memory API: middleware/service/memory/memory_api.md
   - Applications:
       - Applications 概览: applications/README.md
+      - 向量数据库: applications/index_build.md
+      - 检索器: applications/retriever.md
       - RAG 应用: applications/rag.md
       - 智能代理: applications/agents.md
       - IO 模块: applications/io.md
