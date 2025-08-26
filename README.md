@@ -46,7 +46,7 @@ To be updated ...
 pip install mkdocs mkdocs-material
 
 # 本地预览
-mkdocs serve
+python -m mkdocs serve -a 127.0.0.1:9000
 
 # 部署（已配置自动部署）
 mkdocs gh-deploy
