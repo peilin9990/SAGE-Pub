@@ -102,7 +102,8 @@ plugins:
 nav:
   - 首页: index.md
   - 快速开始:
-      - 安装与部署: get_start/install.md
+      - pip 快速安装: get_start/install.md
+      - 开发者模式安装: get_start/developer.md
       - 快速入门: 
           - 概览: get_start/quickstart.md
           - LLM QA: get_start/llm_qa/llm_qa.md
