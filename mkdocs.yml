@@ -197,12 +197,15 @@ nav:
       - Applications 概览: applications/README.md
       - RAG:
         - 组件:
-            - 向量数据库: applications/rag/components/index_build.md
+            - 文档加载与解析: applications/rag/components/document_loaders.md
+            - 分块: applications/rag/components/chunk.md
             - 检索器: applications/rag/components/retriever.md
             - 生成器: applications/rag/components/generator.md
+            - 提示词: applications/rag/components/promptor.md
             - 重排器: applications/rag/components/reranker.md
             - 评估器: applications/rag/components/evaluate.md
         - 例子:
+            - 构建向量数据库: applications/rag/components/index_build.md
             - QA with vector db: applications/rag/examples/RAG.md
     #   - RAG 应用: applications/rag.md
       - Agent: applications/agents.md
