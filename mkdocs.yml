@@ -201,9 +201,11 @@ nav:
         - 组件:
             - 向量数据库: applications/rag/components/index_build.md
             - 检索器: applications/rag/components/retriever.md
+            - 生成器: applications/rag/components/generator.md
+            - 重排器: applications/rag/components/reranker.md
         - 例子:
             - QA with vector db: applications/rag/examples/RAG.md
-      - RAG 应用: applications/rag.md
+    #   - RAG 应用: applications/rag.md
       - 智能代理: applications/agents.md
       - IO 模块: applications/io.md
       - Context 管理: applications/context.md
