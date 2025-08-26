@@ -178,18 +178,16 @@ nav:
       - Middleware 概览: middleware/overview.md
       - API层: 
           - Service API: middleware/api/service_api.md
-        #   - compute_api: middleware/api/compute_api.md
+        #   - Compute API: middleware/api/compute_api.md
       - 服务层: 
-          - Service概览: middleware/service/service_intro.md
+          - Service 概览: middleware/service/service_intro.md
           - Memory Service: middleware/service/memory/memory_service.md
-          - SAGE-DB Service: middleware/service/sage_db/sage_db_service.md
+        #   - SAGE-DB Service: middleware/service/sage_db/sage_db_service.md
         #   - XXX Service: middleware/service/xxx/xxx_service.md
       - 组件层:
           - SAGE-DB (非结构化数据库): middleware/components/sage_db.md
-          - SAGE-Flow (向量处理引擎): middleware/components/sage_flow.md
+        #   - SAGE-Flow (向量处理引擎): middleware/components/sage_flow.md
           - NeuroMem (长期记忆存储): middleware/components/neuromem.md
-            #   - Memory 概览: 
-            #   - Memory API: middleware/service/memory/memory_api.md
           
       - 硬件层:
           - GPU 加速: middleware/hardware/gpu_acceleration.md
