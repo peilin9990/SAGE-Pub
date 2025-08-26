@@ -31,7 +31,6 @@ Retrieval Augmented Generation（RAG）是一种结合检索与生成的智能�
 
 ```python
 def pipeline_run(config: dict) -> None:
-    print("=== 启动基于 ChromaDB 的 RAG 问答系统 ===")
     env = LocalEnvironment()
     (
         env
@@ -44,7 +43,6 @@ def pipeline_run(config: dict) -> None:
     env.submit()
     time.sleep(10)
     env.close()
-    print("=== RAG 问答系统运行完成 ===")
 ```
 
 - `LocalEnvironment`：流程编排环境，负责各模块的串联与运行。
@@ -77,3 +75,48 @@ if __name__ == '__main__':
 
 ---
 
+## 使用Rerank重排器
+
+可以进一步使用Rerank进检索结果进行重排序，提高检索精度，这里以BGEReranker为例子进行说明。
+
+核心流程如下，增加了BGEReranker算子：
+
+```python
+def pipeline_run(config: dict) -> None:
+    env = LocalEnvironment()
+    (
+        env
+        .from_batch(JSONLBatch, config["source"])
+        .map(ChromaRetriever, config["retriever"])
+        .map(BGEReranker, config["reranker"])  
+        .map(QAPromptor, config["promptor"])
+        .map(OpenAIGenerator, config["generator"]["vllm"])
+        .sink(TerminalSink, config["sink"])
+    )
+    env.submit()
+    time.sleep(10)
+    env.close()
+```
+
+
+## 使用huggingface model
+除了调用 OpenAI/VLLM/DashScope 等远程端点，也可调用 HuggingFace 本地模型。
+
+核心流程如下，增加了BGEReranker算子：
+
+```python
+def pipeline_run(config: dict) -> None:
+    env = LocalEnvironment()
+    (
+        env
+        .from_batch(JSONLBatch, config["source"])
+        .map(ChromaRetriever, config["retriever"])
+        .map(BGEReranker, config["reranker"])  
+        .map(QAPromptor, config["promptor"])
+        .map(HFGenerator, config["generator"]["hf"])
+        .sink(TerminalSink, config["sink"])
+    )
+    env.submit()
+    time.sleep(10)
+    env.close()
+```
