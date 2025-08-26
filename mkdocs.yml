@@ -106,9 +106,7 @@ nav:
       - 快速入门: 
           - 概览: get_start/quickstart.md
           - LLM QA: get_start/llm_qa/llm_qa.md
-          - 中间件Service:
-              - API: get_start/middleware_service/api.md
-              - 应用示例: get_start/middleware_service/example.md
+          - 中间件Service: get_start/middleware_service/middleware_quick_start.md
           - Naive RAG:
               - SAGE RAG: get_start/naive_rag/sage_naive_rag.md
               - 有关 RAG: get_start/naive_rag/you_know_rag.md
