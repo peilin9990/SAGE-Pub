@@ -201,13 +201,13 @@ nav:
             - 检索器: applications/rag/components/retriever.md
             - 生成器: applications/rag/components/generator.md
             - 重排器: applications/rag/components/reranker.md
-            - 评估器: applications/rag/components/evaluator.md
+            - 评估器: applications/rag/components/evaluate.md
         - 例子:
             - QA with vector db: applications/rag/examples/RAG.md
     #   - RAG 应用: applications/rag.md
-      - 智能代理: applications/agents.md
+      - Agent: applications/agents.md
       - IO 模块: applications/io.md
-      - Context 管理: applications/context.md
+      # - Context 管理: applications/context.md
       - Embedding 服务: applications/embedding.md
       - 工具生态:
           - 工具概览: applications/tools_intro.md
