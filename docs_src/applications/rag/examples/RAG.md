@@ -102,7 +102,7 @@ def pipeline_run(config: dict) -> None:
 ## 使用huggingface model
 除了调用 OpenAI/VLLM/DashScope 等远程端点，也可调用 HuggingFace 本地模型。
 
-核心流程如下，增加了BGEReranker算子：
+核心流程如下，替换了OpenAIGenerator算子：
 
 ```python
 def pipeline_run(config: dict) -> None:
