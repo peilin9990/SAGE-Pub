@@ -204,7 +204,7 @@ nav:
             - 重排器: applications/rag/components/reranker.md
             - 评估器: applications/rag/components/evaluate.md
         - 例子:
-            - 构建向量数据库: applications/rag/components/index_build.md
+            # - 构建向量数据库: applications/rag/components/index_build.md
             - RAG: applications/rag/examples/RAG.md
     #   - RAG 应用: applications/rag.md
       - Agent: applications/agents.md
