@@ -1,116 +1,196 @@
-# RAG提示词生成模块使用说明
+# 提示词生成组件 (Prompt Generation Components)
 
-本文档介绍了`sage.libs.rag.promptor`模块中各种提示词生成器的使用方法。该模块提供了专门用于RAG（检索增强生成）系统的提示词模板和生成器。
+本文档详细介绍SAGE框架中`sage.libs.rag.promptor`模块的提示词生成组件。提示词组件是RAG系统的认知接口层，负责将检索上下文与用户查询有效融合，为生成模型提供结构化输入。
 
-## 概述
+## 组件概述
 
-该模块包含三个主要的提示词生成器类：
-1. **QAPromptor** - 问答式提示词生成器
-2. **SummarizationPromptor** - 摘要式提示词生成器  
-3. **QueryProfilerPromptor** - 查询分析提示词生成器
+### 核心功能
+提示词生成组件在RAG系统中承担以下关键职责：
 
-所有类都继承自`MapFunction`基类，支持链式调用和管道处理。
+- **上下文整合**：将检索到的相关文档与用户查询进行智能融合
+- **任务适配**：针对不同任务类型（问答、摘要、分析）提供专门的模板
+- **格式标准化**：确保生成模型输入的一致性和有效性
+- **语义增强**：通过结构化提示提升模型理解和生成质量
 
-## 提示词模板
+### 设计架构
+所有提示词生成器继承自`MapFunction`基类，支持流水线处理：
 
-### 内置模板
+```python
+# 标准处理流程
+input_data → 模板渲染 → 结构化提示 → 输出传递
+```
 
-#### QA问答模板
+### 模板引擎
+采用Jinja2模板引擎，支持：
+- 条件渲染
+- 循环结构
+- 变量替换
+- 自定义过滤器
+
+## 核心提示词生成器
+
+### QAPromptor
+
+#### 组件描述
+`QAPromptor`是专门用于问答任务的提示词生成器，将用户问题与检索到的上下文文档组织成适合问答的结构化提示。
+
+#### 技术规格
+
+**输入格式**：
+```python
+input_data = (query, retrieved_documents)
+# query: str - 用户查询
+# retrieved_documents: List[str] - 检索到的相关文档
+```
+
+**输出格式**：
+```python
+output = (query, structured_prompt)
+# query: str - 原始用户查询
+# structured_prompt: str - 结构化的提示词
+```
+
+**内置模板**：
 ```jinja2
 Instruction:
-You are an intelligent assistant with access to a knowledge base. Answer the question below with reference to the provided context.
+You are an intelligent assistant with access to a knowledge base. 
+Answer the question below with reference to the provided context.
 Only give me the answer and do not output any other words.
+
 {%- if external_corpus %}
 Relevant corpus for the current question:
 {{ external_corpus }}
 {%- endif %}
+
+Question: {{ query }}
+Answer:
 ```
 
-#### 摘要模板
+#### 实现示例
+
+##### 基础问答生成
+```python
+from sage.libs.rag.promptor import QAPromptor
+
+# 初始化提示词生成器
+qa_promptor = QAPromptor()
+
+# 准备输入数据
+user_query = "什么是向量数据库？"
+retrieved_docs = [
+    "向量数据库是专门存储和检索高维向量数据的数据库系统。",
+    "ChromaDB是一个开源的向量数据库，支持相似度检索。",
+    "向量数据库在RAG系统中用于存储文档的向量表示。"
+]
+
+# 生成结构化提示
+query, prompt = qa_promptor.execute((user_query, retrieved_docs))
+
+print("生成的提示词:")
+print(prompt)
+```
+
+##### 自定义模板
+```python
+# 自定义模板配置
+custom_template = """
+Context: 您是一个专业的技术文档助手。
+Task: 基于以下资料回答用户问题，要求准确、简洁。
+
+参考资料:
+{%- for doc in external_corpus %}
+{{ loop.index }}. {{ doc }}
+{%- endfor %}
+
+用户问题: {{ query }}
+您的回答:
+"""
+
+qa_promptor_custom = QAPromptor(template=custom_template)
+```
+
+### SummarizationPromptor
+
+#### 组件描述
+`SummarizationPromptor`专门用于摘要生成任务，将多个文档内容组织成适合摘要的结构化提示。
+
+#### 技术规格
+
+**内置模板**：
 ```jinja2
 Instruction:
-You are an intelligent assistant. Summarize the content provided below in a concise and clear manner.
+You are an intelligent assistant. Summarize the content provided below 
+in a concise and clear manner.
 Only provide the summary and do not include any additional information.
+
 {%- if external_corpus %}
 Content to summarize:
 {{ external_corpus }}
 {%- endif %}
+
+Summary:
 ```
 
-#### 查询分析模板
-用于分析查询复杂度、是否需要多文档推理等特性的模板。
-
-## 详细使用方法
-
-### 1. QAPromptor - 问答提示词生成器
-
-这是最核心的提示词生成器，用于生成问答式对话的系统提示词和用户提示词。
-
-#### 基本使用
-
+#### 实现示例
 ```python
-from sage.libs.rag.promptor import QAPromptor
+from sage.libs.rag.promptor import SummarizationPromptor
 
-# 基本配置
-config = {}
+# 初始化摘要提示词生成器
+sum_promptor = SummarizationPromptor()
 
-# 初始化生成器
-qa_promptor = QAPromptor(config)
-
-# 方式1：查询 + 外部语料库
-data = ("什么是人工智能？", ["人工智能是计算机科学的一个分支", "AI可以模拟人类智能"])
-result = qa_promptor.execute(data)
-
-# 方式2：仅查询
-data = "什么是人工智能？"
-result = qa_promptor.execute(data)
-```
-
-#### 自定义模板配置
-
-```python
-# 使用自定义模板
-custom_config = {
-    'template': '''你是一个专业的AI助手。基于以下背景信息回答问题：
-{%- if external_corpus %}
-背景信息：
-{{ external_corpus }}
-{%- endif %}
-请提供准确、简洁的答案。'''
-}
-
-qa_promptor = QAPromptor(custom_config)
-```
-
-#### 启用数据分析功能
-
-```python
-# 启用提示词数据记录和分析
-qa_promptor = QAPromptor(config, enable_profile=True)
-
-# 数据会自动保存到 .sage_states/promptor_data/ 目录
-# 文件格式：promptor_data_{timestamp}.json
-```
-
-#### 输出格式
-
-```python
-# 返回格式：[query, prompt]
-[
-    "什么是人工智能？",
-    [
-        {
-            "role": "system",
-            "content": "You are an intelligent assistant with access to a knowledge base..."
-        },
-        {
-            "role": "user", 
-            "content": "Question: 什么是人工智能？"
-        }
-    ]
+# 准备文档内容
+documents = [
+    "RAG技术结合了检索和生成两个步骤。",
+    "检索步骤从知识库中找到相关信息。", 
+    "生成步骤基于检索结果产生最终答案。"
 ]
+
+# 生成摘要提示
+_, summary_prompt = sum_promptor.execute(("", documents))
+print("摘要提示词:", summary_prompt)
 ```
 
+### QueryProfilerPromptor
+
+#### 组件描述
+`QueryProfilerPromptor`用于分析用户查询的特征，判断查询复杂度、所需推理类型等属性，为系统优化提供决策依据。
+
+#### 技术规格
+
+**分析维度**：
+- 查询复杂度（简单/中等/复杂）
+- 推理类型（事实性/分析性/综合性）
+- 文档需求（单文档/多文档）
+- 时效性要求（历史/实时）
+
+**输出格式**：
+```python
+{
+    "complexity": str,        # 查询复杂度
+    "reasoning_type": str,    # 推理类型
+    "document_scope": str,    # 文档范围需求
+    "temporal_requirement": str  # 时效性需求
+}
+```
+
+#### 实现示例
+```python
+from sage.libs.rag.promptor import QueryProfilerPromptor
+
+# 初始化查询分析器
+profiler = QueryProfilerPromptor()
+
+# 分析简单事实查询
+simple_query = "什么是Python？"
+profile_result = profiler.execute(simple_query)
+
+# 分析复杂推理查询  
+complex_query = "对比分析Python和Java在机器学习领域的优缺点"
+complex_profile = profiler.execute(complex_query)
+
+print("简单查询分析:", profile_result)
+print("复杂查询分析:", complex_profile)
+```
 ### 2. SummarizationPromptor - 摘要提示词生成器
 
 专门用于生成文本摘要任务的提示词。

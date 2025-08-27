@@ -205,7 +205,7 @@ nav:
             - 评估器: applications/rag/components/evaluate.md
         - 例子:
             - 构建向量数据库: applications/rag/components/index_build.md
-            - QA with vector db: applications/rag/examples/RAG.md
+            - RAG: applications/rag/examples/RAG.md
     #   - RAG 应用: applications/rag.md
       - Agent: applications/agents.md
       - IO 模块: applications/io.md

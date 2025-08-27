@@ -1,53 +1,85 @@
-# RAG评估模块使用说明
+# 评估组件 (Evaluation Components)
 
-本文档介绍了`evaluate`模块中各种评估函数的使用方法。该模块提供了多种用于评估RAG（检索增强生成）系统性能的评估指标。
+本文档详细介绍SAGE框架中`sage.libs.rag.evaluate`模块的评估组件。评估组件为RAG系统提供多维度的性能评估指标，支持系统优化和质量控制。
 
-## 概述
+## 组件概述
 
-所有评估类都继承自`MapFunction`基类，可以在数据处理管道中使用。每个评估函数都会：
-1. 接收包含预测结果和参考答案的数据字典
-2. 计算相应的评估指标
-3. 打印彩色格式的结果
-4. 返回原始数据字典以便链式调用
+### 核心功能
+评估组件在RAG系统中承担以下关键职责：
 
-## 评估指标类别
+- **多指标评估**：提供多种评估维度和指标
+- **标准化接口**：所有评估函数继承自`MapFunction`基类
+- **链式调用**：支持在数据处理管道中的无缝集成
+- **结果可视化**：提供彩色格式的评估结果输出
 
-### 1. 文本匹配评估
+### 设计架构
+所有评估组件遵循统一的处理流程：
 
-#### F1Evaluate - F1分数评估
-计算预测文本与参考答案之间的F1分数。
+1. **输入验证**：检查预测结果和参考答案的数据格式
+2. **指标计算**：执行相应的评估算法
+3. **结果展示**：以标准化格式输出评估分数
+4. **数据传递**：返回原始数据以支持链式调用
 
-**使用方法：**
+### 评估数据格式
+标准评估输入格式：
+```python
+data = {
+    "references": List[str],    # 参考答案列表
+    "generated": str           # 系统生成的答案
+}
+```
+
+## 文本匹配评估组件
+
+### F1Evaluate
+
+#### 组件描述
+F1分数评估器计算预测文本与参考答案之间的F1分数，综合考虑精确率和召回率。
+
+#### 技术规格
+- **评估指标**：F1-Score (调和平均数)
+- **计算方式**：F1 = 2 × (Precision × Recall) / (Precision + Recall)
+- **适用场景**：需要平衡精确率和召回率的评估任务
+
+#### 实现示例
 ```python
 from sage.libs.rag.evaluate import F1Evaluate
 
 # 初始化评估器
 f1_evaluator = F1Evaluate()
 
-# 准备数据
+# 准备评估数据
 data = {
-    "references": ["这是正确的答案", "这也是正确答案"],
-    "generated": "这是预测的答案"
+    "references": [
+        "SAGE是一个先进的RAG框架", 
+        "SAGE框架支持多种文本分块方法"
+    ],
+    "generated": "SAGE是支持RAG的先进框架"
 }
 
 # 执行评估
 result = f1_evaluator.execute(data)
+# 输出示例: [F1] : 0.7500
 ```
 
-**输出示例：** `[F1] : 0.7500`
+### RecallEvaluate
 
-#### RecallEvaluate - 召回率评估
-计算预测文本相对于参考答案的召回率。
+#### 组件描述
+召回率评估器计算预测文本相对于参考答案的召回率，衡量系统捕获相关信息的能力。
 
-**使用方法：**
+#### 技术规格
+- **评估指标**：Recall (召回率)
+- **计算方式**：Recall = TP / (TP + FN)
+- **适用场景**：重视信息完整性的评估任务
+
+#### 实现示例
 ```python
 from sage.libs.rag.evaluate import RecallEvaluate
 
 recall_evaluator = RecallEvaluate()
 result = recall_evaluator.execute(data)
+# 输出示例: [Recall] : 0.8000
 ```
-
-**输出示例：** `[Recall] : 0.8000`
 
 #### AccuracyEvaluate - 准确率评估
 检查预测文本是否与任一参考答案完全匹配。

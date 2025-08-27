@@ -1,78 +1,53 @@
-# RAG文档加载器使用说明
+# 文档加载组件 (Document Loading Components)
 
-本文档介绍了`sage.libs.rag.document_loaders`模块中文档加载器的使用方法。该模块提供了用于加载和预处理各种格式文档的工具，是RAG（检索增强生成）系统的基础组件。
+本文档详细介绍SAGE框架中`sage.libs.rag.document_loaders`模块的文档加载组件。文档加载器是RAG系统的数据入口，负责从各种数据源加载和预处理文档内容。
 
-当前版本提供了`TextLoader`类，支持基本的文本文件加载功能，并为扩展其他格式奠定了基础。
+## 组件概述
 
-## TextLoader - 文本文件加载器
+### 核心功能
+文档加载组件在RAG系统中承担以下关键职责：
 
-### 概述
+- **多格式支持**：处理不同格式的文档文件
+- **编码处理**：自动检测和转换文件编码
+- **元数据生成**：为文档自动生成结构化元数据
+- **错误处理**：提供健壮的文件读取异常管理
 
-`TextLoader`是一个简单而实用的文本文件加载器，能够：
-- 加载任意编码的文本文件
-- 自动生成文档元数据
-- 返回标准化的文档对象格式
-- 支持错误处理和异常管理
+### 设计原则
+- **可扩展性**：支持新文档格式的快速集成
+- **标准化输出**：所有加载器输出统一的文档对象格式
+- **性能优化**：针对大文件的内存友好处理
 
-### 类定义
+## TextLoader
 
+### 组件描述
+`TextLoader`是基础文本文件加载器，专门处理纯文本格式文档。该组件为其他格式加载器提供了标准实现模板。
+
+### 技术规格
+
+**类定义**：
 ```python
 class TextLoader:
     def __init__(self, filepath: str, encoding: str = "utf-8", chunk_separator: str = None)
-    def load(self) -> Dict
+    def load(self) -> Dict[str, Any]
 ```
 
-### 初始化参数
+**初始化参数**：
 
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `filepath` | str | 必需 | 要加载的文本文件路径 |
-| `encoding` | str | "utf-8" | 文件编码格式 |
-| `chunk_separator` | str | None | 预留参数，用于未来分块功能 |
+| 参数名 | 类型 | 默认值 | 必需性 | 说明 |
+|--------|------|--------|--------|------|
+| `filepath` | str | - | 必需 | 目标文本文件的绝对或相对路径 |
+| `encoding` | str | "utf-8" | 可选 | 文件编码格式（如utf-8, gbk等） |
+| `chunk_separator` | str | None | 可选 | 预留的分块分隔符参数 |
 
-### 基本使用
-
-#### 简单文本加载
-
-```python
-from sage.libs.rag.document_loaders import TextLoader
-
-# 基本用法
-loader = TextLoader('data/sample.txt')
-document = loader.load()
-
-print("文档内容:", document["content"][:100] + "...")
-print("文档元数据:", document["metadata"])
-```
-
-#### 指定编码格式
-
-```python
-# 加载不同编码的文件
-loaders = {
-    'utf8': TextLoader('data/utf8_file.txt', encoding='utf-8'),
-    'gbk': TextLoader('data/gbk_file.txt', encoding='gbk'),
-    'latin1': TextLoader('data/latin1_file.txt', encoding='latin-1')
-}
-
-documents = {}
-for name, loader in loaders.items():
-    try:
-        documents[name] = loader.load()
-        print(f"✓ 成功加载 {name} 编码文件")
-    except UnicodeDecodeError:
-        print(f"✗ {name} 编码解析失败")
-```
-
-### 返回格式
-
-`load()`方法返回一个标准化的文档字典：
-
+**输出格式**：
 ```python
 {
-    "content": "文件的完整文本内容",
-    "metadata": {
-        "source": "文件路径"
+    "content": str,           # 文档的完整文本内容
+    "metadata": {             # 文档元数据
+        "source": str,        # 源文件路径
+        "encoding": str,      # 使用的编码格式
+        "size": int,          # 文件大小（字节）
+        "load_time": str      # 加载时间戳
     }
 }
 ```
