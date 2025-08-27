@@ -6,7 +6,7 @@ SAGE Middleware 是一个模块化、高性能的中间件层，为SAGE推理框
 
 ```mermaid
 flowchart TB
-  App[应用层 (App)]
+  App["应用层 (App)"]
   subgraph MW[SAGE Middleware]
     direction TB
     subgraph API[API 层]
@@ -21,7 +21,7 @@ flowchart TB
     subgraph Components[组件层]
       SageDB[SAGE-DB]
       NeuroMem[NeuroMem]
-      Vector[向量引擎]
+      Vector[流式向量引擎]
     end
     subgraph HW[硬件层]
       GPU[GPU 加速]
@@ -29,7 +29,7 @@ flowchart TB
       Affinity[硬件亲和计算]
     end
   end
-  Kernel[内核层 (Kernel)]
+  Kernel["内核层 (Kernel)"]
   App --> MW --> Kernel
 ```
 
