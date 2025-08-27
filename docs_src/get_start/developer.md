@@ -16,7 +16,7 @@
 
 <!-- 仓库链接待修改 -->
 ```bash
-git clone git@github.com:intellistream/SAGE-Pub.git
+git clone git@github.com:intellistream/SAGE.git
 ```
 
 ---
@@ -65,3 +65,13 @@ python examples/tutorials/hello_world.py
 ---
 
 ## *D*. 常见问题 (Common Question)
+
+:octicons-info-16: **SAGE-Pub Failed to connect / 子模块设置失败**
+
+报错内容大致如下：
+
+```bash title="bash error"
+fatal:unable to access'https://github.com/intellistream/SAGE-Pub.git/': Failed to connect_to github.com_port 443 after 118564 ms: Could not connect to server
+```
+
+这一般是因为网络原因导致无法与 github 建立连接，建议科学上网并切换到虚拟网卡模式重试。
