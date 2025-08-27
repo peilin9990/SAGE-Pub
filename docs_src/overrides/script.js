@@ -188,3 +188,214 @@ window.addEventListener('scroll', function() {
         hero.style.transform = `translateY(${scrolled * 0.3}px)`;
     }
 });
+
+// Tab switching functionality for Quick Start section
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding content
+            this.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+});
+
+// Video placeholder click handlers
+document.addEventListener('DOMContentLoaded', function() {
+    const videoPlaceholders = document.querySelectorAll('.video-placeholder');
+    
+    videoPlaceholders.forEach(placeholder => {
+        placeholder.addEventListener('click', function() {
+            // Add a simple click effect
+            const playButton = this.querySelector('.play-button');
+            playButton.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                playButton.style.transform = 'scale(1.1)';
+            }, 150);
+            
+            setTimeout(() => {
+                playButton.style.transform = 'scale(1)';
+            }, 300);
+            
+            // You can add actual video loading logic here
+            console.log('Video placeholder clicked - implement video loading');
+        });
+    });
+});
+
+// Enhanced hover effects for cards
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to various card elements
+    const cards = document.querySelectorAll('.feature-card, .why-card, .example-card, .contribute-card, .opportunity-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+    });
+    
+    // Add click effects to contribute links
+    const contributeLinks = document.querySelectorAll('.contribute-link');
+    contributeLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Add ripple effect
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(59, 130, 246, 0.3);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            
+            this.style.position = 'relative';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+});
+
+// Smooth scrolling for anchor links
+document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('a[href^="#"]');
+    
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+
+// Add CSS animation keyframes dynamically
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes nodeFloat {
+        0%, 100% { transform: translateX(0) translateY(0); }
+        25% { transform: translateX(100vw) translateY(-20px); }
+        50% { transform: translateX(100vw) translateY(20px); }
+        75% { transform: translateX(100vw) translateY(-10px); }
+    }
+    
+    @keyframes labelFlow {
+        0% { transform: translateX(0); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateX(calc(100vw + 200px)); opacity: 0; }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.8; }
+    }
+    
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+    }
+    
+    @keyframes streamFlow {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+`;
+document.head.appendChild(style);
+
+// Performance optimization: Throttle scroll events
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
+
+// Apply throttling to scroll events
+const throttledScrollHandler = throttle(function() {
+    const floatingNav = document.getElementById('floatingNav');
+    if (window.scrollY > window.innerHeight * 0.3) {
+        floatingNav.classList.add('visible');
+    } else {
+        floatingNav.classList.remove('visible');
+    }
+    
+    // Parallax effect
+    const scrolled = window.pageYOffset;
+    const hero = document.querySelector('.hero');
+    if (hero && scrolled < window.innerHeight) {
+        hero.style.transform = `translateY(${scrolled * 0.3}px)`;
+    }
+}, 16); // ~60fps
+
+// Replace the existing scroll event listener
+window.removeEventListener('scroll', arguments.callee);
+window.addEventListener('scroll', throttledScrollHandler);
+
+// Add missing playVideo function
+function playVideo(videoId) {
+    console.log('Playing video:', videoId);
+    // Add actual video implementation here
+    // For now, just show an alert or console message
+    const videoElement = document.querySelector(`[onclick="playVideo('${videoId}')"]`);
+    if (videoElement) {
+        const overlay = videoElement.querySelector('.video-overlay h4');
+        if (overlay) {
+            const originalText = overlay.textContent;
+            overlay.textContent = '正在加载视频...';
+            setTimeout(() => {
+                overlay.textContent = originalText;
+            }, 2000);
+        }
+    }
+}
+
+// Fix section animation visibility issues
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure all section-animate elements are visible initially
+    const sectionElements = document.querySelectorAll('.section-animate');
+    sectionElements.forEach(el => {
+        // Set initial state for better visibility
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+    });
+});
