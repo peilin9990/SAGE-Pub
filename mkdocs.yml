@@ -203,6 +203,7 @@ nav:
             - 提示词: applications/rag/components/promptor.md
             - 重排器: applications/rag/components/reranker.md
             - 评估器: applications/rag/components/evaluate.md
+            - 上下文压缩 : applications/rag/components/refiner.md
         - 例子:
             # - 构建向量数据库: applications/rag/components/index_build.md
             - RAG: applications/rag/examples/RAG.md
@@ -210,7 +211,7 @@ nav:
       - Agent: applications/agents.md
       - IO 模块: applications/io.md
       # - Context 管理: applications/context.md
-      - Embedding 服务: applications/embedding.md
+      # - Embedding 服务: applications/embedding.md
       - 工具生态:
           - 工具概览: applications/tools_intro.md
           - 工具列表:
