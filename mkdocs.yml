@@ -192,35 +192,35 @@ nav:
           - GPU 加速: middleware/hardware/gpu_acceleration.md
         #   - CXL: middleware/hardware/cxl.md
 
-  - Applications:
-      - Applications 概览: applications/README.md
+  - Librarys:
+      - Librarys 概览: librarys/README.md
       - RAG:
         - 组件:
-            - 文档加载与解析: applications/rag/components/document_loaders.md
-            - 分块: applications/rag/components/chunk.md
-            - 检索器: applications/rag/components/retriever.md
-            - 生成器: applications/rag/components/generator.md
-            - 提示词: applications/rag/components/promptor.md
-            - 重排器: applications/rag/components/reranker.md
-            - 评估器: applications/rag/components/evaluate.md
-            - 上下文压缩 : applications/rag/components/refiner.md
+            - 文档加载与解析: librarys/rag/components/document_loaders.md
+            - 分块: librarys/rag/components/chunk.md
+            - 检索器: librarys/rag/components/retriever.md
+            - 生成器: librarys/rag/components/generator.md
+            - 提示词: librarys/rag/components/promptor.md
+            - 重排器: librarys/rag/components/reranker.md
+            - 评估器: librarys/rag/components/evaluate.md
+            - 上下文压缩 : librarys/rag/components/refiner.md
         - 例子:
-            # - 构建向量数据库: applications/rag/components/index_build.md
-            - RAG: applications/rag/examples/RAG.md
-    #   - RAG 应用: applications/rag.md
-      - Agent: applications/agents.md
-      - IO 模块: applications/io.md
-      # - Context 管理: applications/context.md
-      # - Embedding 服务: applications/embedding.md
+            # - 构建向量数据库: librarys/rag/components/index_build.md
+            - RAG: librarys/rag/examples/RAG.md
+    #   - RAG 应用: librarys/rag.md
+      - Agent: librarys/agents.md
+      - IO 模块: librarys/io.md
+      # - Context 管理: librarys/context.md
+      # - Embedding 服务: librarys/embedding.md
       - 工具生态:
-          - 工具概览: applications/tools_intro.md
+          - 工具概览: librarys/tools_intro.md
           - 工具列表:
-              - Arxiv Paper Searcher: applications/tools/arxiv_paper_searcher.md
-              - Image Captioner: applications/tools/image_captioner.md
-              - Nature News Fetcher: applications/tools/nature_news_fetcher.md
-              - Searcher Tool: applications/tools/searcher_tool.md
-              - Text Detector: applications/tools/text_detector.md
-              - URL Text Extractor: applications/tools/url_text_extractor.md
+              - Arxiv Paper Searcher: librarys/tools/arxiv_paper_searcher.md
+              - Image Captioner: librarys/tools/image_captioner.md
+              - Nature News Fetcher: librarys/tools/nature_news_fetcher.md
+              - Searcher Tool: librarys/tools/searcher_tool.md
+              - Text Detector: librarys/tools/text_detector.md
+              - URL Text Extractor: librarys/tools/url_text_extractor.md
   - Extensions: get_start/remote_mode/sage_cil.md
   - 加入 SAGE:
     - 我们是谁: join_sage/intellistream.md
