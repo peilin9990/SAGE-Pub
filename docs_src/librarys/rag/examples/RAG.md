@@ -420,52 +420,6 @@ hf_config = {
 rag_config["generator"]["hf"] = hf_config
 ```
 
-## 端到端运行示例
-
-# 数据源配置
-source:
-  data_path: "data/qa_dataset.jsonl"     # 问答数据集路径
-  batch_size: 32                        # 批处理大小
-  shuffle: false                        # 是否随机打乱数据
-
-# 检索器配置  
-retriever:
-  dimension: 384                         # 向量维度
-  top_k: 5                              # 检索返回数量
-  embedding:
-    method: "default"                    # 嵌入方法
-    model: "sentence-transformers/all-MiniLM-L6-v2"
-  chroma:
-    persist_path: "./vector_database"    # 数据库存储路径
-    collection_name: "knowledge_base"    # 集合名称
-    knowledge_file: "data/knowledge_corpus.txt"
-
-# 提示词配置
-promptor:
-  template_type: "qa"                    # 模板类型
-  include_context: true                  # 包含检索上下文
-  max_context_length: 2000              # 最大上下文长度
-
-# 生成器配置
-generator:
-  vllm:
-    method: "openai"                     # 生成方法
-    model_name: "gpt-4o-mini"           # 模型名称
-    base_url: "http://localhost:8000/v1" # API地址
-    api_key: "your-api-key"             # API密钥
-    temperature: 0.7                     # 生成温度
-    max_tokens: 512                      # 最大生成长度
-    seed: 42                            # 随机种子
-
-# 输出配置
-sink:
-  format: "json"                        # 输出格式
-  show_metadata: true                   # 显示元数据
-  save_to_file: "results/rag_output.jsonl"
-```
-
-### 端到端测试
-
 ## 使用Rerank重排器
 
 可以进一步使用Rerank进检索结果进行重排序，提高检索精度，这里以BGEReranker为例子进行说明。
