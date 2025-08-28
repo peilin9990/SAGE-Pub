@@ -257,6 +257,43 @@ def pipeline_run(config: dict) -> None:
     env.close()
 ```
 
+## 使用Refiner文档优化器
+
+Refiner是基于LongRefiner技术的文档优化组件，能够智能压缩检索文档，在保持语义完整性的同时显著减少上下文长度。
+
+核心流程如下，增加了LongRefinerAdapter算子：
+
+```python
+from sage.libs.rag.refiner import LongRefinerAdapter
+
+def pipeline_with_refiner(config: dict) -> None:
+    env = LocalEnvironment()
+    (
+        env
+        .from_batch(JSONLBatch, config["source"])
+        .map(ChromaRetriever, config["retriever"])
+        .map(LongRefinerAdapter, config["refiner"])  # 添加文档优化
+        .map(QAPromptor, config["promptor"])
+        .map(OpenAIGenerator, config["generator"]["vllm"])
+        .sink(TerminalSink, config["sink"])
+    )
+    env.submit()
+    time.sleep(10)
+    env.close()
+```
+
+配置示例：
+
+```python
+refiner_config = {
+    "refiner": {
+        "model_name": "long-refiner-base",
+        "compression_ratio": 0.2,          # 压缩比例
+        "enable_cache": True,              # 启用缓存
+        "max_input_length": 8192
+    }
+}
+```
 
 ## 使用huggingface model
 除了调用 OpenAI/VLLM/DashScope 等远程端点，也可调用 HuggingFace 本地模型。
@@ -279,3 +316,41 @@ def pipeline_run(config: dict) -> None:
     time.sleep(10)
     env.close()
 ```
+
+---
+
+## 组件组合使用
+
+### 完整流水线示例
+
+```python
+def full_pipeline_run(config: dict) -> None:
+    """包含所有组件的完整RAG流水线"""
+    env = LocalEnvironment()
+    (
+        env
+        .from_batch(JSONLBatch, config["source"])
+        .map(ChromaRetriever, config["retriever"])        # 检索
+        .map(BGEReranker, config["reranker"])             # 重排序  
+        .map(LongRefinerAdapter, config["refiner"])       # 文档优化
+        .map(QAPromptor, config["promptor"])              # 提示组装
+        .map(OpenAIGenerator, config["generator"]["vllm"]) # 答案生成
+        .sink(TerminalSink, config["sink"])               # 结果输出
+    )
+    env.submit()
+    time.sleep(10)
+    env.close()
+```
+
+### 配置参考
+
+更多配置示例和详细文档：
+
+- [检索器配置](../components/retriever.md)
+- [重排序器配置](../components/BGE_RERANKER_GUIDE.md)  
+- [文档优化器配置](../components/refiner.md)
+- [基础配置文件](../../config/config_qa_chroma.yaml)
+
+---
+
+**注意**：本示例展示了SAGE框架下RAG系统的完整实现。
