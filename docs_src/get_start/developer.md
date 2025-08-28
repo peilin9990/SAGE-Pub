@@ -75,3 +75,15 @@ fatal:unable to access'https://github.com/intellistream/SAGE-Pub.git/': Failed t
 ```
 
 这一般是因为网络原因导致无法与 github 建立连接，建议科学上网并切换到虚拟网卡模式重试。
+
+## *E*. 安装演示 （Installation Demo）
+
+<iframe 
+  src="https://player.bilibili.com/player.html?bvid=BV125e1zgE1Q" 
+  scrolling="no" 
+  border="0" 
+  frameborder="no" 
+  framespacing="0" 
+  allowfullscreen="true" 
+  style="width: 800px; height: 500px;">
+</iframe>
