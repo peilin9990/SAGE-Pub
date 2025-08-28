@@ -1,36 +1,31 @@
 # SAGE 安装指南
 
-本文档将指导您如何安装 SAGE 及其相关依赖。请根据您的需求选择合适的安装方式。
+本文档将指导您如何 **安装 SAGE** 及其相关依赖。请根据您的需求选择合适的安装方式。
 
 ---
 
-## 📋 前置要求 (Prerequisites)
+## *A*. 前置要求 (Prerequisites)
 
 在开始安装之前，请确保您的开发环境满足以下要求：
 
-* **支持的操作系统 (OS)**:
-    * Linux
-    * macOS(docker ubuntu 22.04+)
-    * Windows(WSL ubuntu 22.04+)
-* **Python**：建议使用版本 **≥ 3.11.10** 的 Python 解释器。例如使用 Conda 在虚拟环境中创建并激活环境：
+* **操作系统 (OS)**：[Ubuntu 22.04及以上版本](https://ubuntu.com/)
+* **基础依赖**：[Anaconda/Miniconda](https://www.anaconda.com/) 
+* **备注**：建议使用版本 **≥ 3.11.10** 的 Python 解释器。
+
+利用 Conda 在虚拟环境中创建并激活环境：
 
 ```bash
 conda create -n sage python=3.11.10
 conda activate sage
 ```
 
-*温馨提示：若 Conda 创建失败，可能是网络问题导致，请及时更换 Conda 源。*
+<small>*温馨提示：若 Conda 创建失败，可能是网络问题导致，请及时更换 Conda 源。*</small>
 
 ---
 
-## 🚀 下载安装 (Installation)
+## *B*. 下载安装 (Installation)
 
 SAGE 提供简单的安装方式，您只需通过 `pip install isage` 命令，即可完成安装，无需下载源码，适合快速部署和使用。
-
-### 安装步骤
-
-
-**第 1 步：使用 pip 安装**
 
 执行以下命令完成安装：
 
@@ -39,7 +34,9 @@ SAGE 提供简单的安装方式，您只需通过 `pip install isage` 命令，
 pip install isage
 ```
 
-## ✅ 验证安装 (Verify Installation)
+---
+
+## *C*. 验证安装 (Verify Installation)
 安装完成后，您可以通过以下任一方式来验证 SAGE 是否已成功安装。
 
 ### 方法1：查看包信息
@@ -64,16 +61,17 @@ Location: /path/to/your/python/site-packages
 Requires: isage-common, isage-kernel, isage-libs, isage-middleware
 Required-by:
 ```
+
 ### 方法2：运行 SAGE HelloWorld 程序
 
 执行 SAGE 官方发布仓库下(目前为私有库) `hello_world.py` Python 文件。
 
-```Python
+```Bash
 python hello_world.py
 ```
 
 hello_world.py代码如下：
-```Python
+```Python linenums="1"
 from sage.core.api.local_environment import LocalEnvironment
 from sage.core.api.function.sink_function import SinkFunction
 from sage.core.api.function.batch_function import BatchFunction
@@ -137,8 +135,12 @@ Hello World 批处理示例结束
 
 至此，您已成功安装 SAGE，祝您使用愉快！
 
-#❓pip install时可能遇到的问题以及解决方案
-###问题1：Python版本过高，报错如下
+---
+
+## *D*.pip install时可能遇到的问题以及解决方案
+
+:octicons-info-16: **Python版本过高，报错如下**：
+
 ```
 Building wheels for collected packages: faiss-cpu, sgmllib3k
   Building wheel for faiss-cpu (pyproject.toml) ... error
@@ -153,10 +155,3 @@ note: This error originates from a subprocess, and is likely not a problem with 
   ERROR: Failed building wheel for faiss-cpu
 ```
 问题分析：Faiss官方包还没支持到Python 3.13，支持范围为3.7~3.12，因此推荐使用3.11。
-
-###问题2：待补充
-```
-
-
-```
-问题分析：
