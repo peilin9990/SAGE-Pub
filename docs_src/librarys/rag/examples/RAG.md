@@ -1,6 +1,6 @@
 # RAG系统完整实现示例 (Complete RAG System Implementation)
 
-本文档提供基于ChromaDB的RAG问答系统的完整实现示例。该示例展示了从数据准备到答案生成的端到端流程，是学习和理解RAG技术的最佳起点。
+本文档提供基于SAGE的RAG问答系统的完整实现示例。该示例展示了从数据准备到答案生成的端到端流程，是学习和理解RAG技术的最佳起点。
 
 ## 技术概述
 
@@ -102,6 +102,8 @@ RAG系统的运行分为两个独立且必需的阶段：**索引构建阶段**�
 
 离线索引构建不依赖流水线，需要独立执行索引构建流程。此方法尤其适用于数据量较大的情况下构建知识库。具体示例如下：
 
+[代码实例如下](https://github.com/intellistream/SAGE/blob/main/examples/rag/build_chroma_index.py)
+
 ```python
 def build_knowledge_index(config: dict) -> None:
     """
@@ -185,6 +187,8 @@ build_knowledge_index(rag_config)
 
 ### RAG流水线实现
 
+[代码实例如下](examples/rag/qa_dense_retrieval_chroma.py)
+
 ```python
 def execute_rag_pipeline(config: dict) -> None:
     """
@@ -236,6 +240,8 @@ def execute_rag_pipeline(config: dict) -> None:
 ## 系统配置与运行
 
 ### 完整系统配置示例
+
+推荐使用yaml文件配置pipeline各个算子，[配置实例如下](https://github.com/intellistream/SAGE/blob/main/examples/config/config_qa_chroma.yaml)
 
 ```python
 # 完整的RAG系统配置
@@ -291,71 +297,6 @@ rag_config = {
 }
 ```
 
-### YAML配置文件格式
-
-对于生产环境，推荐使用YAML配置文件：
-
-```yaml
-# config_rag_system.yaml
-source:
-  file_path: "data/qa_dataset.jsonl"
-  batch_size: 32
-  shuffle: false
-
-retriever:
-  dimension: 384
-  top_k: 5
-  embedding:
-    method: "default"
-    model: "sentence-transformers/all-MiniLM-L6-v2"
-  chroma:
-    persist_path: "./vector_database"
-    collection_name: "knowledge_base"
-    knowledge_file: "data/knowledge_corpus.txt"
-
-promptor:
-  template_type: "qa"
-  include_context: true
-  max_context_length: 2000
-
-generator:
-  vllm:
-    method: "openai"
-    model_name: "gpt-4o-mini"
-    base_url: "http://localhost:8000/v1"
-    api_key: "${OPENAI_API_KEY}"  # 使用环境变量
-    temperature: 0.7
-    max_tokens: 512
-    seed: 42
-
-sink:
-  format: "json"
-  show_metadata: true
-  save_to_file: "results/rag_output.jsonl"
-```
-
-```python
-# 加载YAML配置的工具函数
-import yaml
-import os
-
-def load_config_from_yaml(config_path: str) -> dict:
-    """从YAML文件加载配置，支持环境变量替换"""
-    
-    with open(config_path, 'r', encoding='utf-8') as f:
-        config_str = f.read()
-    
-    # 替换环境变量
-    config_str = os.path.expandvars(config_str)
-    
-    # 解析YAML
-    config = yaml.safe_load(config_str)
-    
-    return config
-
-# 使用YAML配置
-rag_config = load_config_from_yaml("config_rag_system.yaml")
-```
 
 ## 高级功能扩展
 
