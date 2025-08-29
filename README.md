@@ -43,7 +43,7 @@ To be updated ...
 
 ```bash
 # 安装
-pip install mkdocs mkdocs-material
+./build.sh
 
 # 本地预览
 python -m mkdocs serve -a 127.0.0.1:9000
