@@ -206,7 +206,8 @@ nav:
             - 上下文压缩 : librarys/rag/components/refiner.md
         - 例子:
             # - 构建向量数据库: librarys/rag/components/index_build.md
-            - RAG: librarys/rag/examples/RAG.md
+            - 使用SAGE基于chroma构建RAG: librarys/rag/examples/RAG.md
+            - 使用SAGE基于milvus构建RAG: librarys/rag/examples/RAG_milvus.md
     #   - RAG 应用: librarys/rag.md
       - Agent: librarys/agents.md
       - IO 模块: librarys/io.md
