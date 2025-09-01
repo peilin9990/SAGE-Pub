@@ -55,7 +55,7 @@ Version: 0.1.2
 Summary: SAGE (Meta Package)
 Home-page: https://github.com/intellistream/SAGE
 Author: 
-Author-email: SAGE Team <sage@intellistream.com>
+Author-email: SAGE Team <shuhao_zhang@hust.edu.cn>
 License: MIT
 Location: /path/to/your/python/site-packages
 Requires: isage-common, isage-kernel, isage-libs, isage-middleware
