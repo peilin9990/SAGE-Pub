@@ -11,7 +11,7 @@ flowchart TB
     direction TB
     subgraph API[API 层]
       SvcAPI[Service 调用接口]
-      ComputeAPI[Compute API]
+      ComputeAPI[计算接口]
     end
     subgraph Services[服务层]
       Memory[Memory Service]
@@ -21,7 +21,7 @@ flowchart TB
     subgraph Components[组件层]
       SageDB["SAGE-DB"]
       NeuroMem[NeuroMem]
-      Vector[流式向量引擎]
+      Vector["SAGE-Flow"]
     end
     subgraph HW[硬件层]
       GPU[GPU 加速]

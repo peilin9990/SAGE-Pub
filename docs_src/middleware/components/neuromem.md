@@ -105,42 +105,56 @@ flowchart TB
 ```
 
 - MemoryManager（memory_manager.py）
-  - 统一管理写入/检索的流程编排，将请求路由到对应集合/后端
+  
+    - 统一管理写入/检索的流程编排，将请求路由到对应集合/后端
+
 - Memory Collection 层（memory_collection/）
-  - base_collection.py：集合抽象基类
-  - kv_collection.py / vdb_collection.py / graph_collection.py：面向不同后端的集合实现
+
+    - base_collection.py：集合抽象基类
+    - kv_collection.py / vdb_collection.py / graph_collection.py：面向不同后端的集合实现
+
 - 引擎/后端适配（storage_engine/ 与 search_engine/）
-  - metadata_storage.py：元数据存储
-  - graph_index/、hybrid_index/：图与混合检索相关索引
-  - 与 KV/VDB 的落地引擎迁移到了各自服务模块（遵循单一职责）
-    - 在 Memory Service 中仅保留“编排与抽象”
-    - KV/VDB 具体存储与索引在 kv/vdb 服务中实现
+   
+    - metadata_storage.py：元数据存储
+    - graph_index/、hybrid_index/：图与混合检索相关索引
+   
+    - 与 KV/VDB 的落地引擎迁移到了各自服务模块（遵循单一职责）
+
+        - 在 Memory Service 中仅保留“编排与抽象”
+        - KV/VDB 具体存储与索引在 kv/vdb 服务中实现
 
 ---
 
 ## 三、部分组件层 API（按模块粒度汇总）
 
 说明：
+
 - 下列为稳定“面向组件”的职责/接口面向，尽量避免硬编码具体签名；以仓库实际实现为准
 - 对上统一通过 Memory Service 的服务接口（store_memory/search_memories 等）
 
 1) Memory Service（服务层，对上暴露）
+
 - 常用方法（依据仓库示例）
-  - store_memory(content, vector, session_id, memory_type, metadata)
-  - search_memories(query_vector, session_id, limit/top_k, filters)
-  - retrieve_memories(...)（如实现提供）
+
+    - store_memory(content, vector, session_id, memory_type, metadata)
+    - search_memories(query_vector, session_id, limit/top_k, filters)
+    - retrieve_memories(...)（如实现提供）
+
 - 作用：将 Neuromem 的能力服务化，屏蔽 KV/VDB/Graph 的细节
 
 2) MemoryManager（组件核心）
+
 - 职责：解析写入/检索请求，将其分发到合适的 Collection 与后端
 - 行为：维护集合/索引/元数据一致性；聚合后端结果
 
 3) Collections（memory_collection/）
+
 - base_collection.py：集合抽象（提供集合级能力的统一接口）
 - kv_collection.py / vdb_collection.py / graph_collection.py：不同后端集合的适配器
 - 典型行为：集合创建/加载、集合内对象/向量读写、索引/检索委托
 
 4) Engines（storage_engine/ 与 search_engine/）
+
 - metadata_storage.py：元数据读写
 - graph_index/、hybrid_index/：图与混合检索索引能力
 - 与 KV/VDB 的具体存储/检索引擎在各自服务模块维护

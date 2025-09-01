@@ -61,19 +61,24 @@ class BaseService:
 ## 三、服务清单（基于当前仓库，按模块划分）
 
 说明：
+
 - 下列服务名称为常用注册名；需与实际注册时的名称一致。
 - 具体方法以仓库实现为准；示例仅展示仓库中出现的典型用法，避免虚构接口。
 - 如需浏览完整代码，请参考仓库目录：packages/sage-middleware/src/sage/middleware/services
 
 ### 1) Memory Service（由 Neuromem 提供的长期记忆服务）
+
 - 典型注册名：memory_service
 - 组件关系：Memory Service = Neuromem 的服务化封装，对接底层 VDB/KV/Graph 等后端
 - 模块位置（参考）：services/memory/
 - 常见能力
-  - 集合/空间管理（如创建集合）
-  - 写入长期记忆（内容、向量、会话上下文与元数据）
-  - 相似检索/语义检索（基于向量/过滤条件）
+
+    - 集合/空间管理（如创建集合）
+    - 写入长期记忆（内容、向量、会话上下文与元数据）
+    - 相似检索/语义检索（基于向量/过滤条件）
+
 - 仓库中示例用法（节选）
+
   - 在环境中注册后使用：
     ```python
     # 参考仓库 README 用法
@@ -109,11 +114,14 @@ class BaseService:
     ```
 
 ### 2) KV Service（键值存储服务）
+
 - 典型注册名：kv_service
 - 模块位置（参考）：services/kv/kv_service.py
 - 常见能力
-  - 键值写入与读取
-  - 作为 Memory 编排中的元数据/缓存支撑
+
+    - 键值写入与读取
+    - 作为 Memory 编排中的元数据/缓存支撑
+
 - 仓库中示例用法（节选）
   ```python
   # 同步写入
@@ -125,25 +133,33 @@ class BaseService:
   ```
 
 ### 3) VDB Service（向量数据库服务）
+
 - 典型注册名：vdb_service
 - 模块位置（参考）：services/vdb/
 - 常见能力
-  - 向量集合管理
-  - 向量写入/更新
-  - 相似度检索、过滤检索
+
+    - 向量集合管理
+    - 向量写入/更新
+    - 相似度检索、过滤检索
+
 - 使用说明
-  - 该服务通常由 Memory Service 间接使用；用户也可直接注册后在 Function 中调用
-  - 具体方法名称请参考模块代码与 examples/services/vdb/examples/vdb_demo.py
+
+    - 该服务通常由 Memory Service 间接使用；用户也可直接注册后在 Function 中调用
+    - 具体方法名称请参考模块代码与 examples/services/vdb/examples/vdb_demo.py
 
 ### 4) Graph Service（图存储/关系索引服务）
+
 - 典型注册名：graph_service
 - 模块位置（参考）：services/graph/
 - 常见能力
-  - 节点/边的写入与查询
-  - 关系/邻域检索，辅助长期记忆的上下文组织
+
+    - 节点/边的写入与查询
+    - 关系/邻域检索，辅助长期记忆的上下文组织
+
 - 使用说明
-  - 该服务通常作为 Memory/Neuromem 的关系后端；具体接口以实现为准
-  - 可参考 examples/services/graph/examples/graph_demo.py
+
+    - 该服务通常作为 Memory/Neuromem 的关系后端；具体接口以实现为准
+    - 可参考 examples/services/graph/examples/graph_demo.py
 
 ---
 
