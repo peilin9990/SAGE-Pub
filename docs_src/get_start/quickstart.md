@@ -121,48 +121,6 @@ if __name__ == "__main__":
 
 ---
 
-## 🔧 使用 SAGE 构建 RAG 流水线
-
-SAGE 提供声明式、可组合的 API 接口构建数据流，以下为典型 RAG 管线：
-
-```python
-from sage.core.api.local_environment import LocalEnvironment
-from sage.libs.io_utils.source import FileSource
-from sage.libs.io_utils.sink import TerminalSink
-from sage.libs.rag.retriever import DenseRetriever
-from sage.libs.rag.promptor import QAPromptor
-from sage.libs.rag.generator import OpenAIGenerator
-from sage.common.utils.config.loader import load_config
-
-def pipeline_run():
-    """创建并运行RAG数据处理管道"""
-    # 创建本地环境
-    env = LocalEnvironment("rag_pipeline")
-
-    # 加载配置
-    config = load_config("examples/config/config.yaml")
-    
-    # 构建RAG处理流程
-    (env
-        .from_source(FileSource, config["source"])
-        .map(DenseRetriever, config["retriever"])
-        .map(QAPromptor, config["promptor"])
-        .map(OpenAIGenerator, config["generator"]["vllm"])
-        .sink(TerminalSink, config["sink"])
-    )
-
-    # 提交并运行
-    env.submit()
-    
-    # 等待处理完成
-    import time
-    time.sleep(5)
-    env.close()
-
-if __name__ == '__main__':
-    pipeline_run()
-```
-
 ### 📘 配置说明
 
 每个 Operator 的运行需传入 config 参数，你可在项目中的 [`examples/config/`](https://github.com/intellistream/SAGE/tree/main/examples/config) 文件夹中找到示例配置文件。
@@ -205,7 +163,6 @@ def execute(self, data):
     
     - 环境：`sage.core.api.local_environment.LocalEnvironment`
     - 函数基类：`sage.core.api.function.*`
-    - RAG组件：`sage.libs.rag.*`
     - IO组件：`sage.libs.io_utils.*`
     - 服务：`sage.middleware.services.*`
 
@@ -215,7 +172,6 @@ def execute(self, data):
 
 - 若希望了解更多批处理示例，请参阅 [有界流处理](streaming/limited_streaming.md)
 - 若希望了解流式处理示例，请参阅 [无界流处理](streaming/unlimited_streaming.md)
-- 若希望构建RAG应用，请参阅 [Naive RAG](naive_rag/sage_naive_rag.md)
 - 若希望了解中间件服务，请参阅 [中间件服务](middleware_service/middleware_quick_start.md)
 
 ---
