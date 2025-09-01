@@ -1,199 +1,280 @@
 # CLI 命令行工具
 
-SAGE Kernel 提供了完整的命令行工具集，支持开发、调试、部署和监控等全生命周期操作。
+SAGE 提供了完整的命令行工具集，支持系统部署、作业管理、集群管理和开发调试等全生命周期操作。
 
 ## 🔧 主要命令
 
 ### sage - 主入口命令
 
 ```bash
-# 查看版本信息
-sage --version
+# 查看版本信息  
+sage version show
 
 # 查看帮助
 sage --help
 
-# 显示系统信息
-sage info
+# 显示可用扩展信息
+sage extensions
 
 # 配置管理
-sage config list
-sage config set parallelism 8
-sage config get checkpoint_interval
+sage config show
+sage config init
 ```
 
-### sage-core - 核心管理命令
+### 核心管理命令
 
 ```bash
 # 启动作业管理器
-sage-core jobmanager start
+sage jobmanager start
 
 # 启动工作节点
-sage-core worker start --slots 4
+sage worker start
 
 # 启动集群头节点
-sage-core head start --port 8081
+sage head start
 
 # 集群管理
-sage-core cluster list
-sage-core cluster status
-sage-core cluster scale --workers 5
+sage cluster start
+sage cluster stop
+sage cluster status
+sage cluster scale
 ```
 
 ## 📊 作业管理
 
-### 作业提交和控制
+### 作业控制
 
 ```bash
-# 提交作业
-sage job submit my_app.py --parallelism 4
-
-# 列出作业
+# 列出所有作业
 sage job list
 
 # 查看作业状态
-sage job status <job-id>
+sage job status
 
-# 停止作业
+# 查看作业详情
+sage job show <job-id>
+
+# 停止/暂停作业
 sage job stop <job-id>
 
-# 取消作业
-sage job cancel <job-id>
+# 继续/恢复作业
+sage job continue <job-id>
 
-# 重启作业
-sage job restart <job-id>
+# 删除作业
+sage job delete <job-id>
+
+# 清理所有作业
+sage job cleanup
 ```
 
 ### 作业监控
 
 ```bash
-# 查看作业详情
-sage job describe <job-id>
+# 健康检查
+sage job health
 
-# 查看作业日志
-sage job logs <job-id>
+# 显示JobManager系统信息
+sage job info
 
-# 实时跟踪日志
-sage job logs <job-id> --follow
+# 实时监控所有作业
+sage job monitor
 
-# 查看指标
-sage job metrics <job-id>
-
-# 性能分析
-sage job profile <job-id>
+# 监控特定作业
+sage job watch <job-id>
 ```
 
-## 🚀 部署工具
+## 🚀 系统部署
 
-### 应用打包
+### 系统控制
 
 ```bash
-# 创建部署包
-sage deploy package my_app/ --output my_app.sage
+# 启动SAGE系统（Ray集群 + JobManager）
+sage deploy start
 
-# 验证部署包
-sage deploy validate my_app.sage
+# 停止SAGE系统
+sage deploy stop
 
-# 提取部署包
-sage deploy extract my_app.sage --target ./extracted/
+# 重启SAGE系统
+sage deploy restart
+
+# 显示系统状态
+sage deploy status
 ```
 
-## 🛠️ 开发工具
-
-### 项目脚手架
+### 集群管理
 
 ```bash
-# 创建新项目
-sage create project my-stream-app --template basic
+# 启动整个Ray集群
+sage cluster start
 
-# 可用模板
-sage create project --list-templates
+# 停止整个Ray集群
+sage cluster stop
 
-# 创建函数模板
-sage create function MyMapFunction --type map --output-dir src/functions/
+# 重启整个Ray集群
+sage cluster restart
+
+# 检查集群状态
+sage cluster status
+
+# 部署SAGE到所有Worker节点
+sage cluster deploy
+
+# 动态扩缩容集群
+sage cluster scale
+
+# 显示集群配置信息
+sage cluster info
 ```
 
-### 本地开发
+### 节点管理
 
 ```bash
-# 启动本地开发环境
-sage dev start
+# Head节点管理
+sage head start
+sage head stop
+sage head status
+sage head restart
+sage head logs
 
-# 热重载模式运行
-sage dev run my_app.py --watch
+# 或者通过cluster子命令管理Head节点
+sage cluster head start
+sage cluster head stop
+sage cluster head status
 
-# 调试模式
-sage dev debug my_app.py --breakpoint MyFunction.map
+# Worker节点管理
+sage worker start
+sage worker stop
+sage worker status
+sage worker restart
+sage worker add
+sage worker remove
+sage worker list
+sage worker config
+sage worker deploy
 
-# 性能分析
-sage dev profile my_app.py --output profile.html
+# 或者通过cluster子命令管理Worker节点
+sage cluster worker start
+sage cluster worker stop
+sage cluster worker status
+sage cluster worker add
+sage cluster worker remove
+
+# JobManager管理
+sage jobmanager start
+sage jobmanager stop
+sage jobmanager restart
+sage jobmanager status
+sage jobmanager kill
+```
+
+## 🛠️ 开发工具 (sage-dev)
+
+SAGE 提供了专门的开发工具 `sage-dev`，用于项目开发、测试和发布。
+
+### 项目分析和管理
+
+```bash
+# 分析项目依赖
+sage-dev dependencies
+
+# 分析类依赖关系
+sage-dev classes
+
+# 检查导入依赖
+sage-dev check-dependency <package-name>
+
+# 清理构建产物
+sage-dev artifacts
+
+# 管理SAGE主目录和日志
+sage-dev home
+```
+
+### 包管理和发布
+
+```bash
+# 发布开源包(保留源码)
+sage-dev opensource
+
+# 发布闭源包(编译为字节码)  
+sage-dev proprietary
+
+# 显示包信息
+sage-dev info
+
+# 生成开发报告
+sage-dev generate
+
+# 显示版本信息
+sage-dev show
 ```
 
 ### 测试工具
 
 ```bash
 # 运行测试
-sage test run tests/
+sage-dev test
 
-# 运行特定测试
-sage test run tests/test_my_function.py::test_map
+# PyPI包管理
+sage-dev pypi
 
-# 性能测试
-sage test benchmark my_app.py --iterations 100
-
-# 生成测试报告
-sage test report --format html --output test-report.html
+# 包管理命令
+sage-dev package
 ```
 
 ## 📈 监控和诊断
 
-### 系统监控
+### 系统诊断
 
 ```bash
-# 查看集群状态
+# 系统健康检查
+sage doctor check
+
+# 查看系统状态
+sage deploy status
 sage cluster status
-
-# 查看节点信息
-sage cluster nodes
-
-# 查看资源使用
-sage cluster resources
-
-# 查看网络状态
-sage cluster network
+sage jobmanager status
 ```
 
-### 日志管理
+### Web界面
 
 ```bash
-# 查看系统日志
-sage logs system
+# 启动Web界面
+sage web-ui start
 
-# 查看组件日志
-sage logs jobmanager
-sage logs worker --node worker-01
+# 查看Web界面状态
+sage web-ui status
 
-# 日志搜索
-sage logs search "ERROR" --since 1h
-
-# 日志导出
-sage logs export --output logs.tar.gz --since 24h
+# 显示Web界面信息
+sage web-ui info
 ```
 
-### 性能分析
+### Studio可视化编辑器
 
 ```bash
-# CPU性能分析
-sage profile cpu <job-id> --duration 60s
+# 启动Studio服务
+sage studio start
 
-# 内存分析
-sage profile memory <job-id>
+# 停止Studio服务
+sage studio stop
 
-# 网络分析
-sage profile network <job-id>
+# 重启Studio服务
+sage studio restart
 
-# 生成性能报告
-sage profile report <job-id> --format html
+# 查看Studio状态
+sage studio status
+
+# 查看Studio日志
+sage studio logs
+
+# 安装Studio依赖
+sage studio install
+
+# 显示Studio信息
+sage studio info
+
+# 在浏览器中打开Studio
+sage studio open
 ```
 
 ## ⚙️ 配置管理
@@ -201,174 +282,58 @@ sage profile report <job-id> --format html
 ### 全局配置
 
 ```bash
-# 查看所有配置
-sage config list
+# 查看配置信息
+sage config show
 
-# 设置配置项
-sage config set logging.level DEBUG
-sage config set cluster.default_parallelism 8
-
-# 获取配置项
-sage config get logging.level
-
-# 重置配置
-sage config reset logging.level
-
-# 导入配置
-sage config import config.yaml
-
-# 导出配置  
-sage config export --output current-config.yaml
+# 初始化配置文件
+sage config init
 ```
-
-### 环境配置
-
-```bash
-# 列出环境
-sage config env list
-
-# 创建环境
-sage config env create production --from staging
-
-# 切换环境
-sage config env use production
-
-# 删除环境
-sage config env delete development
 ```
 
 ## 🔌 扩展管理
 
-### 插件管理
+### 扩展信息
 
 ```bash
-# 列出已安装插件
-sage extensions list
+# 显示可用扩展信息
+sage extensions
 
-# 安装插件
-sage extensions install sage-kafka-connector
-
-# 更新插件
-sage extensions update sage-kafka-connector
-
-# 卸载插件
-sage extensions uninstall sage-kafka-connector
-
-# 搜索插件
-sage extensions search kafka
+# 查看当前安装状态
+sage extensions  # 会显示当前安装的扩展状态
 ```
 
-### 自定义扩展
+### 扩展安装（通过pip）
 
 ```bash
-# 创建扩展模板
-sage extensions create my-extension --type connector
+# 安装前端扩展
+pip install isage[frontend]
 
-# 构建扩展
-sage extensions build my-extension/
+# 安装开发工具扩展
+pip install isage[dev]
 
-# 发布扩展
-sage extensions publish my-extension/ --registry local
+# 安装所有免费扩展
+pip install isage[full]
+
+# 安装商业扩展（需要授权）
+pip install isage[commercial]
 ```
 
-## 🔐 安全和认证
-
-### 用户管理
-
-```bash
-# 登录
-sage auth login --username admin
-
-# 登出
-sage auth logout
-
-# 查看当前用户
-sage auth whoami
-
-# 修改密码
-sage auth passwd
-```
-
-### 访问控制
-
-```bash
-# 列出角色
-sage auth roles list
-
-# 创建角色
-sage auth roles create developer --permissions job:submit,job:read
-
-# 分配角色
-sage auth users assign-role user1 developer
-
-# 查看权限
-sage auth permissions check user1 job:submit
-```
-
-## 📱 交互式界面
-
-### Web UI
-
-```bash
-# 启动Web界面
-sage ui start --port 8080
-
-# 启动只读模式
-sage ui start --readonly
-
-# 启动带认证的界面
-sage ui start --auth-required
-```
-
-### 交互式Shell
-
-```bash
-# 启动交互式Shell
-sage shell
-
-# 在Shell中执行命令
-sage> job list
-sage> cluster status
-sage> exit
-```
-
-## 📊 示例命令组合
-
-### 开发工作流
-
-```bash
-# 1. 创建项目
-sage create project stream-analytics --template kafka-processing
-
-# 2. 启动开发环境
-cd stream-analytics
-sage dev start
-
-# 3. 运行应用
-sage dev run main.py --watch
-
-# 4. 运行测试
-sage test run --coverage
-
-# 5. 性能分析
-sage dev profile main.py --output profile.html
-```
+## � 示例命令组合
 
 ### 生产部署
 
 ```bash
-# 1. 打包应用
-sage deploy package . --output stream-analytics.sage
+# 1. 启动SAGE系统
+sage deploy start
 
-# 2. 验证包
-sage deploy validate stream-analytics.sage
+# 2. 检查集群状态
+sage cluster status
 
-# 3. 部署到集群
-sage job submit stream-analytics.sage --env production
+# 3. 启动作业管理器
+sage jobmanager start
 
-# 4. 监控部署
-sage job status <job-id>
-sage job logs <job-id> --follow
+# 4. 监控系统状态
+sage deploy status
 ```
 
 ### 运维监控
@@ -376,17 +341,18 @@ sage job logs <job-id> --follow
 ```bash
 # 1. 检查集群健康
 sage cluster status
-sage cluster resources
+sage deploy status
 
 # 2. 查看作业状态
-sage job list --filter running
-sage job metrics --all
+sage job list
+sage job status
 
-# 3. 性能分析
-sage profile cpu --all-jobs --duration 5m
+# 3. 系统诊断
+sage doctor check
 
-# 4. 导出日志
-sage logs export --output daily-logs.tar.gz --since 24h
+# 4. 查看Web界面
+sage web-ui start
+sage studio start
 ```
 
 ## 🔧 故障排除
@@ -395,29 +361,7 @@ sage logs export --output daily-logs.tar.gz --since 24h
 
 ```bash
 # 检查系统状态
-sage doctor
-
-# 网络连接测试
-sage network test
-
-# 配置验证
-sage config validate
-
-# 依赖检查
-sage dependencies check
-```
-
-### 调试工具
-
-```bash
-# 详细日志输出
-sage --verbose job submit my_app.py
-
-# 跟踪模式
-sage --trace job submit my_app.py
-
-# 调试信息
-sage --debug cluster status
+sage doctor check
 ```
 
 ## 📚 更多信息

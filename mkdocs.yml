@@ -126,7 +126,6 @@ nav:
       - 🔧 SAGE Core 层:
           - Core 概览: kernel/core/core_overview.md
           - 数据流编程模型: kernel/core/dataflow_model.md
-          - 流水线编排系统: kernel/core/pipeline_orchestration.md
           
           - API 模块:
               - Environments API: kernel/api/environments.md
@@ -166,8 +165,6 @@ nav:
           
       - 🔍 工具与调试:
           - CLI 工具: kernel/components/cli.md
-          - 调试工具: kernel/components/debugging_tools.md
-          - 监控仪表盘: kernel/components/monitoring_dashboard.md
           
       - ❓ 问题解决:
           - FAQ: kernel/faq.md
