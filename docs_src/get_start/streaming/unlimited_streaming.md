@@ -28,6 +28,8 @@ WordCount在无界流模式下展现了实时数据处理的魅力。与批处�
 
 ### 数据源定义
 
+以下示例来自 `examples/tutorials/core-api/wordcount_lambda_example.py`：
+
 ```python
 from sage.core.api.function.source_function import SourceFunction
 
@@ -67,7 +69,7 @@ def main():
     
     def update_word_count(words_with_count):
         """更新全局词汇计数"""
-        global word_counts, total_processed
+        nonlocal word_counts, total_processed
         word, count = words_with_count
         word_counts[word] += count
         total_processed += count
@@ -78,6 +80,8 @@ def main():
             for word, count in word_counts.most_common(10):
                 print(f"{word:20}: {count:3d}")
             print("=" * 50)
+        
+        return word
     
     # 构建流处理管道
     (env
@@ -95,8 +99,73 @@ def main():
         
         # 词汇统计
         .map(lambda word: (word, 1))                     # 转换为 (word, count) 格式
-        .print()                                         # 实时输出处理结果
+        .map(update_word_count)                          # 更新计数器
+        .sink(lambda x: None)                           # 确保数据流完整
     )
+    
+    print("🚀 Starting WordCount Example with Lambda Functions")
+    print("📝 Processing sentences and counting words...")
+    print("⏹️  Press Ctrl+C to stop")
+    
+    try:
+        # 运行流处理
+        env.submit()
+        time.sleep(60)  # 运行60秒以观察输出
+    except KeyboardInterrupt:
+        print("\n\n🛑 Stopping WordCount Example...")
+        print("\n📊 Final Word Count Results:")
+        print("=" * 60)
+        for word, count in word_counts.most_common():
+            print(f"{word:20}: {count:3d}")
+        print("=" * 60)
+        print(f"Total words processed: {total_processed}")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    main()
+```
+    
+    print("🚀 Starting Streaming WordCount Example")
+    
+    try:
+        # 启动流处理
+        env.submit()
+        
+        # 运行一段时间
+        time.sleep(20)
+        print(f"\n📊 Final Statistics: {total_processed} words processed")
+        
+    except KeyboardInterrupt:
+        print("\n⏹️ Stopping stream processing...")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    main()
+```
+
+### 关键技术要点
+
+#### 1. **持续数据流**
+```python
+def execute(self):
+    # 循环选择句子，模拟持续数据流
+    sentence = self.sentences[self.counter % len(self.sentences)]
+    self.counter += 1
+    return sentence
+```
+- 使用取模运算实现循环数据生成
+- 永不返回 `None`，保持数据流连续性
+
+#### 2. **实时状态更新**
+```python
+# 每处理10个词就打印一次统计结果
+if total_processed % 10 == 0:
+    print(f"=== Word Count Statistics (Total: {total_processed}) ===")
+```
+- 实时显示处理进度和统计结果
+- 提供即时反馈和监控
     
     print("🚀 Starting WordCount Example")
     
@@ -163,36 +232,130 @@ hello               :   1
 
 ---
 
-## 示例2：QA无界流处理
+---
 
-在WordCount实时统计展示了基础的流式数据处理后，我们来看一个更加实用的场景：实时问答系统。
+## 核心技术对比
+import time
 
-这个示例模拟了一个持续运行的AI助手，能够不断接收问题并实时生成回答。与批处理的离线问答不同，这里强调的是实时响应和持续服务能力。
+class SystemMetricsSource(SourceFunction):
+    """系统指标数据源 - 模拟持续的监控数据"""
+    def execute(self):
+        # 模拟系统指标
+        metrics = {
+            "timestamp": time.time(),
+            "cpu_usage": random.uniform(10, 90),
+            "memory_usage": random.uniform(30, 80),
+            "disk_io": random.uniform(0, 100),
+            "network_traffic": random.uniform(0, 1000)
+        }
+        return metrics
 
-### 数据源定义
+class AlertProcessor(MapFunction):
+    """告警处理器"""
+    def execute(self, data):
+        alerts = []
+        
+        if data["cpu_usage"] > 80:
+            alerts.append(f"🔥 CPU使用率过高: {data['cpu_usage']:.1f}%")
+        
+        if data["memory_usage"] > 75:
+            alerts.append(f"⚠️ 内存使用率过高: {data['memory_usage']:.1f}%")
+        
+        if alerts:
+            data["alerts"] = alerts
+        
+        return data
 
-基于实际的QA源设计，模拟持续的问答数据流：
+class MonitoringSink(SinkFunction):
+    """监控输出"""
+    def execute(self, data):
+        timestamp = time.strftime("%H:%M:%S", time.localtime(data["timestamp"]))
+        print(f"[{timestamp}] CPU: {data['cpu_usage']:.1f}% | MEM: {data['memory_usage']:.1f}%")
+        
+        if "alerts" in data:
+            for alert in data["alerts"]:
+                print(f"  🚨 {alert}")
+        
+        return data
+
+def monitoring_pipeline():
+    """系统监控流处理管道"""
+    env = LocalEnvironment("system_monitoring")
+    
+    (env
+        .from_source(SystemMetricsSource, delay=2.0)  # 每2秒采集一次
+        .map(AlertProcessor)
+        .sink(MonitoringSink)
+    )
+    
+    try:
+        print("📊 系统监控启动...")
+        env.submit()
+        time.sleep(60)  # 监控1分钟
+    except KeyboardInterrupt:
+        print("\n⏹️ 停止监控")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    monitoring_pipeline()
+```
+
+---
+
+## 核心技术对比
+
+### 有界流 vs 无界流
+
+| 特性 | 有界流（Batch） | 无界流（Streaming） |
+|------|----------------|-------------------|
+| **数据源** | BatchFunction | SourceFunction |
+| **结束条件** | 返回 `None` | 永不结束（除非异常） |
+| **状态管理** | 批量聚合 | 实时累积 |
+| **输出模式** | 最终结果 | 增量更新 |
+| **适用场景** | 离线分析、报告生成 | 实时监控、在线服务 |
+
+### 生命周期管理
 
 ```python
-from sage.core.api.function.source_function import SourceFunction
+# 无界流的典型生命周期
+try:
+    env.submit()          # 启动流处理
+    while True:           # 保持运行
+        time.sleep(1)
+except KeyboardInterrupt: # 优雅停止
+    print("Stopping...")
+finally:
+    env.close()           # 清理资源
+```
 
-class QASource(SourceFunction):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.questions = [
-            "什么是DNA的结构？",
-            "细胞分裂的过程是怎样的？",
-            "蛋白质的功能有哪些？", 
-            "基因表达是如何调控的？",
-            "细胞膜的组成和功能是什么？"
-        ]
-        self.counter = 0
+---
 
-    def execute(self):
-        # 循环产生问题，模拟持续的QA数据流
-        question = self.questions[self.counter % len(self.questions)]
-        self.counter += 1
-        return question
+## 最佳实践
+
+### 1. **数据源设计**
+- 实现适当的延迟控制（`delay`参数）
+- 处理异常和中断信号
+- 提供数据质量保证
+
+### 2. **状态管理**
+- 使用 `nonlocal` 或全局变量管理状态
+- 定期保存重要状态数据
+- 实现状态恢复机制
+
+### 3. **性能优化**
+- 控制数据生成速率
+- 使用批量处理减少开销
+- 实施背压控制
+
+### 4. **错误处理**
+- 实现健壮的异常处理
+- 提供优雅的停止机制
+- 记录详细的错误日志
+
+---
+
+### 知识检索组件
 ```
 
 ### 知识检索组件
@@ -347,10 +510,13 @@ env.register_service("memory_service", memory_service_factory)
 
 无界流处理通过**持续数据源**、**链式转换**和**状态管理**，支持实时分析与交互式应用。核心在于正确使用 `.from_source()` 启动管道，通过 `submit()` 执行，通过中断或 `close()` 停止。
 
-关键特点：
+### 关键特点
+
 - **持续性**：数据源永不返回 `None`，保持数据流持续
 - **实时性**：支持实时状态更新和结果输出
 - **可控性**：通过 `delay` 参数控制数据产生频率
 - **服务集成**：支持复杂的服务依赖和组件协作
 
-适用场景：实时监控、流式分析、在线推理、交互式AI应用等需要持续处理数据流的场景。
+### 适用场景
+
+实时监控、流式分析、在线推理、交互式AI应用等需要持续处理数据流的场景。
