@@ -150,7 +150,6 @@ if __name__ == '__main__':
         print("知识库已成功加载，可运行检索/问答脚本")
     else:
         print("知识库加载失败")
-```
     
     print("✅ Chroma知识库构建完成")
     return retriever
