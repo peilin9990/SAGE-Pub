@@ -47,26 +47,37 @@ class RAGStep(BaseFunction):
 
 - 运行时支持将同一份流图提交到分布式环境执行（仓库示例展示了远程环境的使用）
 - 在分布式部署中：
-  - 将 GPU 服务（如 vLLM、VDB/SAGE-DB）部署到具备 GPU 的节点
-  - 数据流通过 Service API 访问这些服务，服务进程自行绑定并使用 GPU
-  - 通过仪表盘监控 GPU 与任务状态，结合批处理/异步，提高吞吐
+
+    - 将 GPU 服务（如 vLLM、VDB/SAGE-DB）部署到具备 GPU 的节点
+    - 数据流通过 Service API 访问这些服务，服务进程自行绑定并使用 GPU
+    - 通过仪表盘监控 GPU 与任务状态，结合批处理/异步，提高吞吐
 
 ## 性能与工程建议
 
 - 服务粒度：
-  - 将 GPU 密集型能力统一封装为长生命周期服务，避免在算子内频繁初始化 GPU 上下文
+
+    - 将 GPU 密集型能力统一封装为长生命周期服务，避免在算子内频繁初始化 GPU 上下文
+
 - 批处理与异步：
-  - 在算子内使用 self.call_service_async 发起检索/推理批请求，减少阻塞
-  - 配合 SAGE-DB 的 numpy 批路径（add/search）大幅提升吞吐
+
+    - 在算子内使用 self.call_service_async 发起检索/推理批请求，减少阻塞
+    - 配合 SAGE-DB 的 numpy 批路径（add/search）大幅提升吞吐
+
 - 数据搬运：
-  - 尽量合并请求，避免频繁的小数据量往返带来的 PCIe/NVLink 抖动
+
+    - 尽量合并请求，避免频繁的小数据量往返带来的 PCIe/NVLink 抖动
+
 - 监控与扩容：
-  - 使用仪表盘观测 GPU 利用率与延迟
-  - 通过服务分片（shard）与副本（replica）扩展多 GPU 并发
+
+    - 使用仪表盘观测 GPU 利用率与延迟
+    - 通过服务分片（shard）与副本（replica）扩展多 GPU 并发
+
 - 容错与降级：
-  - 服务不可用或 GPU 饱和时，服务层可降级到 CPU/其他后端；数据流逻辑保持不变
+
+    - 服务不可用或 GPU 饱和时，服务层可降级到 CPU/其他后端；数据流逻辑保持不变
 
 参考：
+
 - Engine/RemoteEnvironment 的分布式示例（仓库 README）
 - GPU 资源监控与仪表盘（仓库 README）
 - SAGE-DB GPU/索引配置（middleware/components/sage_db.md）

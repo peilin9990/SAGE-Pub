@@ -69,5 +69,6 @@ class ConversationMemory(BaseFunction):
 ```
 
 备注：
+
 - 以上调用方式基于 BaseFunction 的 call_service 语法糖，符合当前仓库实现。
 - 如果需要异步：使用 self.call_service_async["memory_service"].method(...).result()

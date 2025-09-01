@@ -113,14 +113,14 @@ SAGE-DB 组件通常采用“Python API/服务封装 → 本地/加速绑定 →
 
 ```mermaid
 flowchart TB
-  API[Python API/服务封装\n(VDB Service/Memory Service 间接使用)]
-  Bind[本地扩展/加速绑定\n(若存在)]
+  API["Python API/服务封装\n(VDB Service/Memory Service 间接使用)"]
+  Bind["本地扩展/加速绑定\n(若存在)"]
   subgraph Core[Core Engine]
     Index[Index Engine]
     Query[Query Engine]
     Storage[Storage Engine]
   end
-  HW[硬件: 内存/磁盘/GPU/专用库]
+  HW["硬件: 内存/磁盘/GPU/专用库"]
 
   API --> Bind --> Core --> HW
 ```
@@ -138,22 +138,22 @@ flowchart TB
 
 1) 向量集合与写入
 
-- add_vectors(vectors, ids?, metadata?)
-- update_vectors(vectors, ids?)（若实现提供）
-- delete_vectors(ids?)（若实现提供）
-- create_collection(name, params?) / drop_collection(name)（若实现提供）
+- add_vectors(vectors, ids, metadata)
+- update_vectors(vectors, ids)
+- delete_vectors(ids)
+- create_collection(name, params) / drop_collection(name)
 
 2) 检索能力
 
-- search(query, top_k, filters?)：相似度检索
-- batch_search(queries, top_k, filters?)（若实现提供）
-- get_vector(id)/get_metadata(id)（若实现提供）
+- search(query, top_k, filters)：相似度检索
+- batch_search(queries, top_k, filters)
+- get_vector(id)/get_metadata(id)
 
 3) 维护与工具
 
 - stats()/info()：集合/引擎状态
-- persist()/load()：持久化/加载（若实现提供）
-- compact()/rebuild_index()：索引维护（若实现提供）
+- persist()/load()：持久化/加载
+- compact()/rebuild_index()：索引维护
 
 对上建议：
 

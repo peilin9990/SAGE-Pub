@@ -6,6 +6,7 @@ Neuromem 是长期记忆（Long-term Memory）的组件实现，Memory Service �
 - 与服务的关系：Memory Service = Neuromem 的服务化封装；Function 中通过 self.call_service["memory_service"] 调用
 
 本页包含：
+
 - 服务示例（如何在 Function 中调用由 Neuromem 提供的 Memory Service）
 - 组件设计（Neuromem 的核心分层与关键子模块）
 - 部分组件层 API（按模块粒度与稳定调用面汇总）
@@ -66,6 +67,7 @@ class ConversationMemory(BaseFunction):
 ```
 
 要点：
+
 - Function/Service 中统一使用 self.call_service / self.call_service_async 访问
 - Memory Service 对接向量（VDB）、KV、Graph 等后端，Function 无需关心内部细节
 
@@ -78,21 +80,21 @@ Neuromem 采用“编排服务 + 基础集合 + 引擎/后端”的分层方式�
 ```mermaid
 flowchart TB
   App[调用方：Function/Service]
-  MS[Memory Service（服务封装）]
+  MS["Memory Service（服务封装）"]
   subgraph Neuromem[Neuromem 组件]
-    MM[MemoryManager\n(核心管理/路由)]
+    MM["MemoryManager (核心管理/路由)"]
     subgraph Collections[Memory Collection 层]
-      BC[base_collection.py\n（基础抽象）]
+      BC["base_collection.py（基础抽象）"]
       KVC[kv_collection.py]
       VDBC[vdb_collection.py]
       GC[graph_collection.py]
     end
-    subgraph Engines[引擎/后端适配]
-      MD[storage_engine/metadata_storage.py]
-      GI[search_engine/graph_index/]
-      HI[search_engine/hybrid_index/]
-      KV[kv（在对应服务中实现）]
-      VDB[vdb（在对应服务中实现）]
+    subgraph Engines["引擎/后端适配"]
+      MD["storage_engine/metadata_storage.py"]
+      GI["search_engine/graph_index/"]
+      HI["search_engine/hybrid_index/"]
+      KV["kv（在对应服务中实现）"]
+      VDB["vdb（在对应服务中实现）"]
     end
   end
   Stores[实际后端：KV / VDB / Graph 等]
