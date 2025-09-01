@@ -13,43 +13,55 @@ SAGE流处理框架为RAG系统提供了强大的技术基础：
 
 ## Naive RAG Pipeline示例
 
-我们将通过 SAGE 中预定义的算子向您展示一个完整的 Naive RAG 查询处理流水线的创建：
+我们将通过 SAGE 中预定义的算子向您展示一个完整的 Naive RAG 查询处理流水线的创建。以下代码来自 `examples/rag/qa_dense_retrieval_chroma.py`：
 
 ```python
+import time
+import os
+from dotenv import load_dotenv
+import yaml
 from sage.core.api.local_environment import LocalEnvironment
-from sage.libs.io_utils.source import FileSource
 from sage.libs.io_utils.sink import TerminalSink
-from sage.libs.rag.retriever import DenseRetriever
-from sage.libs.rag.promptor import QAPromptor
+from sage.libs.io_utils.batch import JSONLBatch
 from sage.libs.rag.generator import OpenAIGenerator
+from sage.libs.rag.promptor import QAPromptor
+from sage.libs.rag.retriever import ChromaRetriever
 from sage.common.utils.config.loader import load_config
 
-def naive_rag_pipeline():
-    """创建Naive RAG处理管道"""
-    env = LocalEnvironment("naive_rag")
+def pipeline_run(config: dict) -> None:
+    """
+    创建并运行 ChromaDB 专用 RAG 数据处理管道
+
+    Args:
+        config (dict): 包含各模块配置的配置字典。
+    """
     
-    # 加载配置
-    config = load_config("examples/config/config.yaml")
+    print("=== 启动基于 ChromaDB 的 RAG 问答系统 ===")
+    print("配置信息:")
+    print(f"  - 源文件: {config['source']['data_path']}")
+    print(f"  - 向量维度: {config['retriever']['dimension']}")
+    print(f"  - Top-K: {config['retriever']['top_k']}")
+    print(f"  - 集合名称: {config['retriever']['chroma']['collection_name']}")
+    print(f"  - 嵌入模型: {config['retriever']['embedding']['method']}")
+
+    env = LocalEnvironment()
     
-    # 构建RAG处理流程
     (env
-        .from_source(FileSource, config["source"])
-        .map(DenseRetriever, config["retriever"])
+        .from_batch(JSONLBatch, config["source"])
+        .map(ChromaRetriever, config["retriever"])
         .map(QAPromptor, config["promptor"])
         .map(OpenAIGenerator, config["generator"]["vllm"])
         .sink(TerminalSink, config["sink"])
     )
-    
-    # 提交并运行
-    env.submit()
-    
-    # 等待处理完成
-    import time
-    time.sleep(10)
+
+    print("正在提交并运行管道...")
+    env.submit(autostop=True)
     env.close()
+    print("=== RAG 问答系统运行完成 ===")
 
 if __name__ == '__main__':
-    naive_rag_pipeline()
+    config = load_config("../config/config_qa_chroma.yaml")
+    pipeline_run(config)
 ```
 
 在完成了基础的 Naive RAG Pipeline 构建后，接下来我们需要准备离线知识库，以便为查询提供可检索的信息支持。以下是知识库构建的关键步骤与示例代码：
@@ -58,46 +70,87 @@ if __name__ == '__main__':
 
 ### 1. 构建向量索引
 
-使用SAGE提供的Chroma索引构建工具：
+使用SAGE提供的Chroma索引构建工具，代码来自 `examples/rag/build_chroma_index.py`：
 
 ```python
+#!/usr/bin/env python3
 """
-使用Chroma构建向量索引的示例
+知识库预加载脚本（SAGE版）
+使用 TextLoader 加载文本，CharacterSplitter 分块，写入 ChromaDB。
 """
 import os
-from sage.libs.rag.retriever import ChromaRetriever
-from sage.middleware.utils.embedding.embedding_api import apply_embedding_model
-from sage.common.utils.config.loader import load_config
+import sys
+import chromadb
+from sentence_transformers import SentenceTransformer
+from sage.libs.rag.document_loaders import TextLoader
+from sage.libs.rag.chunk import CharacterSplitter
 
-def build_chroma_index():
-    """构建Chroma向量索引"""
-    
-    # 加载配置
-    config_path = os.path.join(os.path.dirname(__file__), "..", "config", "config_qa_chroma.yaml")
-    config = load_config(config_path)
-    
-    # 初始化嵌入模型
-    embedding_model = apply_embedding_model("default")
-    
-    # 准备知识数据
-    knowledge_data = [
-        "机器学习是人工智能的一个分支，通过算法让计算机从数据中自动学习模式。",
-        "深度学习使用多层神经网络来模拟人脑的学习过程，特别擅长处理图像和语音。",
-        "自然语言处理是人工智能的重要应用领域，涉及文本理解、生成和翻译等任务。",
-        "强化学习通过与环境交互来学习最优策略，在游戏和机器人控制中应用广泛。",
-        "计算机视觉使机器能够理解和处理视觉信息，包括图像识别、目标检测等。"
+def load_knowledge_to_chromadb():
+    # 配置参数
+    knowledge_file = "../data/qa_knowledge_base.txt"
+    persistence_path = "./chroma_qa_database"
+    collection_name = "qa_knowledge_base"
+
+    print(f"=== 预加载知识库到 ChromaDB ===")
+    print(f"文件: {knowledge_file} | DB: {persistence_path} | 集合: {collection_name}")
+
+    loader = TextLoader(knowledge_file)
+    document = loader.load()
+    print(f"已加载文本，长度: {len(document['content'])}")
+
+    splitter = CharacterSplitter({"separator": "\n\n"})
+    chunks = splitter.execute(document)
+    print(f"分块数: {len(chunks)}")
+    chunk_docs = [
+        {"content": chunk, "metadata": {"chunk": idx+1, "source": knowledge_file}}
+        for idx, chunk in enumerate(chunks)
     ]
+
+    # 初始化嵌入模型
+    print("\n加载嵌入模型...")
+    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    print("初始化ChromaDB...")
+    client = chromadb.PersistentClient(path=persistence_path)
+    try:
+        client.delete_collection(name=collection_name)
+    except:
+        pass
     
-    # 使用ChromaRetriever构建索引
-    retriever = ChromaRetriever(config["retriever"])
+    collection = client.create_collection(name=collection_name)
+    print(f"集合已创建")
     
-    # 向索引中添加文档
-    for i, text in enumerate(knowledge_data):
-        retriever.add_document(
-            document_id=f"doc_{i}",
-            text=text,
-            metadata={"source": "knowledge_base", "topic": "AI/ML"}
-        )
+    texts = [c["content"] for c in chunk_docs]
+    embeddings = model.encode(texts).tolist()
+    ids = [f"chunk_{i}" for i in range(len(chunk_docs))]
+    metadatas = [c["metadata"] for c in chunk_docs]
+    
+    collection.add(
+        embeddings=embeddings,
+        documents=texts,
+        metadatas=metadatas,
+        ids=ids
+    )
+    
+    print(f"✓ 已添加 {len(chunk_docs)} 个文本块")
+    print(f"✓ 数据库文档数: {collection.count()}")
+    
+    # 测试检索
+    test_query = "什么是ChromaDB"
+    query_embedding = model.encode([test_query]).tolist()
+    results = collection.query(query_embeddings=query_embedding, n_results=3)
+    print(f"检索测试: {test_query}")
+    for i, doc in enumerate(results['documents'][0]):
+        print(f"  {i+1}. {doc[:100]}...")
+    
+    print("=== 预加载完成 ===")
+    return True
+
+if __name__ == '__main__':
+    if load_knowledge_to_chromadb():
+        print("知识库已成功加载，可运行检索/问答脚本")
+    else:
+        print("知识库加载失败")
+```
     
     print("✅ Chroma知识库构建完成")
     return retriever

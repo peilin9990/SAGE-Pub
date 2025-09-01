@@ -18,31 +18,34 @@
 
 ### 批处理模式
 
+以下示例来自 `examples/tutorials/hello_world.py`：
+
 ```python
 from sage.core.api.local_environment import LocalEnvironment
+from sage.core.api.function.sink_function import SinkFunction
 from sage.core.api.function.batch_function import BatchFunction
 from sage.core.api.function.map_function import MapFunction
-from sage.core.api.function.sink_function import SinkFunction
+from sage.common.utils.logging.custom_logger import CustomLogger
 
-# 批处理数据源：生成10条"Hello, World!"字符串
+# 批处理数据源：作用是生成10条"Hello, World!"字符串
 class HelloBatch(BatchFunction):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.counter = 0
-        self.max_count = 10
+        self.max_count = 10     # 生成10个数据包后返回None
     
     def execute(self):
         if self.counter >= self.max_count:
-            return None  # 返回None表示批处理完成
+            return None         # 返回None表示批处理完成
         self.counter += 1
         return f"Hello, World! #{self.counter}"
 
-# 转换函数：将文本转为大写
+# 简单的 MapFunction，将内容转大写
 class UpperCaseMap(MapFunction):
     def execute(self, data):
         return data.upper()
 
-# 输出函数：打印结果
+# 简单 SinkFunction，直接打印结果
 class PrintSink(SinkFunction):
     def execute(self, data):
         print(data)
@@ -50,26 +53,30 @@ class PrintSink(SinkFunction):
 def main():
     env = LocalEnvironment("Hello_World")
     
-    # 构建数据处理流水线
+    # 批处理源 -> map -> sink
     env.from_batch(HelloBatch).map(UpperCaseMap).sink(PrintSink)
-    
-    # 提交并运行
+
     env.submit(autostop=True)
     print("Hello World 批处理示例结束")
 
 if __name__ == "__main__":
+    # 关闭日志输出
+    CustomLogger.disable_global_console_debug()
     main()
 ```
 
 ### 流式处理模式
 
+以下示例来自 `examples/tutorials/stream_mode/hello_streaming_world.py`：
+
 ```python
 from sage.core.api.local_environment import LocalEnvironment
+from sage.core.api.function.sink_function import SinkFunction
 from sage.core.api.function.source_function import SourceFunction
 from sage.core.api.function.map_function import MapFunction
-from sage.core.api.function.sink_function import SinkFunction
+from sage.common.utils.logging.custom_logger import CustomLogger
 
-# 流式数据源：持续生成数据
+# 流式数据源：从BatchFunction变成SourceFunction
 class HelloStreaming(SourceFunction):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -90,24 +97,25 @@ class PrintSink(SinkFunction):
 def main():
     env = LocalEnvironment("hello_streaming_world")
 
-    # 构建流式处理管道
+    # 流式源，从 from_batch 变成 from_source
     env.from_source(HelloStreaming).map(UpperCaseMap).sink(PrintSink)
 
     try:
-        print("开始流式处理...")
+        print("Waiting for streaming processing to complete...")
         env.submit()
-        
-        # 暂停主程序，因为流式处理是异步的
+
+        # 暂停主程序，因为在LocalEnvironment下，流式处理是异步的
         from time import sleep
-        sleep(5)  # 运行5秒后停止
+        sleep(1)
 
     except KeyboardInterrupt:
         print("停止运行")
     finally:
-        env.close()
         print("Hello Streaming World 流式处理示例结束")
 
 if __name__ == "__main__":
+    # 关闭日志输出
+    CustomLogger.disable_global_console_debug()
     main()
 ```
 

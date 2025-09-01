@@ -28,6 +28,8 @@ WordCount在无界流模式下展现了实时数据处理的魅力。与批处�
 
 ### 数据源定义
 
+以下示例来自 `examples/tutorials/core-api/wordcount_lambda_example.py`：
+
 ```python
 from sage.core.api.function.source_function import SourceFunction
 
@@ -59,24 +61,25 @@ import time
 
 def main():
     # 创建环境
-    env = LocalEnvironment("wordcount_streaming")
+    env = LocalEnvironment("wordcount_example")
     
     # 全局词汇计数器
     word_counts = Counter()
     total_processed = 0
     
-    def update_word_count(word):
+    def update_word_count(words_with_count):
         """更新全局词汇计数"""
         nonlocal word_counts, total_processed
-        word_counts[word] += 1
-        total_processed += 1
+        word, count = words_with_count
+        word_counts[word] += count
+        total_processed += count
         
         # 每处理10个词就打印一次统计结果
         if total_processed % 10 == 0:
             print(f"\n=== Word Count Statistics (Total: {total_processed}) ===")
-            for word, count in word_counts.most_common(5):
-                print(f"{word:15}: {count:3d}")
-            print("=" * 40)
+            for word, count in word_counts.most_common(10):
+                print(f"{word:20}: {count:3d}")
+            print("=" * 50)
         
         return word
     
@@ -95,9 +98,33 @@ def main():
         .map(lambda word: word.replace(",", "").replace(".", ""))  # 去除标点
         
         # 词汇统计
-        .map(update_word_count)                          # 更新计数并返回词
+        .map(lambda word: (word, 1))                     # 转换为 (word, count) 格式
+        .map(update_word_count)                          # 更新计数器
         .sink(lambda x: None)                           # 确保数据流完整
     )
+    
+    print("🚀 Starting WordCount Example with Lambda Functions")
+    print("📝 Processing sentences and counting words...")
+    print("⏹️  Press Ctrl+C to stop")
+    
+    try:
+        # 运行流处理
+        env.submit()
+        time.sleep(60)  # 运行60秒以观察输出
+    except KeyboardInterrupt:
+        print("\n\n🛑 Stopping WordCount Example...")
+        print("\n📊 Final Word Count Results:")
+        print("=" * 60)
+        for word, count in word_counts.most_common():
+            print(f"{word:20}: {count:3d}")
+        print("=" * 60)
+        print(f"Total words processed: {total_processed}")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    main()
+```
     
     print("🚀 Starting Streaming WordCount Example")
     
@@ -205,119 +232,9 @@ hello               :   1
 
 ---
 
-## 示例2：终端交互式QA
+---
 
-在WordCount实时统计展示了基础的流式数据处理后，我们来看一个更加实用的场景：终端交互式问答系统。
-
-这个示例展示了如何构建一个持续运行的AI助手，能够实时接收用户输入并生成回答。
-
-### 交互式数据源
-
-```python
-from sage.core.api.function.source_function import SourceFunction
-
-class TerminalInputSource(SourceFunction):
-    """终端输入源 - 实时接收用户输入"""
-    def execute(self, data=None):
-        try:
-            print("🤔 请输入您的问题（按Ctrl+C退出）:")
-            user_input = input(">>> ").strip()
-            if user_input:
-                return user_input
-            return self.execute(data)  # 递归调用直到有效输入
-        except (EOFError, KeyboardInterrupt):
-            raise  # 向上传播中断信号
-```
-
-### QA处理管道
-
-```python
-from sage.core.api.local_environment import LocalEnvironment
-from sage.core.api.function.map_function import MapFunction
-from sage.core.api.function.sink_function import SinkFunction
-from sage.libs.rag.generator import OpenAIGenerator
-from sage.libs.rag.promptor import QAPromptor
-import time
-
-class QuestionProcessor(MapFunction):
-    """问题预处理器"""
-    def execute(self, data):
-        if not data or data.strip() == "":
-            return None
-        return data.strip()
-
-class AnswerFormatter(MapFunction):
-    """回答格式化器"""
-    def execute(self, data):
-        if isinstance(data, tuple) and len(data) >= 2:
-            question, answer = data[0], data[1]
-            return {
-                "question": question,
-                "answer": answer,
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-            }
-        return {"answer": str(data), "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}
-
-class ConsoleSink(SinkFunction):
-    """控制台输出"""
-    def execute(self, data):
-        if isinstance(data, dict):
-            print(f"\n🤖 {data.get('answer', 'N/A')}\n")
-        else:
-            print(f"\n🤖 {data}\n")
-        return data
-
-def interactive_qa_pipeline():
-    """创建交互式QA处理管道"""
-    env = LocalEnvironment("interactive_qa")
-
-    # 配置
-    config = {
-        "promptor": {"platform": "local"},
-        "generator": {
-            "vllm": {
-                "api_key": "your-api-key",
-                "method": "openai",
-                "model_name": "gpt-3.5-turbo",
-                "base_url": "https://api.openai.com/v1"
-            }
-        }
-    }
-
-    print("💬 QA助手已启动！输入问题后按回车")
-
-    try:
-        # 构建流处理管道
-        (env
-            .from_source(TerminalInputSource)
-            .map(QuestionProcessor)
-            .map(QAPromptor, config["promptor"])
-            .map(OpenAIGenerator, config["generator"]["vllm"])
-            .map(AnswerFormatter)
-            .sink(ConsoleSink)
-        )
-
-        # 启动管道
-        env.submit()
-
-        # 保持程序运行
-        while True:
-            time.sleep(1)
-
-    except KeyboardInterrupt:
-        print("\n👋 感谢使用，再见！")
-    finally:
-        env.close()
-
-if __name__ == "__main__":
-    interactive_qa_pipeline()
-```
-
-### 流式监控示例
-
-```python
-from sage.core.api.function.source_function import SourceFunction
-import random
+## 核心技术对比
 import time
 
 class SystemMetricsSource(SourceFunction):
@@ -438,23 +355,7 @@ finally:
 
 ---
 
-## 小结
-
-无界流处理通过**持续数据源**、**实时状态更新**和**增量输出**机制，实现**永不停歇**、**实时响应**的流式数据处理能力。
-
-关键特点：
-- **实时性**：数据到达即处理，延迟极低
-- **持续性**：7x24小时不间断运行
-- **增量式**：状态实时更新，提供即时反馈
-- **可扩展**：支持分布式部署和水平扩展
-- **交互性**：支持用户实时交互和在线服务
-
-适用场景：实时监控、在线服务、交互式应用、流式数据分析、IoT数据处理等需要实时响应的场景。
-
----
-        适用场景：实时监控、在线服务、交互式应用、流式数据分析、IoT数据处理等需要实时响应的场景。
-
----
+### 知识检索组件
 ```
 
 ### 知识检索组件
@@ -609,10 +510,13 @@ env.register_service("memory_service", memory_service_factory)
 
 无界流处理通过**持续数据源**、**链式转换**和**状态管理**，支持实时分析与交互式应用。核心在于正确使用 `.from_source()` 启动管道，通过 `submit()` 执行，通过中断或 `close()` 停止。
 
-关键特点：
+### 关键特点
+
 - **持续性**：数据源永不返回 `None`，保持数据流持续
 - **实时性**：支持实时状态更新和结果输出
 - **可控性**：通过 `delay` 参数控制数据产生频率
 - **服务集成**：支持复杂的服务依赖和组件协作
 
-适用场景：实时监控、流式分析、在线推理、交互式AI应用等需要持续处理数据流的场景。
+### 适用场景
+
+实时监控、流式分析、在线推理、交互式AI应用等需要持续处理数据流的场景。

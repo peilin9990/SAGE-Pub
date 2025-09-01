@@ -24,10 +24,13 @@ WordCount（词频统计）是大数据处理领域的经典示例，它通过�
 
 ### 数据源定义
 
+以下示例来自 `examples/tutorials/core-api/wordcount_batch_example.py`：
+
 ```python
 from sage.core.api.function.batch_function import BatchFunction
 
 class TextDataBatch(BatchFunction):
+    """文本数据批处理源 - 提供固定的文本数据集"""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.sentences = [
@@ -40,9 +43,10 @@ class TextDataBatch(BatchFunction):
         self.counter = 0
 
     def execute(self):
+        """返回下一个句子，如果没有更多句子则返回None"""
         if self.counter >= len(self.sentences):
             return None  # 返回None表示批处理完成
-        
+
         sentence = self.sentences[self.counter]
         self.counter += 1
         return sentence
@@ -53,13 +57,16 @@ class TextDataBatch(BatchFunction):
 ```python
 from sage.core.api.local_environment import LocalEnvironment
 from collections import Counter
-import time
 
 def main():
-    # 创建本地执行环境
+    """运行有界流WordCount示例"""
+    # 创建本地环境
     env = LocalEnvironment("batch_wordcount")
+    
+    # 设置日志级别为WARNING以减少输出噪音
+    env.set_console_log_level("WARNING")
 
-    # 准备状态管理
+    # 全局词汇计数器
     word_counts = Counter()
     total_processed = 0
 
@@ -71,28 +78,49 @@ def main():
         total_processed += count
         return words_with_count
 
-        # 批处理源 -> map -> sink
-        env.from_batch(TextDataBatch).map(UpperCaseMap).sink(PrintSink)
+    # 构建批处理管道
+    result = (env
+        .from_batch(TextDataBatch)                        # 批数据源
 
-        print("🚀 Starting Batch WordCount Example")
+        # 数据清洗和预处理
+        .map(lambda sentence: sentence.lower())           # 转小写
+        .map(lambda sentence: sentence.strip())           # 去除首尾空白
+        .filter(lambda sentence: len(sentence) > 0)       # 过滤空字符串
 
-        try:
-            # 提交并运行批处理作业
-            env.submit(autostop=True)
-            time.sleep(2)  # 等待批处理完成
+        # 分词处理
+        .flatmap(lambda sentence: sentence.split())       # 按空格分词
+        .filter(lambda word: len(word) > 2)               # 过滤长度小于3的词
+        .map(lambda word: word.replace(",", "").replace(".", ""))  # 去除标点
 
-            # 打印最终统计结果（简化版，因为使用了链式调用）
-            print("\n📊 Batch Processing Completed")
-            print("=" * 50)
-            print(f"✅ All sentences processed successfully")
+        # 词汇统计
+        .map(lambda word: (word, 1))                      # 转换为(word, count)格式
+        .map(update_word_count)                           # 更新计数器
+        .sink(lambda x: None)                            # 添加sink确保数据流完整
+    )
 
-        except Exception as e:
-            print(f"❌ 批处理执行失败: {str(e)}")
-        finally:
-            env.close()
+    print("🚀 Starting Batch WordCount Example")
 
-    if __name__ == "__main__":
-        main()
+    try:
+        # 提交并运行批处理作业
+        env.submit()
+        import time
+        time.sleep(2)  # wait for batch processing to complete
+
+        # 打印最终统计结果
+        print("\n📊 Final Word Count Results:")
+        print("=" * 60)
+        for word, count in word_counts.most_common():
+            print(f"{word:20}: {count:3d}")
+        print("=" * 60)
+        print(f"Total words processed: {total_processed}")
+
+    except Exception as e:
+        print(f"❌ 批处理执行失败: {str(e)}")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    main()
 ```
 
 ### 使用Lambda函数的简化实现
