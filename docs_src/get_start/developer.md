@@ -52,7 +52,7 @@ git clone git@github.com:intellistream/SAGE.git
 
 ## *C*. 验证安装 (Verify Installation)
 
-执行 SAGE 目录下的 `hello_world.py` 文件：
+执行 SAGE 目录下的 [`hello_world.py`](https://github.com/intellistream/SAGE/blob/main/examples/tutorials/hello_world.py) 文件：
 
 ```bash
 python examples/tutorials/hello_world.py

@@ -24,7 +24,7 @@ WordCount（词频统计）是大数据处理领域的经典示例，它通过�
 
 ### 数据源定义
 
-以下示例来自 `examples/tutorials/core-api/wordcount_batch_example.py`：
+以下示例来自 [`examples/tutorials/core-api/wordcount_batch_example.py`](https://github.com/intellistream/SAGE/blob/main/examples/tutorials/core-api/wordcount_batch_example.py)：
 
 ```python
 from sage.core.api.function.batch_function import BatchFunction
@@ -257,7 +257,7 @@ def rag_batch_pipeline():
     # 配置
     config = {
         "source": {
-            "data_path": "examples/data/sample/question.txt"
+            "data_path": "[examples/data/sample/question.txt](https://github.com/intellistream/SAGE/blob/main/examples/data/sample/question.txt)"
         },
         "promptor": {
             "platform": "local"

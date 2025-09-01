@@ -18,7 +18,7 @@
 
 ### 批处理模式
 
-以下示例来自 `examples/tutorials/hello_world.py`：
+以下示例来自 [`examples/tutorials/hello_world.py`](https://github.com/intellistream/SAGE/blob/main/examples/tutorials/hello_world.py)：
 
 ```python
 from sage.core.api.local_environment import LocalEnvironment
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
 ### 流式处理模式
 
-以下示例来自 `examples/tutorials/stream_mode/hello_streaming_world.py`：
+以下示例来自 [`examples/tutorials/stream_mode/hello_streaming_world.py`](https://github.com/intellistream/SAGE/blob/main/examples/tutorials/stream_mode/hello_streaming_world.py)：
 
 ```python
 from sage.core.api.local_environment import LocalEnvironment
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
 ### 📘 配置说明
 
-每个 Operator 的运行需传入 config 参数，你可在项目中的 `examples/config/` 文件夹中找到示例配置文件。
+每个 Operator 的运行需传入 config 参数，你可在项目中的 [`examples/config/`](https://github.com/intellistream/SAGE/tree/main/examples/config) 文件夹中找到示例配置文件。
 
 ### 📘 分布式执行（Remote）
 

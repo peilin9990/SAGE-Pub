@@ -28,7 +28,7 @@ WordCount在无界流模式下展现了实时数据处理的魅力。与批处�
 
 ### 数据源定义
 
-以下示例来自 `examples/tutorials/core-api/wordcount_lambda_example.py`：
+以下示例来自 [`examples/tutorials/core-api/wordcount_lambda_example.py`](https://github.com/intellistream/SAGE/blob/main/examples/tutorials/core-api/wordcount_lambda_example.py)：
 
 ```python
 from sage.core.api.function.source_function import SourceFunction
@@ -322,21 +322,25 @@ finally:
 ## 最佳实践
 
 ### 1. **数据源设计**
+
 - 实现适当的延迟控制（`delay`参数）
 - 处理异常和中断信号
 - 提供数据质量保证
 
 ### 2. **状态管理**
+
 - 使用 `nonlocal` 或全局变量管理状态
 - 定期保存重要状态数据
 - 实现状态恢复机制
 
 ### 3. **性能优化**
+
 - 控制数据生成速率
 - 使用批量处理减少开销
 - 实施背压控制
 
 ### 4. **错误处理**
+
 - 实现健壮的异常处理
 - 提供优雅的停止机制
 - 记录详细的错误日志

@@ -13,7 +13,7 @@ SAGE流处理框架为RAG系统提供了强大的技术基础：
 
 ## Naive RAG Pipeline示例
 
-我们将通过 SAGE 中预定义的算子向您展示一个完整的 Naive RAG 查询处理流水线的创建。以下代码来自 `examples/rag/qa_dense_retrieval_chroma.py`：
+我们将通过 SAGE 中预定义的算子向您展示一个完整的 Naive RAG 查询处理流水线的创建。以下代码来自 [`examples/rag/qa_dense_retrieval_chroma.py`](https://github.com/intellistream/SAGE/blob/main/examples/rag/qa_dense_retrieval_chroma.py)：
 
 ```python
 import time
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
 ### 1. 构建向量索引
 
-使用SAGE提供的Chroma索引构建工具，代码来自 `examples/rag/build_chroma_index.py`：
+使用SAGE提供的Chroma索引构建工具，代码来自 [`examples/rag/build_chroma_index.py`](https://github.com/intellistream/SAGE/blob/main/examples/rag/build_chroma_index.py)：
 
 ```python
 #!/usr/bin/env python3
@@ -199,7 +199,7 @@ def chroma_rag_pipeline():
     
     # 配置
     config = {
-        "source": {"data_path": "examples/data/sample/question.txt"},
+        "source": {"data_path": "[examples/data/sample/question.txt](https://github.com/intellistream/SAGE/blob/main/examples/data/sample/question.txt)"},
         "retriever": {
             "platform": "local",
             "chroma": {
@@ -304,7 +304,7 @@ def distributed_rag_pipeline():
     )
     
     config = {
-        "source": {"data_path": "examples/data/sample/question.txt"},
+        "source": {"data_path": "[examples/data/sample/question.txt](https://github.com/intellistream/SAGE/blob/main/examples/data/sample/question.txt)"},
         "retriever": {
             "platform": "local",
             "milvus": {
@@ -481,7 +481,7 @@ pipeline:
   description: "基础RAG问答管道"
 
 source:
-  data_path: "examples/data/sample/question.txt"
+  data_path: "[examples/data/sample/question.txt](https://github.com/intellistream/SAGE/blob/main/examples/data/sample/question.txt)"
   platform: "local"
 
 retriever:

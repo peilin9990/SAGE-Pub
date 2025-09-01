@@ -19,7 +19,7 @@ LLM QA（大语言模型问答）是直接使用大语言模型进行问答的�
 
 ### 终端交互式QA
 
-这个示例展示如何构建一个终端交互式的问答系统，代码来自 `examples/rag/qa_without_retrieval.py`：
+这个示例展示如何构建一个终端交互式的问答系统，代码来自 [`examples/rag/qa_without_retrieval.py`](https://github.com/intellistream/SAGE/blob/main/examples/rag/qa_without_retrieval.py)：
 
 ```python
 """
