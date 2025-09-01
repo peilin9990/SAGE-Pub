@@ -59,25 +59,26 @@ import time
 
 def main():
     # 创建环境
-    env = LocalEnvironment("wordcount_example")
+    env = LocalEnvironment("wordcount_streaming")
     
     # 全局词汇计数器
     word_counts = Counter()
     total_processed = 0
     
-    def update_word_count(words_with_count):
+    def update_word_count(word):
         """更新全局词汇计数"""
-        global word_counts, total_processed
-        word, count = words_with_count
-        word_counts[word] += count
-        total_processed += count
+        nonlocal word_counts, total_processed
+        word_counts[word] += 1
+        total_processed += 1
         
         # 每处理10个词就打印一次统计结果
         if total_processed % 10 == 0:
             print(f"\n=== Word Count Statistics (Total: {total_processed}) ===")
-            for word, count in word_counts.most_common(10):
-                print(f"{word:20}: {count:3d}")
-            print("=" * 50)
+            for word, count in word_counts.most_common(5):
+                print(f"{word:15}: {count:3d}")
+            print("=" * 40)
+        
+        return word
     
     # 构建流处理管道
     (env
@@ -94,9 +95,50 @@ def main():
         .map(lambda word: word.replace(",", "").replace(".", ""))  # 去除标点
         
         # 词汇统计
-        .map(lambda word: (word, 1))                     # 转换为 (word, count) 格式
-        .print()                                         # 实时输出处理结果
+        .map(update_word_count)                          # 更新计数并返回词
+        .sink(lambda x: None)                           # 确保数据流完整
     )
+    
+    print("🚀 Starting Streaming WordCount Example")
+    
+    try:
+        # 启动流处理
+        env.submit()
+        
+        # 运行一段时间
+        time.sleep(20)
+        print(f"\n📊 Final Statistics: {total_processed} words processed")
+        
+    except KeyboardInterrupt:
+        print("\n⏹️ Stopping stream processing...")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    main()
+```
+
+### 关键技术要点
+
+#### 1. **持续数据流**
+```python
+def execute(self):
+    # 循环选择句子，模拟持续数据流
+    sentence = self.sentences[self.counter % len(self.sentences)]
+    self.counter += 1
+    return sentence
+```
+- 使用取模运算实现循环数据生成
+- 永不返回 `None`，保持数据流连续性
+
+#### 2. **实时状态更新**
+```python
+# 每处理10个词就打印一次统计结果
+if total_processed % 10 == 0:
+    print(f"=== Word Count Statistics (Total: {total_processed}) ===")
+```
+- 实时显示处理进度和统计结果
+- 提供即时反馈和监控
     
     print("🚀 Starting WordCount Example")
     
@@ -163,36 +205,256 @@ hello               :   1
 
 ---
 
-## 示例2：QA无界流处理
+## 示例2：终端交互式QA
 
-在WordCount实时统计展示了基础的流式数据处理后，我们来看一个更加实用的场景：实时问答系统。
+在WordCount实时统计展示了基础的流式数据处理后，我们来看一个更加实用的场景：终端交互式问答系统。
 
-这个示例模拟了一个持续运行的AI助手，能够不断接收问题并实时生成回答。与批处理的离线问答不同，这里强调的是实时响应和持续服务能力。
+这个示例展示了如何构建一个持续运行的AI助手，能够实时接收用户输入并生成回答。
 
-### 数据源定义
-
-基于实际的QA源设计，模拟持续的问答数据流：
+### 交互式数据源
 
 ```python
 from sage.core.api.function.source_function import SourceFunction
 
-class QASource(SourceFunction):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.questions = [
-            "什么是DNA的结构？",
-            "细胞分裂的过程是怎样的？",
-            "蛋白质的功能有哪些？", 
-            "基因表达是如何调控的？",
-            "细胞膜的组成和功能是什么？"
-        ]
-        self.counter = 0
+class TerminalInputSource(SourceFunction):
+    """终端输入源 - 实时接收用户输入"""
+    def execute(self, data=None):
+        try:
+            print("🤔 请输入您的问题（按Ctrl+C退出）:")
+            user_input = input(">>> ").strip()
+            if user_input:
+                return user_input
+            return self.execute(data)  # 递归调用直到有效输入
+        except (EOFError, KeyboardInterrupt):
+            raise  # 向上传播中断信号
+```
 
+### QA处理管道
+
+```python
+from sage.core.api.local_environment import LocalEnvironment
+from sage.core.api.function.map_function import MapFunction
+from sage.core.api.function.sink_function import SinkFunction
+from sage.libs.rag.generator import OpenAIGenerator
+from sage.libs.rag.promptor import QAPromptor
+import time
+
+class QuestionProcessor(MapFunction):
+    """问题预处理器"""
+    def execute(self, data):
+        if not data or data.strip() == "":
+            return None
+        return data.strip()
+
+class AnswerFormatter(MapFunction):
+    """回答格式化器"""
+    def execute(self, data):
+        if isinstance(data, tuple) and len(data) >= 2:
+            question, answer = data[0], data[1]
+            return {
+                "question": question,
+                "answer": answer,
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+            }
+        return {"answer": str(data), "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}
+
+class ConsoleSink(SinkFunction):
+    """控制台输出"""
+    def execute(self, data):
+        if isinstance(data, dict):
+            print(f"\n🤖 {data.get('answer', 'N/A')}\n")
+        else:
+            print(f"\n🤖 {data}\n")
+        return data
+
+def interactive_qa_pipeline():
+    """创建交互式QA处理管道"""
+    env = LocalEnvironment("interactive_qa")
+
+    # 配置
+    config = {
+        "promptor": {"platform": "local"},
+        "generator": {
+            "vllm": {
+                "api_key": "your-api-key",
+                "method": "openai",
+                "model_name": "gpt-3.5-turbo",
+                "base_url": "https://api.openai.com/v1"
+            }
+        }
+    }
+
+    print("💬 QA助手已启动！输入问题后按回车")
+
+    try:
+        # 构建流处理管道
+        (env
+            .from_source(TerminalInputSource)
+            .map(QuestionProcessor)
+            .map(QAPromptor, config["promptor"])
+            .map(OpenAIGenerator, config["generator"]["vllm"])
+            .map(AnswerFormatter)
+            .sink(ConsoleSink)
+        )
+
+        # 启动管道
+        env.submit()
+
+        # 保持程序运行
+        while True:
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+        print("\n👋 感谢使用，再见！")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    interactive_qa_pipeline()
+```
+
+### 流式监控示例
+
+```python
+from sage.core.api.function.source_function import SourceFunction
+import random
+import time
+
+class SystemMetricsSource(SourceFunction):
+    """系统指标数据源 - 模拟持续的监控数据"""
     def execute(self):
-        # 循环产生问题，模拟持续的QA数据流
-        question = self.questions[self.counter % len(self.questions)]
-        self.counter += 1
-        return question
+        # 模拟系统指标
+        metrics = {
+            "timestamp": time.time(),
+            "cpu_usage": random.uniform(10, 90),
+            "memory_usage": random.uniform(30, 80),
+            "disk_io": random.uniform(0, 100),
+            "network_traffic": random.uniform(0, 1000)
+        }
+        return metrics
+
+class AlertProcessor(MapFunction):
+    """告警处理器"""
+    def execute(self, data):
+        alerts = []
+        
+        if data["cpu_usage"] > 80:
+            alerts.append(f"🔥 CPU使用率过高: {data['cpu_usage']:.1f}%")
+        
+        if data["memory_usage"] > 75:
+            alerts.append(f"⚠️ 内存使用率过高: {data['memory_usage']:.1f}%")
+        
+        if alerts:
+            data["alerts"] = alerts
+        
+        return data
+
+class MonitoringSink(SinkFunction):
+    """监控输出"""
+    def execute(self, data):
+        timestamp = time.strftime("%H:%M:%S", time.localtime(data["timestamp"]))
+        print(f"[{timestamp}] CPU: {data['cpu_usage']:.1f}% | MEM: {data['memory_usage']:.1f}%")
+        
+        if "alerts" in data:
+            for alert in data["alerts"]:
+                print(f"  🚨 {alert}")
+        
+        return data
+
+def monitoring_pipeline():
+    """系统监控流处理管道"""
+    env = LocalEnvironment("system_monitoring")
+    
+    (env
+        .from_source(SystemMetricsSource, delay=2.0)  # 每2秒采集一次
+        .map(AlertProcessor)
+        .sink(MonitoringSink)
+    )
+    
+    try:
+        print("📊 系统监控启动...")
+        env.submit()
+        time.sleep(60)  # 监控1分钟
+    except KeyboardInterrupt:
+        print("\n⏹️ 停止监控")
+    finally:
+        env.close()
+
+if __name__ == "__main__":
+    monitoring_pipeline()
+```
+
+---
+
+## 核心技术对比
+
+### 有界流 vs 无界流
+
+| 特性 | 有界流（Batch） | 无界流（Streaming） |
+|------|----------------|-------------------|
+| **数据源** | BatchFunction | SourceFunction |
+| **结束条件** | 返回 `None` | 永不结束（除非异常） |
+| **状态管理** | 批量聚合 | 实时累积 |
+| **输出模式** | 最终结果 | 增量更新 |
+| **适用场景** | 离线分析、报告生成 | 实时监控、在线服务 |
+
+### 生命周期管理
+
+```python
+# 无界流的典型生命周期
+try:
+    env.submit()          # 启动流处理
+    while True:           # 保持运行
+        time.sleep(1)
+except KeyboardInterrupt: # 优雅停止
+    print("Stopping...")
+finally:
+    env.close()           # 清理资源
+```
+
+---
+
+## 最佳实践
+
+### 1. **数据源设计**
+- 实现适当的延迟控制（`delay`参数）
+- 处理异常和中断信号
+- 提供数据质量保证
+
+### 2. **状态管理**
+- 使用 `nonlocal` 或全局变量管理状态
+- 定期保存重要状态数据
+- 实现状态恢复机制
+
+### 3. **性能优化**
+- 控制数据生成速率
+- 使用批量处理减少开销
+- 实施背压控制
+
+### 4. **错误处理**
+- 实现健壮的异常处理
+- 提供优雅的停止机制
+- 记录详细的错误日志
+
+---
+
+## 小结
+
+无界流处理通过**持续数据源**、**实时状态更新**和**增量输出**机制，实现**永不停歇**、**实时响应**的流式数据处理能力。
+
+关键特点：
+- **实时性**：数据到达即处理，延迟极低
+- **持续性**：7x24小时不间断运行
+- **增量式**：状态实时更新，提供即时反馈
+- **可扩展**：支持分布式部署和水平扩展
+- **交互性**：支持用户实时交互和在线服务
+
+适用场景：实时监控、在线服务、交互式应用、流式数据分析、IoT数据处理等需要实时响应的场景。
+
+---
+        适用场景：实时监控、在线服务、交互式应用、流式数据分析、IoT数据处理等需要实时响应的场景。
+
+---
 ```
 
 ### 知识检索组件
