@@ -1,6 +1,6 @@
 # DataStream 编程指南
 
-SAGE 中的 DataStream 是对数据流进行转换处理的应用程序。如图所示，数据流的起始是从各种源（例如消息队列、套接字流、文件）创建的，经过各种算子处理，结果通过 sink 返回，例如，可以将数据写入文件或标准输出（例如命令行终端）。
+SAGE 中的 **DataStream** 是对数据流进行转换处理的应用程序。如图所示，数据流的起始是从各种源（例如消息队列、套接字流、文件）创建的，经过各种算子处理，结果通过 sink 返回，例如，可以将数据写入文件或标准输出（例如命令行终端）。
 
 [![DataStream Processing](../../assets/img/streaming.png  "数据流处理流程")](../../assets/img/streaming.png)
 
@@ -21,66 +21,56 @@ SAGE 中的 DataStream 是对数据流进行转换处理的应用程序。如图
 
 先让我们来看一个完整的 SAGE 程序，本程序演示了如何利用 SAGE 编写一个简单的批处理任务：
 
-```Python
-import time
-from sage.utils.custom_logger import CustomLogger
-
+```Python linenums="1" title="Python"
 from sage.core.api.local_environment import LocalEnvironment
+from sage.core.api.function.sink_function import SinkFunction
 from sage.core.api.function.batch_function import BatchFunction
 from sage.core.api.function.map_function import MapFunction
-from sage.core.api.function.sink_function import SinkFunction
+from sage.common.utils.logging.custom_logger import CustomLogger
 
-# 声明数据源，数据在此生成
+# 批处理数据源：作用是生成10条"Hello, World!"字符串
 class HelloBatch(BatchFunction):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.counter = 0
-        # 生成10个数据包后返回None
-        self.max_count = 10  
+        self.max_count = 10     # 生成10个数据包后返回None
     
     def execute(self):
-        # 返回None表示批处理完成
         if self.counter >= self.max_count:
-            return None  
+            return None         # 返回None表示批处理完成
         self.counter += 1
         return f"Hello, World! #{self.counter}"
 
-# 定义数据处理逻辑——将单词转大写
+# 简单的 MapFunction，将内容转大写
 class UpperCaseMap(MapFunction):
     def execute(self, data):
         return data.upper()
 
-# 声明数据流出位置——终端输出数据
+# 简单 SinkFunction，直接打印结果
 class PrintSink(SinkFunction):
     def execute(self, data):
         print(data)
-        return data
 
 def main():
-    # 配置运行环境以及声明运行流水线
-    env = LocalEnvironment("hello_world_batch_demo")
-    env.from_batch(HelloBatch).map(UpperCaseMap).sink(PrintSink)
+    env = LocalEnvironment("Hello_World")
     
-    try:
-        print("Waiting for batch processing to complete...")
-        # 提交，启动任务执行
-        env.submit()
-
-        time.sleep(3)        # 让主线程睡眠，让批处理自动完成并停止
-    except KeyboardInterrupt:
-        print("停止运行")
-    finally:
-        print("Hello World 批处理示例结束")
+    # from_batch -> map -> sink
+    env.from_batch(HelloBatch).map(UpperCaseMap).sink(PrintSink)
+    # 提交 pipeline，并启动自动停止（仅from_batch模式有效）
+    env.submit(autostop=True)
+    print("Hello World 批处理示例结束")
 
 if __name__ == "__main__":
-    CustomLogger.disable_global_console_debug() # 关闭SAGE-logger在终端的输出
+    # 关闭日志输出
+    CustomLogger.disable_global_console_debug()
     main()
+
 
 ```
 
 ---
 
-下面我们将对这些部分逐一进行概述，以便理解 SAGE 编程的主要思想。
+下面我们将对这些部分逐一进行概述，以便理解 SAGE 编程的主要思想：
 
 ### `HelloBatch`：批量数据源
 
@@ -143,19 +133,13 @@ class PrintSink(SinkFunction):
 
 ```python
 def main():
-    env = LocalEnvironment("hello_world_batch_demo")
-
-    # DataStream 定义：
+    env = LocalEnvironment("Hello_World")
+    
+    # from_batch -> map -> sink
     env.from_batch(HelloBatch).map(UpperCaseMap).sink(PrintSink)
-
-    try:
-        print("Waiting for batch processing to complete...")
-        env.submit()
-        time.sleep(3)  # 等待3秒，确保批处理全部完成
-    except KeyboardInterrupt:
-        print("停止运行")
-    finally:
-        print("Hello World 批处理示例结束")
+    # 提交 pipeline，并启动自动停止（仅from_batch模式有效）
+    env.submit(autostop=True)
+    print("Hello World 批处理示例结束")
 ```
 
 > **说明：**
@@ -166,8 +150,7 @@ def main():
 >   1. `from_batch(HelloBatch)`：指定数据源
 >   2. `.map(UpperCaseMap)`：添加 map 转换
 >   3. `.sink(PrintSink)`：指定输出终点
-> * `env.submit()`：**启动任务**。
-> * `time.sleep(3)`：主线程睡眠 3 秒，等待所有处理完成（demo 常用方式）。
+> * `env.submit(autostop=True)`：**启动任务**。
 > * 最后打印“批处理示例结束”。
 
 ---

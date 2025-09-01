@@ -78,13 +78,13 @@ class ConversationMemory(BaseFunction):
 Neuromem 采用“编排服务 + 基础集合 + 引擎/后端”的分层方式实现，支持在服务层提供稳定能力，同时允许组件层按需替换底层后端。
 
 ```mermaid
-flowchart TB
+flowchart LR
   App[调用方：Function/Service]
-  MS["Memory Service（服务封装）"]
+  MS["Memory Service<br/>（服务封装）"]
   subgraph Neuromem[Neuromem 组件]
-    MM["MemoryManager (核心管理/路由)"]
+    MM["MemoryManager<br/>(核心管理/路由)"]
     subgraph Collections[Memory Collection 层]
-      BC["base_collection.py（基础抽象）"]
+      BC["base_collection.py<br/>（基础抽象）"]
       KVC[kv_collection.py]
       VDBC[vdb_collection.py]
       GC[graph_collection.py]
@@ -97,7 +97,7 @@ flowchart TB
       VDB["vdb（在对应服务中实现）"]
     end
   end
-  Stores[实际后端：KV / VDB / Graph 等]
+  Stores[实际后端：<br/>KV / VDB / Graph 等]
 
   App --> MS --> Neuromem
   Neuromem --> Stores

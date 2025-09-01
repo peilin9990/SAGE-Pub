@@ -113,8 +113,8 @@ SAGE-DB 组件通常采用“Python API/服务封装 → 本地/加速绑定 →
 
 ```mermaid
 flowchart TB
-  API["Python API/服务封装\n(VDB Service/Memory Service 间接使用)"]
-  Bind["本地扩展/加速绑定\n(若存在)"]
+  API["Python API/服务封装<br/>(VDB Service/Memory Service 间接使用)"]
+  Bind["本地扩展/加速绑定"]
   subgraph Core[Core Engine]
     Index[Index Engine]
     Query[Query Engine]

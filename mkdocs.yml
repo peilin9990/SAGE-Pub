@@ -117,7 +117,10 @@ nav:
           - 分布式流处理:
               - SAGE 分布式简介: get_start/remote_mode/sage_remote.md
               - 远程提交任务: get_start/remote_mode/remote_job_submit.md
-  - 编程指南: core/hello_world.md
+  - 编程指南: 
+      - DataStream 编程指南: code_intro/datastream_intro.md
+      - DataStream Operator 与 Function: code_intro/datastream_function.md
+      - DataStream 数据流转换: code_intro/datastream_trans.md
   - Kernel:
       - 总览: kernel/README.md
       - 架构设计: kernel/architecture.md
