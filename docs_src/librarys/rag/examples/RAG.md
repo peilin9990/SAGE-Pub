@@ -177,7 +177,7 @@ build_knowledge_index(rag_config)
 
 ### RAG流水线实现
 
-[代码实例如下](examples/rag/qa_dense_retrieval_chroma.py)
+[代码实例如下](https://github.com/intellistream/SAGE/blob/main/examples/rag/qa_dense_retrieval_chroma.py)
 
 ```python
 def execute_rag_pipeline(config: dict) -> None:
