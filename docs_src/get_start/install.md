@@ -51,7 +51,7 @@ pip show isage
 
 ```
 Name: isage
-Version: 0.1.x
+Version: 0.1.3.1
 Summary: SAGE (Meta Package)
 Home-page: https://github.com/intellistream/SAGE
 Author: 
