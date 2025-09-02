@@ -225,11 +225,23 @@ nav:
   - Extensions: get_start/remote_mode/sage_cil.md
   - 加入 SAGE:
     - 我们是谁: join_sage/intellistream.md
-    - md 模板: join_sage/template.md
-    - 导言模板: join_sage/overview_template.md
-    - 章节模板: join_sage/detail_template.md
-    - 快速入门模板: join_sage/quick_start.md
-    - 周会安排: join_sage/weekly_meeting.md
+    - 文档模板:
+        - md 模板: join_sage/template.md
+        - 导言模板: join_sage/overview_template.md
+        - 章节模板: join_sage/detail_template.md
+        - 快速入门模板: join_sage/quick_start.md
+    - 周会排班系统:
+        - 📖 使用指南: join_sage/usage_guide.md
+        - 📋 本地版本: join_sage/weekly_meeting.md
+        - ☁️ 云端同步版本: join_sage/weekly_meeting_v2.md
+        - 配置与帮助:
+            - 🚀 快速配置指南: join_sage/gist_setup_guide.md
+            - 🔒 安全配置说明: join_sage/config_security.md
+            - 🤖 GitHub Actions 配置: join_sage/github_actions_config.md
+            - 🛡️ Environment Secrets 设置: join_sage/environment_secrets_guide.md
+            - 🧪 连接测试工具: join_sage/gist_test.md
+            - 📚 技术文档: join_sage/gist_sync_guide.md
+            - 🌐 其他云端方案: join_sage/cloud_database_guide.md
 
 validation:
   omitted_files: info 

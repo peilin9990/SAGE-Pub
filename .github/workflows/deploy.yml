@@ -1,4 +1,4 @@
-name: Deploy MkDocs to GitHub Pages
+name: Deploy SAGE Documentation with Gist Integration
 
 on:
   push:
@@ -21,6 +21,20 @@ jobs:
       - name: Install dependencies
         run: |
           pip install mkdocs mkdocs-material mkdocs-include-markdown-plugin mkdocstrings[python]
+
+      - name: Inject GitHub Token for Gist Access
+        run: |
+          # 创建运行时配置文件，注入 GitHub Token
+          mkdir -p docs_src/assets/js
+          cat > docs_src/assets/js/runtime-config.js << 'EOF'
+          // Runtime configuration injected during build
+          window.SAGE_RUNTIME_CONFIG = window.SAGE_RUNTIME_CONFIG || {};
+          window.SAGE_RUNTIME_CONFIG.gistToken = '${{ secrets.GIST_TOKEN }}';
+          console.log('🔑 GitHub Token 已从环境变量注入');
+          EOF
+          
+          # 在 weekly_meeting_v2.md 中注入配置引用
+          sed -i '/<script>/i <script src="../../assets/js/runtime-config.js"></script>' docs_src/join_sage/weekly_meeting_v2.md
 
       - name: Build and deploy
         run: mkdocs gh-deploy --force
