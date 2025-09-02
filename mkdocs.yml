@@ -229,6 +229,7 @@ nav:
     - 导言模板: join_sage/overview_template.md
     - 章节模板: join_sage/detail_template.md
     - 快速入门模板: join_sage/quick_start.md
+    - 周会安排: join_sage/weekly_meeting.md
 
 validation:
   omitted_files: info 
