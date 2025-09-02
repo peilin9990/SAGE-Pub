@@ -22,19 +22,26 @@ jobs:
         run: |
           pip install mkdocs mkdocs-material mkdocs-include-markdown-plugin mkdocstrings[python]
 
-      - name: Inject GitHub Token for Gist Access
+      - name: Setup Runtime Configuration (Secure)
         run: |
-          # 创建运行时配置文件，注入 GitHub Token
+          # 创建安全的运行时配置，不直接暴露 Token
           mkdir -p docs_src/assets/js
           cat > docs_src/assets/js/runtime-config.js << 'EOF'
-          // Runtime configuration injected during build
+          // Runtime configuration - 安全版本
           window.SAGE_RUNTIME_CONFIG = window.SAGE_RUNTIME_CONFIG || {};
-          window.SAGE_RUNTIME_CONFIG.gistToken = '${{ secrets.GIST_TOKEN }}';
-          console.log('🔑 GitHub Token 已从环境变量注入');
-          EOF
           
-          # 在 weekly_meeting_v2.md 中注入配置引用
-          sed -i '/<script>/i <script src="../../assets/js/runtime-config.js"></script>' docs_src/join_sage/weekly_meeting_v2.md
+          // 不直接存储 Token，而是提供配置方法
+          window.SAGE_RUNTIME_CONFIG.setGistToken = function(token) {
+            this.gistToken = token;
+            console.log('🔑 Gist Token 已设置');
+          };
+          
+          // 生产环境标识
+          window.SAGE_RUNTIME_CONFIG.environment = 'production';
+          window.SAGE_RUNTIME_CONFIG.buildTime = new Date().toISOString();
+          
+          console.log('🚀 生产环境配置已加载');
+          EOF
 
       - name: Build and deploy
         run: mkdocs gh-deploy --force

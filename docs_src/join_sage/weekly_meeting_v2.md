@@ -3,9 +3,43 @@
 <div id="weekly-schedule-container">
     <div class="controls">
         <button id="config-btn" onclick="scheduler.showConfig()">⚙️ 配置 Gist</button>
+        <button id="token-btn" onclick="scheduler.showTokenConfig()">🔑 设置 Token</button>
         <button id="reset-all" onclick="scheduler.resetAll()">重置所有</button>
         <button id="sync-data" onclick="scheduler.syncWithCloud()">同步数据</button>
         <div class="sync-status" id="sync-status">未同步</div>
+    </div>
+    
+    <!-- Token 配置弹窗 -->
+    <div id="token-config-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔑 配置 GitHub Token</h3>
+                <span class="close" onclick="scheduler.hideTokenConfig()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>⚠️ 重要安全说明</strong></p>
+                <p>为了防止 Token 被 GitHub 自动撤销，此系统采用安全配置方式：</p>
+                <div class="form-group">
+                    <label for="gist-token">GitHub Token:</label>
+                    <input type="password" id="gist-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 8px; margin: 5px 0;">
+                    <small>⚠️ Token 只在当前浏览器会话中保存，页面刷新后需要重新输入</small>
+                </div>
+                <div class="form-actions">
+                    <button onclick="scheduler.setGistToken()" class="primary-btn">设置 Token</button>
+                    <button onclick="scheduler.hideTokenConfig()" class="secondary-btn">取消</button>
+                </div>
+                <div class="help-section">
+                    <h4>如何获取 GitHub Token？</h4>
+                    <ol>
+                        <li>访问 GitHub Settings → Developer settings → Personal access tokens</li>
+                        <li>点击 "Generate new token (classic)"</li>
+                        <li>只勾选 "gist" 权限</li>
+                        <li>复制生成的 Token</li>
+                    </ol>
+                    <p><strong>注意</strong>：此安全设计避免了 Token 被意外提交到代码库而被撤销。</p>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- 周期信息显示 -->
@@ -388,6 +422,127 @@
 
 .non-empty-zone .zone-hint {
     display: none;
+}
+
+/* 弹窗样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.primary-btn {
+    background: #007acc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.primary-btn:hover {
+    background: #005a9e;
+}
+
+.secondary-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.secondary-btn:hover {
+    background: #545b62;
+}
+
+.help-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.help-section h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+.help-section ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.help-section li {
+    margin: 5px 0;
 }
 </style>
 
@@ -987,6 +1142,62 @@ class CloudSyncScheduler {
         this.testConnection();
     }
     
+    // 安全的 Token 配置方法
+    showTokenConfig() {
+        document.getElementById('token-config-modal').style.display = 'block';
+        
+        // 清空输入框
+        document.getElementById('gist-token').value = '';
+        
+        // 显示当前 Token 状态
+        const hasToken = this.GITHUB_CONFIG.token ? '✅ 已配置' : '❌ 未配置';
+        console.log('🔑 Token 状态:', hasToken);
+    }
+    
+    hideTokenConfig() {
+        document.getElementById('token-config-modal').style.display = 'none';
+        
+        // 清空输入框（安全措施）
+        document.getElementById('gist-token').value = '';
+    }
+    
+    setGistToken() {
+        const tokenInput = document.getElementById('gist-token');
+        const token = tokenInput.value.trim();
+        
+        if (!token) {
+            alert('请输入有效的 GitHub Token');
+            return;
+        }
+        
+        // 验证 Token 格式
+        if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+            if (!confirm('Token 格式可能不正确，是否继续？\n\n有效格式：ghp_xxxx 或 github_pat_xxxx')) {
+                return;
+            }
+        }
+        
+        // 设置 Token（仅在当前会话中）
+        this.GITHUB_CONFIG.token = token;
+        window.SAGE_RUNTIME_CONFIG.gistToken = token;
+        
+        // 清空输入框（安全措施）
+        tokenInput.value = '';
+        
+        // 隐藏弹窗
+        this.hideTokenConfig();
+        
+        // 显示成功消息
+        this.updateSyncStatus('synced', '🔑 Token 已设置（当前会话有效）');
+        
+        console.log('🔑 GitHub Token 已设置，可以使用云端同步功能');
+        
+        // 可选：自动测试连接
+        setTimeout(() => {
+            this.testConnection();
+        }, 1000);
+    }
+    
     async testConnection() {
         this.updateSyncStatus('syncing', '测试连接...');
         
@@ -1010,5 +1221,13 @@ let scheduler;
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
     scheduler = new CloudSyncScheduler();
+    
+    // 点击弹窗外部关闭弹窗
+    window.onclick = function(event) {
+        const modal = document.getElementById('token-config-modal');
+        if (event.target === modal) {
+            scheduler.hideTokenConfig();
+        }
+    }
 });
 </script>
