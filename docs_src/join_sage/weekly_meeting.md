@@ -1,14 +1,52 @@
-# 周会安排
+# 周会安排 - 云端同步版本
 
 <div id="weekly-schedule-container">
     <div class="controls">
+        <button id="config-btn" onclick="scheduler.showConfig()">⚙️ 配置 Gist</button>
+        <button id="token-btn" onclick="scheduler.showTokenConfig()">🔑 设置 Token</button>
         <button id="reset-all" onclick="scheduler.resetAll()">重置所有</button>
+        <button id="sync-data" onclick="scheduler.syncWithCloud()">同步数据</button>
+        <div class="sync-status" id="sync-status">未同步</div>
+    </div>
+    
+    <!-- Token 配置弹窗 -->
+    <div id="token-config-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔑 配置 GitHub Token</h3>
+                <span class="close" onclick="scheduler.hideTokenConfig()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>⚠️ 重要安全说明</strong></p>
+                <p>为了防止 Token 被 GitHub 自动撤销，此系统采用安全配置方式：</p>
+                <div class="form-group">
+                    <label for="gist-token">GitHub Token:</label>
+                    <input type="password" id="gist-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 8px; margin: 5px 0;">
+                    <small>⚠️ Token 只在当前浏览器会话中保存，页面刷新后需要重新输入</small>
+                </div>
+                <div class="form-actions">
+                    <button onclick="scheduler.setGistToken()" class="primary-btn">设置 Token</button>
+                    <button onclick="scheduler.hideTokenConfig()" class="secondary-btn">取消</button>
+                </div>
+                <div class="help-section">
+                    <h4>如何获取 GitHub Token？</h4>
+                    <ol>
+                        <li>访问 GitHub Settings → Developer settings → Personal access tokens</li>
+                        <li>点击 "Generate new token (classic)"</li>
+                        <li>只勾选 "gist" 权限</li>
+                        <li>复制生成的 Token</li>
+                    </ol>
+                    <p><strong>注意</strong>：此安全设计避免了 Token 被意外提交到代码库而被撤销。</p>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- 周期信息显示 -->
     <div class="cycle-info">
         <span>当前周期: <strong id="current-cycle">1</strong></span>
         <span>本周日期: <strong id="current-week-date">加载中...</strong></span>
+        <span>最后同步: <strong id="last-sync">从未</strong></span>
     </div>
     
     <!-- 上方两个区域 - 并排显示 -->
@@ -76,6 +114,7 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     justify-content: flex-start;
+    align-items: center;
 }
 
 .controls button {
@@ -95,26 +134,27 @@
     transform: translateY(-1px);
 }
 
-.week-controls {
-    display: flex;
-    gap: 10px;
-}
-
-.week-controls button {
-    padding: 10px 16px;
-    background: #007acc;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
+.sync-status {
+    margin-left: auto;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 500;
-    transition: all 0.2s ease;
 }
 
-.week-controls button:hover {
-    background: #005a9e;
-    transform: translateY(-1px);
+.sync-status.synced {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.sync-status.syncing {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.sync-status.error {
+    background: #ffebee;
+    color: #d32f2f;
 }
 
 .cycle-info {
@@ -122,6 +162,7 @@
     gap: 20px;
     color: #666;
     font-size: 14px;
+    margin-bottom: 20px;
 }
 
 .cycle-info span {
@@ -336,12 +377,14 @@
         align-items: stretch;
     }
     
-    .week-controls {
-        justify-content: center;
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
     }
     
     .cycle-info {
-        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
     }
     
     .presenters-sections,
@@ -380,31 +423,282 @@
 .non-empty-zone .zone-hint {
     display: none;
 }
+
+/* 弹窗样式 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.primary-btn {
+    background: #007acc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.primary-btn:hover {
+    background: #005a9e;
+}
+
+.secondary-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.secondary-btn:hover {
+    background: #545b62;
+}
+
+.help-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.help-section h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+.help-section ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.help-section li {
+    margin: 5px 0;
+}
 </style>
 
+<script src="../../assets/js/runtime-config.js"></script>
 <script>
-class DragDropScheduler {
+// 运行时配置支持
+window.SAGE_RUNTIME_CONFIG = window.SAGE_RUNTIME_CONFIG || {
+    gistToken: '' // 从环境变量注入，或用户手动配置
+};
+
+class CloudSyncScheduler {
     constructor() {
-        // 先检查是否有存储的数据，如果没有或者成员数量不对，使用默认成员
-        const storedMembers = this.loadData('dragScheduler_members');
-        if (!storedMembers || storedMembers.length !== 20) {
-            console.log('Loading default members...');
-            this.members = this.getDefaultMembers();
-            this.currentCycle = 1;
-            this.weekHistory = [];
-            this.currentWeekPresenters = [];
-            this.nextWeekPresenters = [];
-        } else {
-            console.log('Loading stored members...', storedMembers.length);
-            this.members = storedMembers;
-            this.currentCycle = this.loadData('dragScheduler_cycle') || 1;
-            this.weekHistory = this.loadData('dragScheduler_history') || [];
-            this.currentWeekPresenters = this.loadData('dragScheduler_currentWeek') || [];
-            this.nextWeekPresenters = this.loadData('dragScheduler_nextWeek') || [];
+        // GitHub Gist 配置
+        this.GITHUB_CONFIG = {
+            gistId: 'b7b18befbd332c97f938e7859df5f7ef', // 您的 Gist ID
+            token: window.SAGE_RUNTIME_CONFIG?.gistToken || '', // 从运行时配置或环境变量获取
+            filename: 'schedule_data.json'
+        };
+        
+        // 尝试从 localStorage 加载配置（作为后备方案）
+        this.loadConfig();
+        
+        // 如果仍然没有 token，在控制台提示
+        if (!this.GITHUB_CONFIG.token) {
+            console.warn('🔑 未检测到 GitHub Token，读取功能正常，写入功能需要配置 Token');
         }
         
-        console.log('Total members loaded:', this.members.length);
+        // 数据键名
+        this.STORAGE_KEY = 'weekly_schedule_data';
+        
+        // 初始化数据
+        this.members = [];
+        this.currentCycle = 1;
+        this.weekHistory = [];
+        this.currentWeekPresenters = [];
+        this.nextWeekPresenters = [];
+        this.lastSync = null;
+        
         this.init();
+    }
+    
+    async init() {
+        this.updateSyncStatus('syncing', '正在加载数据...');
+        
+        try {
+            // 尝试从云端加载数据
+            await this.loadFromCloud();
+            this.updateSyncStatus('synced', '数据已同步');
+        } catch (error) {
+            console.warn('云端加载失败，使用本地数据:', error);
+            // 回退到本地存储
+            this.loadFromLocal();
+            this.updateSyncStatus('error', '云端同步失败');
+        }
+        
+        this.updateCycleInfo();
+        this.initializeSchedule();
+        this.renderMembers();
+        this.setupDragAndDrop();
+        
+        // 设置自动同步
+        this.setupAutoSync();
+    }
+    
+    async loadFromCloud() {
+        try {
+            const response = await this.fetchFromGist();
+            if (response && response.data) {
+                this.loadData(response.data);
+                this.lastSync = new Date().toISOString();
+                return;
+            }
+        } catch (error) {
+            console.warn('Gist 加载失败:', error);
+        }
+        
+        // 如果加载失败，抛出错误回退到本地
+        throw new Error('Gist 加载失败');
+    }
+    
+    async fetchFromGist() {
+        const { gistId, filename } = this.GITHUB_CONFIG;
+        
+        if (!gistId || gistId === '1234567890abcdef') {
+            throw new Error('请先配置有效的 Gist ID');
+        }
+        
+        // 构建请求选项，如果有 token 就添加认证头
+        const fetchOptions = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+        
+        // 添加认证头（如果有 token）
+        const token = this.GITHUB_CONFIG.token || window.SAGE_RUNTIME_CONFIG?.gistToken;
+        if (token) {
+            fetchOptions.headers['Authorization'] = `token ${token}`;
+        }
+        
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, fetchOptions);
+        
+        if (!response.ok) {
+            throw new Error(`Gist 请求失败: ${response.status}`);
+        }
+        
+        const gist = await response.json();
+        const content = gist.files[filename]?.content;
+        
+        if (content) {
+            try {
+                return { data: JSON.parse(content) };
+            } catch (parseError) {
+                throw new Error('Gist 数据格式错误');
+            }
+        }
+        
+        return null;
+    }
+    
+    async fetchFromIssueComment() {
+        // 移除这个方法，只使用 Gist
+        throw new Error('已弃用，仅使用 Gist 方案');
+    }
+    
+    loadFromLocal() {
+        const storedData = localStorage.getItem(this.STORAGE_KEY);
+        if (storedData) {
+            try {
+                this.loadData(JSON.parse(storedData));
+            } catch (error) {
+                console.error('本地数据解析失败:', error);
+                this.loadDefaultData();
+            }
+        } else {
+            this.loadDefaultData();
+        }
+    }
+    
+    loadData(data) {
+        this.members = data.members || this.getDefaultMembers();
+        this.currentCycle = data.currentCycle || 1;
+        this.weekHistory = data.weekHistory || [];
+        this.currentWeekPresenters = data.currentWeekPresenters || [];
+        this.nextWeekPresenters = data.nextWeekPresenters || [];
+        this.lastSync = data.lastSync || null;
+    }
+    
+    loadDefaultData() {
+        this.members = this.getDefaultMembers();
+        this.currentCycle = 1;
+        this.weekHistory = [];
+        this.currentWeekPresenters = [];
+        this.nextWeekPresenters = [];
+        this.lastSync = null;
     }
     
     getDefaultMembers() {
@@ -427,51 +721,110 @@ class DragDropScheduler {
         ];
     }
     
-    init() {
-        this.updateCycleInfo();
-        this.initializeSchedule();
-        this.renderMembers();
-        this.setupDragAndDrop();
+    exportData() {
+        return {
+            members: this.members,
+            currentCycle: this.currentCycle,
+            weekHistory: this.weekHistory,
+            currentWeekPresenters: this.currentWeekPresenters,
+            nextWeekPresenters: this.nextWeekPresenters,
+            lastSync: new Date().toISOString(),
+            version: '2.0'
+        };
+    }
+    
+    async saveToCloud() {
+        const data = this.exportData();
         
-        // 首次加载时保存数据，确保新的默认成员被保存
-        this.saveAllData();
+        try {
+            this.updateSyncStatus('syncing', '正在同步到云端...');
+            
+            // 保存到本地作为备份
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+            
+            // 保存到 Gist
+            await this.saveToGist(data);
+            
+            this.lastSync = data.lastSync;
+            this.updateSyncStatus('synced', `已同步 (${new Date().toLocaleTimeString()})`);
+            
+        } catch (error) {
+            console.error('云端同步失败:', error);
+            this.updateSyncStatus('error', '同步失败: ' + error.message);
+            throw error;
+        }
     }
     
-    initializeSchedule() {
-        // 如果当前周没有安排，自动安排
-        if (this.currentWeekPresenters.length === 0) {
-            this.autoFillCurrentWeek();
+    async saveToGist(data) {
+        const { gistId, token, filename } = this.GITHUB_CONFIG;
+        
+        if (!gistId || gistId === '1234567890abcdef') {
+            throw new Error('请先配置有效的 Gist ID');
         }
         
-        // 如果下周没有安排，自动安排
-        if (this.nextWeekPresenters.length === 0) {
-            this.autoFillNextWeek();
+        if (!token) {
+            throw new Error('保存数据需要 GitHub Token，请配置后重试');
         }
+        
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify({
+                files: {
+                    [filename]: {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Gist 保存失败: ${errorData.message || response.status}`);
+        }
+        
+        return await response.json();
     }
     
-    loadData(key) {
+    async simulateCloudSave(data) {
+        // 移除模拟方法，使用真实的 Gist 保存
+        return this.saveToGist(data);
+    }
+    
+    async syncWithCloud() {
         try {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : null;
-        } catch (e) {
-            return null;
+            await this.saveToCloud();
+        } catch (error) {
+            alert('同步失败，请检查网络连接后重试');
         }
     }
     
-    saveData(key, data) {
-        try {
-            localStorage.setItem(key, JSON.stringify(data));
-        } catch (e) {
-            console.error('Failed to save data:', e);
-        }
+    setupAutoSync() {
+        // 每5分钟自动同步一次
+        setInterval(() => {
+            this.saveToCloud().catch(error => {
+                console.warn('自动同步失败:', error);
+            });
+        }, 5 * 60 * 1000);
+        
+        // 页面卸载前同步
+        window.addEventListener('beforeunload', () => {
+            this.saveToCloud().catch(error => {
+                console.warn('页面卸载时同步失败:', error);
+            });
+        });
     }
     
-    saveAllData() {
-        this.saveData('dragScheduler_members', this.members);
-        this.saveData('dragScheduler_cycle', this.currentCycle);
-        this.saveData('dragScheduler_history', this.weekHistory);
-        this.saveData('dragScheduler_currentWeek', this.currentWeekPresenters);
-        this.saveData('dragScheduler_nextWeek', this.nextWeekPresenters);
+    updateSyncStatus(status, message) {
+        const statusElement = document.getElementById('sync-status');
+        if (statusElement) {
+            statusElement.textContent = message;
+            statusElement.className = `sync-status ${status}`;
+        }
     }
     
     updateCycleInfo() {
@@ -490,6 +843,16 @@ class DragDropScheduler {
         if (weekDateElement) {
             weekDateElement.textContent = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
         }
+        
+        const lastSyncElement = document.getElementById('last-sync');
+        if (lastSyncElement) {
+            if (this.lastSync) {
+                const syncDate = new Date(this.lastSync);
+                lastSyncElement.textContent = syncDate.toLocaleString('zh-CN');
+            } else {
+                lastSyncElement.textContent = '从未';
+            }
+        }
     }
     
     getWeekStart(date) {
@@ -497,6 +860,43 @@ class DragDropScheduler {
         const day = d.getDay();
         const diff = d.getDate() - day + (day === 0 ? -6 : 1);
         return new Date(d.setDate(diff));
+    }
+    
+    initializeSchedule() {
+        if (this.currentWeekPresenters.length === 0) {
+            this.autoFillCurrentWeek();
+        }
+        
+        if (this.nextWeekPresenters.length === 0) {
+            this.autoFillNextWeek();
+        }
+    }
+    
+    autoFillCurrentWeek() {
+        const pendingMembers = this.getPendingMembers();
+        const selectedMembers = pendingMembers.slice(0, 2).map(m => m.id);
+        this.currentWeekPresenters = selectedMembers;
+    }
+    
+    autoFillNextWeek() {
+        const pendingMembers = this.getPendingMembers().filter(m => 
+            !this.currentWeekPresenters.includes(m.id)
+        );
+        const selectedMembers = pendingMembers.slice(0, 2).map(m => m.id);
+        this.nextWeekPresenters = selectedMembers;
+    }
+    
+    getPendingMembers() {
+        return this.members.filter(m => 
+            m.cycleCount !== this.currentCycle && 
+            !this.currentWeekPresenters.includes(m.id) && 
+            !this.nextWeekPresenters.includes(m.id)
+        ).sort((a, b) => {
+            if (!a.lastPresented && !b.lastPresented) return 0;
+            if (!a.lastPresented) return -1;
+            if (!b.lastPresented) return 1;
+            return new Date(a.lastPresented) - new Date(b.lastPresented);
+        });
     }
     
     getMemberStatus(member) {
@@ -644,9 +1044,8 @@ class DragDropScheduler {
         });
     }
     
-    moveMemberToZone(member, targetZoneId) {
+    async moveMemberToZone(member, targetZoneId) {
         const today = new Date();
-        const oldStatus = this.getMemberStatus(member);
         
         // 先从所有列表中移除该成员
         this.currentWeekPresenters = this.currentWeekPresenters.filter(id => id !== member.id);
@@ -658,17 +1057,18 @@ class DragDropScheduler {
         } else if (targetZoneId === 'next-presenters') {
             this.nextWeekPresenters.push(member.id);
         } else if (targetZoneId === 'presented-members') {
-            // 标记为已汇报
             member.lastPresented = today.toISOString();
             member.cycleCount = this.currentCycle;
         }
-        // pending-members 不需要特殊处理，保持原状态
         
-        // 执行智能填充逻辑
-        this.autoFillLogic();
-        
-        this.saveAllData();
         this.renderMembers();
+        
+        // 自动保存到云端
+        try {
+            await this.saveToCloud();
+        } catch (error) {
+            console.warn('自动同步失败:', error);
+        }
         
         // 添加动画效果
         setTimeout(() => {
@@ -680,252 +1080,138 @@ class DragDropScheduler {
         }, 50);
     }
     
-    autoFillLogic() {
-        // 确保本周汇报人员至少有2人
-        while (this.currentWeekPresenters.length < 2) {
-            let filled = false;
-            
-            // 1. 先从下周汇报中选择
-            if (this.nextWeekPresenters.length > 0) {
-                const randomIndex = Math.floor(Math.random() * this.nextWeekPresenters.length);
-                const selectedId = this.nextWeekPresenters[randomIndex];
-                this.nextWeekPresenters.splice(randomIndex, 1);
-                this.currentWeekPresenters.push(selectedId);
-                filled = true;
-            }
-            
-            if (!filled) {
-                // 2. 从待汇报成员中选择
-                const pendingMembers = this.getPendingMembers();
-                if (pendingMembers.length > 0) {
-                    const selectedMember = this.selectBestMember(pendingMembers);
-                    this.currentWeekPresenters.push(selectedMember.id);
-                    filled = true;
-                }
-            }
-            
-            if (!filled) {
-                // 3. 从已汇报成员的最下方选择
-                const presentedMembers = this.getPresentedMembers();
-                if (presentedMembers.length > 0) {
-                    const lastMember = presentedMembers[presentedMembers.length - 1];
-                    this.currentWeekPresenters.push(lastMember.id);
-                    // 重置该成员的状态
-                    lastMember.cycleCount = 0;
-                    lastMember.lastPresented = null;
-                    filled = true;
-                }
-            }
-            
-            if (!filled) break; // 防止无限循环
+    async resetAll() {
+        if (!confirm('确定要重置所有数据吗？此操作不可恢复！')) {
+            return;
         }
         
-        // 确保下周汇报人员至少有2人
-        while (this.nextWeekPresenters.length < 2) {
-            let filled = false;
-            
-            // 从待汇报成员中选择
-            const pendingMembers = this.getPendingMembers();
-            if (pendingMembers.length > 0) {
-                const selectedMember = this.selectBestMember(pendingMembers);
-                this.nextWeekPresenters.push(selectedMember.id);
-                filled = true;
-            } else {
-                // 从已汇报成员的最下方选择
-                const presentedMembers = this.getPresentedMembers();
-                if (presentedMembers.length > 0) {
-                    const lastMember = presentedMembers[presentedMembers.length - 1];
-                    this.nextWeekPresenters.push(lastMember.id);
-                    // 重置该成员的状态
-                    lastMember.cycleCount = 0;
-                    lastMember.lastPresented = null;
-                    filled = true;
-                }
-            }
-            
-            if (!filled) break; // 防止无限循环
-        }
-    }
-    
-    autoFillCurrentWeek() {
-        const pendingMembers = this.getPendingMembers();
-        const selectedMembers = pendingMembers.slice(0, 2).map(m => m.id);
-        this.currentWeekPresenters = selectedMembers;
-    }
-    
-    autoFillNextWeek() {
-        const pendingMembers = this.getPendingMembers().filter(m => 
-            !this.currentWeekPresenters.includes(m.id)
-        );
-        const selectedMembers = pendingMembers.slice(0, 2).map(m => m.id);
-        this.nextWeekPresenters = selectedMembers;
-    }
-    
-    getPendingMembers() {
-        return this.members.filter(m => 
-            m.cycleCount !== this.currentCycle && 
-            !this.currentWeekPresenters.includes(m.id) && 
-            !this.nextWeekPresenters.includes(m.id)
-        ).sort((a, b) => {
-            if (!a.lastPresented && !b.lastPresented) return 0;
-            if (!a.lastPresented) return -1;
-            if (!b.lastPresented) return 1;
-            return new Date(a.lastPresented) - new Date(b.lastPresented);
-        });
-    }
-    
-    getPresentedMembers() {
-        return this.members.filter(m => 
-            m.cycleCount === this.currentCycle &&
-            !this.currentWeekPresenters.includes(m.id) && 
-            !this.nextWeekPresenters.includes(m.id)
-        ).sort((a, b) => {
-            if (!a.lastPresented && !b.lastPresented) return 0;
-            if (!a.lastPresented) return -1;
-            if (!b.lastPresented) return 1;
-            return new Date(a.lastPresented) - new Date(b.lastPresented);
-        });
-    }
-    
-    selectBestMember(members) {
-        return members[0]; // 已经按优先级排序，选择第一个
-    }
-    
-    resetAll() {
-        // 清除所有本地存储数据
-        localStorage.removeItem('dragScheduler_members');
-        localStorage.removeItem('dragScheduler_cycle');
-        localStorage.removeItem('dragScheduler_history');
-        localStorage.removeItem('dragScheduler_currentWeek');
-        localStorage.removeItem('dragScheduler_nextWeek');
-        
-        // 重新初始化
-        this.members = this.getDefaultMembers();
-        this.currentCycle = 1;
-        this.currentWeekPresenters = [];
-        this.nextWeekPresenters = [];
-        
-        // 重新初始化排班
+        this.loadDefaultData();
         this.initializeSchedule();
         
-        // 保存初始状态并重新渲染
-        this.saveAllData();
-        this.renderMembers();
-        this.updateCycleInfo();
-        
-        console.log('系统已重置');
-    }
-    
-    autoSchedule() {
-        // 重新初始化排班
-        this.currentWeekPresenters = [];
-        this.nextWeekPresenters = [];
-        
-        this.autoFillCurrentWeek();
-        this.autoFillNextWeek();
-        
-        this.saveAllData();
-        this.renderMembers();
-        
-        const currentNames = this.currentWeekPresenters.map(id => {
-            const member = this.members.find(m => m.id === id);
-            return member ? member.name : '';
-        }).filter(name => name);
-        
-        const nextNames = this.nextWeekPresenters.map(id => {
-            const member = this.members.find(m => m.id === id);
-            return member ? member.name : '';
-        }).filter(name => name);
-        
-        alert(`已自动安排:\n本周汇报: ${currentNames.join(', ')}\n下周准备: ${nextNames.join(', ')}`);
-    }
-    
-    saveSchedule() {
-        if (this.currentWeekPresenters.length === 0) {
-            alert('请先安排本周汇报人员');
-            return;
+        try {
+            await this.saveToCloud();
+        } catch (error) {
+            console.warn('重置后同步失败:', error);
         }
         
-        const today = new Date();
-        const weekStart = this.getWeekStart(today);
+        this.updateCycleInfo();
+        this.renderMembers();
         
-        // 将当前安排保存到历史
-        const weekRecord = {
-            week: this.formatWeek(weekStart),
-            date: weekStart.toISOString(),
-            presenters: this.currentWeekPresenters.map(id => {
-                const member = this.members.find(m => m.id === id);
-                return member ? member.name : '';
-            }).filter(name => name),
-            cycle: this.currentCycle
-        };
-        
-        this.weekHistory.unshift(weekRecord);
-        
-        // 更新汇报成员的状态
-        this.currentWeekPresenters.forEach(memberId => {
-            const member = this.members.find(m => m.id === memberId);
-            if (member) {
-                member.lastPresented = today.toISOString();
-                member.cycleCount = this.currentCycle;
+        alert('所有数据已重置！');
+    }
+    
+    loadConfig() {
+        const savedConfig = localStorage.getItem('sage_gist_config');
+        if (savedConfig) {
+            try {
+                const config = JSON.parse(savedConfig);
+                this.GITHUB_CONFIG = { ...this.GITHUB_CONFIG, ...config };
+            } catch (error) {
+                console.warn('配置加载失败:', error);
             }
-        });
+        }
+    }
+    
+    saveConfig() {
+        localStorage.setItem('sage_gist_config', JSON.stringify({
+            gistId: this.GITHUB_CONFIG.gistId,
+            token: this.GITHUB_CONFIG.token
+        }));
+    }
+    
+    showConfig() {
+        const currentGistId = this.GITHUB_CONFIG.gistId;
+        const hasToken = this.GITHUB_CONFIG.token ? '已配置' : '未配置';
         
-        // 下周的成员变成本周的成员
-        this.currentWeekPresenters = [...this.nextWeekPresenters];
-        this.nextWeekPresenters = [];
-        
-        // 自动安排下周
-        this.autoFillNextWeek();
-        
-        // 检查是否需要开始新周期
-        const allPresented = this.members.every(m => m.cycleCount === this.currentCycle);
-        if (allPresented) {
-            this.startNewCycle();
+        const newGistId = prompt('请输入 Gist ID:', currentGistId);
+        if (newGistId !== null && newGistId !== currentGistId) {
+            this.GITHUB_CONFIG.gistId = newGistId.trim();
         }
         
-        this.saveAllData();
-        this.renderMembers();
-        this.updateCycleInfo();
+        const tokenAction = confirm(`GitHub Token 状态: ${hasToken}\n\n点击"确定"重新配置 Token，点击"取消"保持当前配置`);
+        if (tokenAction) {
+            const newToken = prompt('请输入 GitHub Token (用于写入权限):');
+            if (newToken !== null) {
+                this.GITHUB_CONFIG.token = newToken.trim();
+            }
+        }
         
-        alert('本周排班已保存，下周人员已自动安排！');
+        this.saveConfig();
+        
+        // 测试配置
+        this.testConnection();
     }
     
-    startNewCycle() {
-        this.currentCycle++;
-        this.updateCycleInfo();
-        alert(`开始新周期 ${this.currentCycle}！`);
+    // 安全的 Token 配置方法
+    showTokenConfig() {
+        document.getElementById('token-config-modal').style.display = 'block';
+        
+        // 清空输入框
+        document.getElementById('gist-token').value = '';
+        
+        // 显示当前 Token 状态
+        const hasToken = this.GITHUB_CONFIG.token ? '✅ 已配置' : '❌ 未配置';
+        console.log('🔑 Token 状态:', hasToken);
     }
     
-    resetSchedule() {
-        if (!confirm('确定要重置所有数据吗？此操作不可恢复！\n所有成员将回到待汇报状态，并自动安排本周和下周汇报人员。')) {
+    hideTokenConfig() {
+        document.getElementById('token-config-modal').style.display = 'none';
+        
+        // 清空输入框（安全措施）
+        document.getElementById('gist-token').value = '';
+    }
+    
+    setGistToken() {
+        const tokenInput = document.getElementById('gist-token');
+        const token = tokenInput.value.trim();
+        
+        if (!token) {
+            alert('请输入有效的 GitHub Token');
             return;
         }
         
-        // 重置所有成员数据
-        this.members = this.getDefaultMembers();
-        this.currentCycle = 1;
-        this.weekHistory = [];
-        this.currentWeekPresenters = [];
-        this.nextWeekPresenters = [];
+        // 验证 Token 格式
+        if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+            if (!confirm('Token 格式可能不正确，是否继续？\n\n有效格式：ghp_xxxx 或 github_pat_xxxx')) {
+                return;
+            }
+        }
         
-        // 自动安排本周和下周汇报人员
-        this.autoFillCurrentWeek();
-        this.autoFillNextWeek();
+        // 设置 Token（仅在当前会话中）
+        this.GITHUB_CONFIG.token = token;
+        window.SAGE_RUNTIME_CONFIG.gistToken = token;
         
-        this.saveAllData();
-        this.updateCycleInfo();
-        this.renderMembers();
+        // 清空输入框（安全措施）
+        tokenInput.value = '';
         
-        alert('所有数据已重置！\n所有成员已回到待汇报状态，并自动安排了本周和下周的汇报人员。');
+        // 隐藏弹窗
+        this.hideTokenConfig();
+        
+        // 显示成功消息
+        this.updateSyncStatus('synced', '🔑 Token 已设置（当前会话有效）');
+        
+        console.log('🔑 GitHub Token 已设置，可以使用云端同步功能');
+        
+        // 可选：自动测试连接
+        setTimeout(() => {
+            this.testConnection();
+        }, 1000);
     }
     
-    formatWeek(startDate) {
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6);
+    async testConnection() {
+        this.updateSyncStatus('syncing', '测试连接...');
         
-        const formatDate = (date) => `${date.getMonth() + 1}/${date.getDate()}`;
-        return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+        try {
+            await this.fetchFromGist();
+            this.updateSyncStatus('synced', '连接成功！');
+            
+            // 重新加载数据
+            await this.loadFromCloud();
+            this.renderMembers();
+            
+        } catch (error) {
+            this.updateSyncStatus('error', '连接失败: ' + error.message);
+        }
     }
 }
 
@@ -934,19 +1220,14 @@ let scheduler;
 
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
-    scheduler = new DragDropScheduler();
+    scheduler = new CloudSyncScheduler();
+    
+    // 点击弹窗外部关闭弹窗
+    window.onclick = function(event) {
+        const modal = document.getElementById('token-config-modal');
+        if (event.target === modal) {
+            scheduler.hideTokenConfig();
+        }
+    }
 });
-
-// 全局函数
-function saveSchedule() {
-    scheduler.saveSchedule();
-}
-
-function autoSchedule() {
-    scheduler.autoSchedule();
-}
-
-function resetSchedule() {
-    scheduler.resetSchedule();
-}
 </script>
