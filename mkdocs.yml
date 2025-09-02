@@ -231,9 +231,6 @@ nav:
         - 章节模板: join_sage/detail_template.md
         - 快速入门模板: join_sage/quick_start.md
     - 周会排班: join_sage/weekly_meeting.md
-    - 项目总结:
-        - 📋 Token 安全问题解决方案: join_sage/issue_summary_gist_token_security.md
-        - 🔧 故障排除指南: join_sage/troubleshooting_guide.md
         # - 连接测试工具: join_sage/gist_test.md
 
 
