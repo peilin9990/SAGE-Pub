@@ -10,7 +10,7 @@
 
 * **操作系统 (OS)**：[Ubuntu 22.04及以上版本](https://ubuntu.com/)
 * **基础依赖**：[Anaconda/Miniconda](https://www.anaconda.com/)
-* **SAGE官方仓库**：[IntelliStreamSAGE](https://github.com/intellistream)
+* **SAGE官方仓库**：[IntelliStreamSAGE](https://github.com/intellistream/SAGE)
 <!-- 仓库链接待修改 -->
 <small>您也可以通过以下命令快速拉取 SAGE 官方仓库</small>
 
