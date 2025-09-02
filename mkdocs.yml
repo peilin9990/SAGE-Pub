@@ -240,7 +240,8 @@ nav:
             - 🤖 GitHub Actions 配置: join_sage/github_actions_config.md
             - 🛡️ Environment Secrets 设置: join_sage/environment_secrets_guide.md
             - 🧪 连接测试工具: join_sage/gist_test.md
-            - 📚 技术文档: join_sage/gist_sync_guide.md
+            - � 故障排除指南: join_sage/troubleshooting_guide.md
+            - �📚 技术文档: join_sage/gist_sync_guide.md
             - 🌐 其他云端方案: join_sage/cloud_database_guide.md
 
 validation:

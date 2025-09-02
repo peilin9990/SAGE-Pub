@@ -88,6 +88,7 @@ function log(message, type = 'info') {
 
 async function testRead() {
     const gistId = document.getElementById('gist-id').value.trim();
+    const token = document.getElementById('github-token').value.trim();
     
     if (!gistId) {
         log('请输入 Gist ID', 'error');
@@ -97,7 +98,22 @@ async function testRead() {
     log('开始测试读取...', 'info');
     
     try {
-        const response = await fetch(`https://api.github.com/gists/${gistId}`);
+        // 构建请求选项，如果有 token 就添加认证头
+        const fetchOptions = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+        
+        if (token) {
+            fetchOptions.headers['Authorization'] = `token ${token}`;
+            log('🔐 使用认证 Token 进行读取', 'info');
+        } else {
+            log('📖 尝试公开读取（如果是 Secret Gist 可能会失败）', 'info');
+        }
+        
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, fetchOptions);
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);

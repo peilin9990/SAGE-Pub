@@ -475,7 +475,21 @@ class CloudSyncScheduler {
             throw new Error('请先配置有效的 Gist ID');
         }
         
-        const response = await fetch(`https://api.github.com/gists/${gistId}`);
+        // 构建请求选项，如果有 token 就添加认证头
+        const fetchOptions = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+        
+        // 添加认证头（如果有 token）
+        const token = this.GITHUB_CONFIG.token || window.SAGE_RUNTIME_CONFIG?.gistToken;
+        if (token) {
+            fetchOptions.headers['Authorization'] = `token ${token}`;
+        }
+        
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, fetchOptions);
         
         if (!response.ok) {
             throw new Error(`Gist 请求失败: ${response.status}`);
