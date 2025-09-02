@@ -118,6 +118,13 @@ nav:
       - DataStream 编程指南: code_intro/datastream_intro.md
       - DataStream Operator 与 Function: code_intro/datastream_function.md
       - DataStream 数据流转换: code_intro/datastream_trans.md
+      - DataStream 转换示例:
+          - 过滤与批处理: code_intro/transformation_guides/hello_filter_world.md
+          - 扁平映射 flatMap: code_intro/transformation_guides/hello_flatmap_world.md
+          - 双流 connect + coMap: code_intro/transformation_guides/hello_filter_world_comap.md
+          - Future/反馈回路: code_intro/transformation_guides/hello_future_world.md
+          - 按键 join: code_intro/transformation_guides/hello_join_world.md
+
   - Kernel:
       - 总览: kernel/README.md
       - 架构设计: kernel/architecture.md
