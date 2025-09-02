@@ -1,9 +1,9 @@
-# 周会安排 - 云端同步版本
+# Intellistream 周会安排
 
 <div id="weekly-schedule-container">
     <div class="controls">
-        <button id="config-btn" onclick="scheduler.showConfig()">⚙️ 配置 Gist</button>
-        <button id="token-btn" onclick="scheduler.showTokenConfig()">🔑 设置 Token</button>
+        <!-- <button id="config-btn" onclick="scheduler.showConfig()">配置 Gist</button> -->
+        <button id="token-btn" onclick="scheduler.showTokenConfig()">设置密钥</button>
         <button id="reset-all" onclick="scheduler.resetAll()">重置所有</button>
         <button id="sync-data" onclick="scheduler.syncWithCloud()">同步数据</button>
         <div class="sync-status" id="sync-status">未同步</div>
