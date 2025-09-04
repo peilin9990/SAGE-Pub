@@ -321,7 +321,8 @@ class TimedMapFunction(MapFunction[str, str]):
 
 1. 📖 阅读 [API 详细文档](../api/README.md)
 2. 🌐 学习 [核心概念](../concepts.md)
-3. ⚡ 了解 [数据流开发](./dataflow_development.md)
+3. ⚡ 了解 <!-- [数据流开发](./dataflow_development.md) -->
+数据流开发指南
 4. 🔍 查看 [更多示例](../examples/basic_tutorials.md)
 
 ## 📞 获取帮助

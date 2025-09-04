@@ -2,7 +2,7 @@
 
 DataStream Transformation 是 SAGE 程序中用于串联和组织各类数据处理函数（算子）的核心抽象。如图所示，用户通过在 DataStream 上依次声明不同的数据转换（如 map、filter、flatmap 等），SAGE 会通过 Complier 组件将它们连接为一个完整的数据处理流，形成最终用于执行任务的 DataStream。
 
-[![DataStream Transformation](../../assets/img/transformation.png "transformation建立连接的过程")](../../assets/img/transformation.png)
+[![DataStream Transformation](../assets/img/transformation.png "transformation建立连接的过程")](../assets/img/transformation.png)
 
 本节将介绍 DataStream Transformation 的核心数据转换接口、算子的连接与组合方式，以及数据在各算子间的分区策略和调度机制。
 

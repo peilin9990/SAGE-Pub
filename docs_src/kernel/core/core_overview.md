@@ -227,14 +227,19 @@ streaming_pipeline = (env
 3. [基础教程](../examples/basic_tutorials.md) - 跟随教程学习
 
 ### 进阶开发者
-1. [数据流开发指南](../guides/dataflow_development.md) - 深入理解数据流编程
-2. [自定义算子开发](../guides/custom_operators.md) - 扩展系统功能
-3. [性能调优](../guides/performance_tuning.md) - 优化系统性能
+1. <!-- [数据流开发指南](../guides/dataflow_development.md) -->
+数据流开发指南 - 深入理解数据流编程
+2. <!-- [自定义算子开发](../guides/custom_operators.md) -->
+自定义算子开发 - 扩展系统功能
+3. <!-- [性能调优](../guides/performance_tuning.md) -->
+性能调优 - 优化系统性能
 
 ### 系统管理员
 1. [系统配置](../config/config.md) - 配置生产环境
-2. [监控配置](../config/monitoring_config.md) - 设置监控告警
-3. [故障排除](../troubleshooting.md) - 解决常见问题
+2. <!-- [监控配置](../config/monitoring_config.md) -->
+监控配置 - 设置监控告警
+3. <!-- [故障排除](../troubleshooting.md) -->
+故障排除 - 解决常见问题
 
 ---
 

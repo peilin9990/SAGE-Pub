@@ -865,9 +865,12 @@ tutorial_08_simple_rag_system()
 现在您可以：
 
 1. **深入学习**：
-   - [数据流开发指南](./dataflow_development.md) - 更深入的开发技巧
-   - [自定义算子开发](./custom_operators.md) - 扩展系统功能
-   - [性能调优](./performance_tuning.md) - 优化系统性能
+   - <!-- [数据流开发指南](./dataflow_development.md) -->
+数据流开发 - 更深入的开发技巧
+   - <!-- [自定义算子开发](./custom_operators.md) -->
+自定义算子 - 扩展系统功能
+   - <!-- [性能调优](./performance_tuning.md) -->
+性能调优 - 优化系统性能
 
 2. **实践项目**：
    - 构建更复杂的RAG系统

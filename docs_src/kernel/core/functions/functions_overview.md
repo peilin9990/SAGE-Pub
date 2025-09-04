@@ -609,4 +609,5 @@ class TestTextCleanerFunction(unittest.TestCase):
 
 ---
 
-**下一步**: 了解 [Transformation 转换系统](../transformations_overview.md) 如何优化函数执行。
+**下一步**: 了解 <!-- [Transformation 转换系统](../transformations_overview.md) -->
+转换操作概览 如何优化函数执行。

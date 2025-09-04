@@ -164,9 +164,12 @@ def deploy_rag_system(config):
 ## 🔗 相关资源
 
 ### 学习资料
-- [SAGE框架官方文档](../../README.md)
-- [向量数据库最佳实践](../../../core/vector_database.md)
-- [大语言模型集成指南](../../../core/llm_integration.md)
+- <!-- [SAGE框架官方文档](../../README.md) -->
+项目README
+- <!-- [向量数据库最佳实践](../../../core/vector_database.md) -->
+向量数据库
+- <!-- [大语言模型集成指南](../../../core/llm_integration.md) -->
+LLM集成
 
 ### 社区支持
 - **GitHub Issues**：技术问题和Bug报告
@@ -174,11 +177,13 @@ def deploy_rag_system(config):
 - **示例代码库**：完整的项目示例
 
 ### 版本更新
-- 查看 [CHANGELOG.md](../../../../CHANGELOG.md) 了解最新更新
+- 查看 <!-- [CHANGELOG.md](../../../../CHANGELOG.md) -->
+更新日志 了解最新更新
 - 订阅发布通知获取新功能信息
 
 ---
 
-**贡献指南**：欢迎提交文档改进建议和新的使用示例。请参考 [贡献指南](../../../../CONTRIBUTING.md) 了解详细信息。
+**贡献指南**：欢迎提交文档改进建议和新的使用示例。请参考 <!-- [贡献指南](../../../../CONTRIBUTING.md) -->
+贡献指南 了解详细信息。
 
 **许可证**：本文档遵循 Apache 2.0 许可证。详见 [LICENSE](../../LICENSE) 文件。

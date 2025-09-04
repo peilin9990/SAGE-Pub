@@ -860,5 +860,7 @@ class WindowAverageFunction(StatefulFunction):
 
 **相关文档**: 
 - [Function 函数系统详解](../functions/functions_overview.md)
-- [Task 任务系统架构](../../runtime/task/task_overview.md)
-- [通信路由系统](../../runtime/communication/router_overview.md)
+- <!-- [Task 任务系统架构](../../runtime/task/task_overview.md) -->
+任务概览
+- <!-- [通信路由系统](../../runtime/communication/router_overview.md) -->
+通信路由概览

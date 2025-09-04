@@ -332,5 +332,7 @@ env.set_network_memory_fraction(0.1)
 
 - [数据流处理](datastreams.md) - 数据流操作详解
 - [函数接口](functions.md) - 用户自定义函数
-- [分布式部署](../guides/distributed-deployment.md) - 集群部署指南
-- [性能优化](../guides/performance.md) - 性能调优技巧
+<!-- - [分布式部署](../guides/distributed-deployment.md) - 集群部署指南 -->
+- 分布式部署 - 集群部署指南
+<!-- - [性能优化](../guides/performance.md) - 性能调优技巧 -->
+- 性能优化 - 性能调优技巧

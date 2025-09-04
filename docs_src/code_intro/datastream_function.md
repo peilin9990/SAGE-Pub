@@ -5,7 +5,7 @@
 * **`Function` 是用户实现的业务逻辑模块** —— 它描述了你想要对数据做什么。你只需选择一个合适的 `Base Function` 类型（例如： `MapFunction`），然后实现其中的核心逻辑，比如如何对每条数据进行转换。这个过程就像你告诉系统：“我要对这些数据进行特定的处理”。你不需要关心数据是如何流动、如何分发，甚至如何执行这些处理。
 * **`Operator` 是由系统自动创建并调度的构件** —— 它负责如何执行你定义的逻辑，以及在什么环境下执行。这包括决定如何分配资源，如何调度任务，如何在分布式系统中并行处理数据，甚至处理错误和故障恢复。用户无需手动创建或管理 `Operator`，系统会自动为你管理这些底层的执行和调度细节。
 
-[![DataStream Function](../../assets/img/function.png  "function实现与提交")](../../assets/img/function.png)
+[![DataStream Function](../assets/img/function.png  "function实现与提交")](../assets/img/function.png)
 
 如图，在 SAGE 中，用户只需要选择合适的 Base Function 类型（如 `MapFunction`）并实现其核心逻辑，系统会在后续为其 **创建匹配的 Operator**，并负责执行调度、资源管理、容错等所有底层细节。
 

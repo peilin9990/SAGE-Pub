@@ -221,8 +221,10 @@ SAGE 是一个很棒的项目，HTML 和 CSS 是网页开发的基础。
 [访问 GitHub](https://github.com)
 
 ### 内部链接
-[回到首页](index.md)  
-[查看 DataStream 介绍](api_guides/datastream/datastream_intro.md)
+<!-- [回到首页](index.md) -->
+回到首页  
+<!-- [查看 DataStream 介绍](api_guides/datastream/datastream_intro.md) -->
+查看 DataStream 介绍
 
 ### 引用式链接
 这是一个[引用式链接][ref1]，还有[另一个引用][ref2]。

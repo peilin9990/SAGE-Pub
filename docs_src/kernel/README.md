@@ -16,9 +16,12 @@ SAGE Kernel 采用分层架构设计：
 ### DataStream API
 流数据处理的核心API，提供丰富的数据转换和处理操作：
 
-- [DataStream 概览](datastream/datastream_intro.md) - 基础概念和编程模式
-- [Operator 与 Function](datastream/datastream_function.md) - 算子和函数的设计原理
-- [Transformation](datastream/datastream_trans.md) - 数据转换操作详解
+<!-- - [DataStream 概览](datastream/datastream_intro.md) - 基础概念和编程模式 -->
+- DataStream 概览 - 基础概念和编程模式
+<!-- - [Operator 与 Function](datastream/datastream_function.md) - 算子和函数的设计原理 -->
+- Operator 与 Function - 算子和函数的设计原理
+<!-- - [Transformation](datastream/datastream_trans.md) - 数据转换操作详解 -->
+- Transformation - 数据转换操作详解
 
 ### 执行环境 API
 管理任务执行的环境和资源：
@@ -53,9 +56,12 @@ SAGE Kernel 为 [中间件服务](../middleware/service/service_intro.md) 提供
 
 ### Application 层
 上层应用组件基于 Kernel 构建：
-- [RAG 应用](../applications/rag.md)
-- [智能代理](../applications/agents.md)
-- [工具集成](../applications/tools_intro.md)
+<!-- - [RAG 应用](../applications/rag.md) -->
+- RAG 应用
+<!-- - [智能代理](../applications/agents.md) -->
+- 智能代理
+<!-- - [工具集成](../applications/tools_intro.md) -->
+- 工具集成
 
 ## 🚀 快速开始
 
