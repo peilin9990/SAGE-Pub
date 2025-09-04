@@ -9,7 +9,7 @@
 !!! tip "先决条件（Prerequisites）"
     - 基础概念：向量相似性搜索、嵌入向量、L2距离、内积
     - 技术依赖：FAISS库、numpy数组操作
-    - 推荐前置阅读：[\[返回 Chapter：神经记忆系统\]](../neuromem/overview.md)
+    <!-- - 推荐前置阅读：[\[返回 Chapter：神经记忆系统\]](../neuromem/overview.md) -->
 
 ---
 

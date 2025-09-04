@@ -8,7 +8,7 @@
 <small>*注意，在了解本节之前需要提前了解以下知识：*</small>
 !!! tip "先决条件（Prerequisites）"
     - 基础概念：**RAG / Vector Database / Embedding / 元数据过滤**
-    - 推荐前置阅读：[\[返回 Chapter：SAGE NeuroMem\]](../neuromem/overview.md)
+    <!-- - 推荐前置阅读：[\[返回 Chapter：SAGE NeuroMem\]](../neuromem/overview.md) -->
     - 相关组件：**BaseMemoryCollection / VDBIndex / EmbeddingModel**
 
 ---

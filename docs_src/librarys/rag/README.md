@@ -159,7 +159,7 @@ def deploy_rag_system(config):
 #### 响应速度慢
 - **原因**：模型推理慢或检索数据量大
 - **解决**：使用更快的模型，优化索引结构
-- **参考**：[性能优化最佳实践](components/retriever.md#性能优化策略)
+- **参考**：[性能优化最佳实践](components/retriever.md)
 
 ## 🔗 相关资源
 
@@ -181,4 +181,4 @@ def deploy_rag_system(config):
 
 **贡献指南**：欢迎提交文档改进建议和新的使用示例。请参考 [贡献指南](../../../../CONTRIBUTING.md) 了解详细信息。
 
-**许可证**：本文档遵循 Apache 2.0 许可证。详见 [LICENSE](../../../../LICENSE) 文件。
+**许可证**：本文档遵循 Apache 2.0 许可证。详见 [LICENSE](../../LICENSE) 文件。

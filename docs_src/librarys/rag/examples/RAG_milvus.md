@@ -1,7 +1,7 @@
 
 # RAG系统完整实现示例 (Complete RAG System Implementation)
 
-本文档提供使用SAGE基于milvus的RAG问答系统的完整实现示例。如果对RAG相关知识以及SAGE pipeline相关知识不了解，建议先阅读[使用SAGE基于chroma构建RAG](../RAG.md)。
+本文档提供使用SAGE基于milvus的RAG问答系统的完整实现示例。如果对RAG相关知识以及SAGE pipeline相关知识不了解，建议先阅读[使用SAGE基于chroma构建RAG](RAG.md)。
 
 ## 使用Milvus向量库进行向量检索
 SAGE提供了基于Milvus向量库的稠密向量检索和稀疏向量检索算子，可以先执行离线向量知识库构建，创建知识库，然后执行RAG流水线，调用创建的知识库，对其中的知识进行查询。
