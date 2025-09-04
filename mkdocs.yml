@@ -233,12 +233,14 @@ nav:
   - Extensions: get_start/remote_mode/sage_cil.md
   - 加入 SAGE:
     - 我们是谁: join_sage/intellistream.md
+    - 欢迎进组: join_sage/rookie.md 
+    - 周会排班: join_sage/weekly_meeting.md
     - 文档模板:
         - md 模板: join_sage/template.md
         - 导言模板: join_sage/overview_template.md
         - 章节模板: join_sage/detail_template.md
         - 快速入门模板: join_sage/quick_start.md
-    - 周会排班: join_sage/weekly_meeting.md
+
         # - 连接测试工具: join_sage/gist_test.md
 
 

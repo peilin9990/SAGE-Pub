@@ -49,7 +49,7 @@ SAGE 正在开发：
 ## 📬 联系方式
 
 - 👤 团队负责人：张书豪  
-  
+    - 🧢 主页：[https://faculty.hust.edu.cn/ZHANG_SHUHAO/zh_CN/index/2608525/list/](https://faculty.hust.edu.cn/ZHANG_SHUHAO/zh_CN/index/2608525/list/)
     - 📧 邮箱：shuhao_zhang@hust.edu.cn  
     - 💬 QQ：420444843  
 
