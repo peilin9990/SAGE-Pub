@@ -116,8 +116,8 @@ nav:
               - 远程提交任务: get_start/remote_mode/remote_job_submit.md
   - 编程指南: 
       - DataStream 编程指南: code_intro/datastream_intro.md
-      - DataStream Operator 与 Function: code_intro/datastream_function.md
-      - DataStream 数据流转换: code_intro/datastream_trans.md
+      - Operator 与 Function: code_intro/datastream_function.md
+      - Transformation 数据流转换: code_intro/datastream_trans.md
       - DataStream 转换示例:
           - 过滤与批处理: code_intro/transformation_guides/hello_filter_world.md
           - 扁平映射 flatMap: code_intro/transformation_guides/hello_flatmap_world.md
