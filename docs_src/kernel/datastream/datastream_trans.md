@@ -104,22 +104,6 @@ ds.sink(MyJdbcSink, url="jdbc:...", table="users")
 
 ---
 
-## 反馈边与循环流
-
-SAGE 支持在 DAG 中创建 **循环 (feedback edge)**：
-
-```python
-future = env.from_future("loop")            # 声明占位流
-processed = source\
-    .connect(future).co_map(LoopCoMap)      # 使用未来流参与计算
-
-processed.fill_future(future)               # 闭合循环
-```
-
-典型用途：**机器学习在线迭代**、**告警抑制**、**流量增量补偿** 等。
-
----
-
 ## 总结
 
 在本章中，介绍了 SAGE 中用于构建数据处理流程的核心机制 —— **DataStream Transformation**。通过链式组合多个算子，用户可以灵活实现从数据接入到结果输出的完整处理路径。
