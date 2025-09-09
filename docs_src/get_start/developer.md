@@ -38,11 +38,10 @@ git clone git@github.com:intellistream/SAGE.git
 
 **第 2 步：选择环境名称**
 
-输入 ++1+enter++ 进入交互式安装：
+在终端中，输入 ++3+enter++, 以指定创建 SAGE 环境的名称： 
 
+指定您希望创建的 SAGE 环境名称并 ++enter++ ，等待安装程序开始安装。
 [![交互式安装](../assets/img/quickstart_install_1.png "交互式安装")](../assets/img/quickstart_install_1.png)
-
-输入 3 后，指定您希望创建的 SAGE 环境名称并 ++enter++ ，等待安装程序开始安装。
 
 静待片刻后，显示以下页面，完成 SAGE 环境部署：
 
@@ -79,7 +78,7 @@ fatal:unable to access'https://github.com/intellistream/SAGE-Pub.git/': Failed t
 ## *E*. 安装演示 （Installation Demo）
 
 <iframe 
-  src="https://player.bilibili.com/player.html?bvid=BV125e1zgE1Q" 
+  src="https://player.bilibili.com/player.html?bvid=BV1uKYNz8EEm" 
   scrolling="no" 
   border="0" 
   frameborder="no" 
