@@ -185,4 +185,4 @@ WordCount 批处理示例结束
 
 ## 结语
 
-`env.from_batch()` 和 `Batchfunction` 共同组成了有界流处理的基础。SAGE 中，会通过 `autostop=True` 这一参数，检查数据源是否为空，如果为空，则会自动关闭Pipeline。有界流处理的相关接口可以处理固定大小的数据集，适合离线批量分析和一次性计算任务。
+`env.from_batch()` 和 `BatchFunction` 共同组成了有界流处理的基础。SAGE 中，会通过 `autostop=True` 这一参数，检查数据源是否为空，如果为空，则会自动关闭Pipeline。有界流处理的相关接口可以处理固定大小的数据集，适合离线批量分析和一次性计算任务。
