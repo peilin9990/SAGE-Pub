@@ -130,7 +130,7 @@ class PrintSink(SinkFunction):
 
 ---
 
-### **D**.`main`函数：环境和数据流搭建
+### **D**.`main`函数：Pipeline搭建
 
 ```python
 def main():

@@ -3,9 +3,10 @@
 > 本例位于 SAGE Repo 下的 `examples/tutorials/service-api/hello_service_world.py`
 
 ```mermaid
-graph TD
-    A[HelloBatch] --> B[UpperCaseMap] --> C[PrintSink]
-    B --> D[Service]
+graph LR
+    A[HelloBatch] --> B[UpperCaseMap]
+    B --> C[PrintSink]
+    B -.-> D[Service]
 ```
 
 ## 示例解析
@@ -95,7 +96,7 @@ self.call_service["hello_service"].hello()
 
  **说明：**
 
- * 算子内部通过call_service["服务名"].服务方法() 进行服务调用。
+ * 算子内部通过 `call_service["服务名"].服务方法()` 进行服务调用。
 
 ---
 
@@ -108,7 +109,7 @@ env.register_service("hello_service", HelloService)
 
  **说明：**
 
- * 需要在env中通过register_service("服务名", 服务提供对象)来注册服务
+ * 需要在env中通过 `register_service("服务名", 服务提供对象)` 来注册服务
 
 
 ---
@@ -147,4 +148,4 @@ Hello Service World 示例完成!
 
 ## 结语
 
-微服务程序作为 Pipeline 内 **所有算子都可以调用** 的程序，能为Pipeline的运行提供独特的上下文反馈/记忆等能力。总的来说，编程人员需要定义好服务调用逻辑（即拆解业务逻辑，定义好多算子调用服务事务），最终实现带有记忆等功能的推理程序。
+微服务程序作为 Pipeline 内 **所有算子都可以调用** 的程序，能为Pipeline的运行提供独特的上下文反馈/记忆等能力。总的来说，编程人员需要定义好服务调用逻辑（即拆解业务逻辑，定义多算子调用服务事务），最终实现带有记忆等外部服务的推理程序。
