@@ -181,4 +181,4 @@ Hello World 批处理示例结束
 
 ## 结语
 
-Hello SAGE 程序展示了 SAGE 编程所需的基本接口：env、from_batch、map、sink、submit、几类function以及对应需要实现的execute函数，总得来说，编程人员需要定义好 **数据处理单元** （即实现抽象Function）以及 **Pipeline** （利用env、map、sink、env等接口），最终 **提交Pipeline** 以实现个性化的数据处理程序。
+Hello SAGE 程序展示了 SAGE 编程所需的基本接口：env、from_batch、map、sink、submit、几类function以及对应需要实现的execute函数，总的来说，编程人员需要定义好 **数据处理单元** （即实现抽象Function）以及 **Pipeline** （利用env、map、sink、env等接口），最终 **提交Pipeline** 以实现个性化的数据处理程序。
