@@ -1,3 +1,12 @@
-# 欢迎使用 SAGE 系统！
+---
+template: index.html
+title: SAGE - 高性能流处理平台
+hide:
+  - navigation
+  - toc
+---
 
-SAGE 是一个高效、模块化的推理管道引擎，支持多模态数据、流式处理和向量增强推理。
+# SAGE Landing Page
+
+这个页面使用自定义的index.html模板来显示landing page。
+

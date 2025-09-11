@@ -2,58 +2,253 @@ site_name: SAGE 项目文档
 site_url: https://intellistream.github.io/SAGE-Pub/
 extra:
   base_url: /SAGE-Pub/
+  social:
+    - icon: fontawesome/solid/address-card
+      link: https://shuhaozhangtony.github.io/
+    - icon: fontawesome/brands/github
+      link: https://github.com/intellistream
+copyright: >
+    Copyright &copy; 2025 SAGE | <a href="https://grid.hust.edu.cn/" target="_blank">CGCL Lab</a>
 docs_dir: docs_src
 theme:
   name: material
   language: zh
+  custom_dir: docs_src/overrides
+  favicon: assets/img/isage_light.svg
+  logo: assets/logo/sage.svg
   features:
-    - navigation.tabs
     - navigation.expand
+    - toc.follow
+    - announce.dismiss
+    - content.code.annotate
     - content.code.copy
+    - content.code.select
+    - content.tabs.link
+    - content.action.edit
+    - content.tooltips
+    - navigation.indexes
+    - navigation.footer
+    - navigation.sections
+    - navigation.path
+    - navigation.tabs
+    - navigation.top
+    - navigation.prune
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+  palette:
+    - scheme: default
+      primary: white 
+  font:
+    text: "Public Sans"
+    code: "Roboto Mono"
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - codehilite:
+      guess_lang: false
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      use_pygments: true
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/mkdocs.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
 
 plugins:
-  - search
+  - search:
+      separator: '[\s\u200b\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;'
+  - tags
   - include-markdown
 
 nav:
   - 首页: index.md
-  - 关于 SAGE: about.md
-  - 使用指南:
-      - Installation: get_start/install.md
-      - Quickstart: get_start/quickstart.md
-  - Guides:
-      - Components: guides/components.md
-      - Framework:
-          - Design Philosophy: framework/philosophy.md
-      - SAGE-dashboard:
-          - DAG Visualization: dashboard/dag_visualization.md
-          - Live Monitoring: dashboard/live_monitoring.md
-          - Drag-and-Drop DAG Construction: dashboard/dnd_construction.md
-  - Reference:
-      - SAGE:
-          - api:
-              - memory: reference/sage/api/memory.md
-              - model: reference/sage/api/model.md
-              - operator: reference/sage/api/operator.md
-              - pipeline: reference/sage/api/pipeline.md
-              - query: reference/sage/api/query.md
-          - core:
-              - compiler: reference/sage/core/compiler.md
-              - dag: reference/sage/core/dag.md
-              - engine: reference/sage/core/engine.md
-              - graph: reference/sage/core/graph.md
-              - io: reference/sage/core/io.md
-              - metrics: reference/sage/core/metrics.md
-              - model: reference/sage/core/model.md
-              - neuromem: reference/sage/core/neuromem.md
-              - operator: reference/sage/core/operator.md
-              - runtime: reference/sage/core/runtime.md
-          - sage_runtime: reference/sage/sage_runtime.md
-          - sage_commen_funs: reference/sage/sage_commen_funs.md
-          - sage_memory: reference/sage/sage_memory.md
-          - sage_tests: reference/sage/sage_tests.md
-          - sage_vectors: reference/sage/sage_vectors.md
-  - Example:
-      - minimal: examples/minimal.md
-      - advanced: examples/advanced.md
-      - integration: examples/integration.md
+  - 快速开始:
+      - pip 快速安装: get_start/install.md
+      - 开发者模式安装: get_start/developer.md
+      - 快速入门: 
+          - 概览: get_start/quickstart.md
+          - Hello SAGE: get_start/cpu_examples/hello_sage.md
+          - Finite / Infinite Stream:
+              - Finite Stream: get_start/cpu_examples/streaming/limited_streaming.md
+              - Infinite Stream: get_start/cpu_examples/streaming/unlimited_streaming.md
+          - Micro Service: get_start/cpu_examples/micro_service.md
+          - LLM QA: get_start/llm_qa/llm_qa.md
+
+          - 分布式流处理:
+              - SAGE 分布式简介: get_start/remote_mode/sage_remote.md
+              - 远程提交任务: get_start/remote_mode/remote_job_submit.md
+              
+  - 编程指南: 
+      - DataStream 编程指南: code_intro/datastream_intro.md
+      - Operator 与 Function: code_intro/datastream_function.md
+      - Transformation 数据流转换: code_intro/datastream_trans.md
+      - DataStream 编程示例:
+          - Filter & Map: code_intro/transformation_guides/hello_filter_world.md
+          - FlatMap: code_intro/transformation_guides/hello_flatmap_world.md
+          - Connect & CoMap: code_intro/transformation_guides/hello_filter_world_comap.md
+          - Future: code_intro/transformation_guides/hello_future_world.md
+          - Join & KeyBy: code_intro/transformation_guides/hello_join_world.md
+
+  - Kernel:
+      - 总览: kernel/README.md
+      - 架构设计: kernel/architecture.md
+      - 核心概念: kernel/concepts.md
+      
+      - 🔧 SAGE Core 层:
+          - Core 概览: kernel/core/core_overview.md
+          - 数据流编程模型: kernel/core/dataflow_model.md
+          # - 流水线编排系统: kernel/core/pipeline_orchestration.md
+          
+          - API 模块:
+              - Environments API: kernel/api/environments.md
+              - DataStream API: kernel/api/datastreams.md
+              - Connected Streams API: kernel/api/connected-streams.md
+              - Functions API: kernel/api/functions.md
+          
+          - 核心组件:
+              - "Operator 算子系统": "kernel/core/operators/operators_overview.md"
+              - "Function 函数系统": "kernel/core/functions/functions_overview.md"
+          
+          # - 执行引擎:
+              # - 本地执行环境: kernel/core/execution/local_environment.md
+              # - 远程执行环境: kernel/core/execution/remote_environment.md
+              # - 分布式调度: kernel/core/execution/distributed_scheduling.md
+              # - 状态管理: kernel/core/execution/state_management.md
+      
+      - 🛠️ 开发指南:
+          - 快速入门: kernel/guides/quickstart.md
+          # - 数据流开发指南: kernel/guides/dataflow_development.md
+          # - 自定义算子开发: kernel/guides/custom_operators.md
+          # - 流水线调试与优化: kernel/guides/pipeline_debugging.md
+          # - 性能调优: kernel/guides/performance_tuning.md
+          - 最佳实践: kernel/best-practices.md
+          
+      - 📚 示例与教程:
+          - 示例代码: kernel/examples/README.md
+          - 基础教程: kernel/examples/basic_tutorials.md
+          # - 高级用例: kernel/examples/advanced_examples.md
+          # - 集成示例: kernel/examples/integration_examples.md
+          
+      - ⚙️ 系统配置:
+          - 配置指南: kernel/config/config.md
+          # - 环境变量: kernel/config/environment_variables.md
+          # - 性能配置: kernel/config/performance_config.md
+          # - 监控配置: kernel/config/monitoring_config.md
+          
+      - 🔍 工具与调试:
+          - CLI 工具: kernel/components/cli.md
+          # - 调试工具: kernel/components/debugging_tools.md
+          # - 监控仪表盘: kernel/components/monitoring_dashboard.md
+          
+      - ❓ 问题解决:
+          - FAQ: kernel/faq.md
+          # - 故障排除: kernel/troubleshooting.md
+          # - 已知问题: kernel/known_issues.md
+  - Middleware:
+      - Middleware 概览: middleware/overview.md
+      - API层: 
+          - Service API: middleware/api/service_api.md
+        #   - Compute API: middleware/api/compute_api.md
+      - 服务层: 
+          - Service 概览: middleware/service/service_intro.md
+          - Memory Service: middleware/service/memory/memory_service.md
+        #   - SAGE-DB Service: middleware/service/sage_db/sage_db_service.md
+        #   - XXX Service: middleware/service/xxx/xxx_service.md
+      - 组件层:
+          - SAGE-DB (非结构化数据库): middleware/components/sage_db.md
+        #   - SAGE-Flow (向量处理引擎): middleware/components/sage_flow.md
+          - NeuroMem (长期记忆存储): middleware/components/neuromem.md
+          
+      - 硬件层:
+          - GPU 加速: middleware/hardware/gpu_acceleration.md
+        #   - CXL: middleware/hardware/cxl.md
+
+  - Librarys:
+      - Librarys 概览: librarys/README.md
+      - RAG:
+        - 组件:
+            - 文档加载与解析: librarys/rag/components/document_loaders.md
+            - 分块: librarys/rag/components/chunk.md
+            - 检索器: librarys/rag/components/retriever.md
+            - 生成器: librarys/rag/components/generator.md
+            - 提示词: librarys/rag/components/promptor.md
+            - 重排器: librarys/rag/components/reranker.md
+            - 评估器: librarys/rag/components/evaluate.md
+            - 上下文压缩 : librarys/rag/components/refiner.md
+        - 例子:
+            # - 构建向量数据库: librarys/rag/components/index_build.md
+            - 使用SAGE基于chroma构建RAG: librarys/rag/examples/RAG.md
+            - 使用SAGE基于milvus构建RAG: librarys/rag/examples/RAG_milvus.md
+    #   - RAG 应用: librarys/rag.md
+      - Agent: librarys/agents.md
+      - IO 模块: librarys/io.md
+      # - Context 管理: librarys/context.md
+      # - Embedding 服务: librarys/embedding.md
+      - 工具生态:
+          - 工具概览: librarys/tools_intro.md
+          - 工具列表:
+              - Arxiv Paper Searcher: librarys/tools/arxiv_paper_searcher.md
+              - Image Captioner: librarys/tools/image_captioner.md
+              - Nature News Fetcher: librarys/tools/nature_news_fetcher.md
+              - Searcher Tool: librarys/tools/searcher_tool.md
+              - Text Detector: librarys/tools/text_detector.md
+              - URL Text Extractor: librarys/tools/url_text_extractor.md
+  - Extensions: get_start/remote_mode/sage_cil.md
+  - 加入 SAGE:
+    - 我们是谁: join_sage/intellistream.md
+    - 欢迎进组: join_sage/rookie.md 
+    - 周会排班: join_sage/weekly_meeting.md
+    - 文档模板:
+        - md 模板: join_sage/template.md
+        - 导言模板: join_sage/overview_template.md
+        - 章节模板: join_sage/detail_template.md
+        - 快速入门模板: join_sage/quick_start.md
+
+        # - 连接测试工具: join_sage/gist_test.md
+
+
+validation:
+  omitted_files: info 
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+  not_found: info

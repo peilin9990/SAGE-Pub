@@ -2,7 +2,7 @@
 
 本仓库用于发布和维护 [SAGE](https://github.com/intellistream/SAGE) 系统的对外文档。
 
-SAGE 是一个模块化、高性能的推理引擎，支持向量增强、流数据、神经记忆与复杂数据处理。
+SAGE 是一个模块化、高性能的推理框架，支持向量增强、流数据、神经记忆与复杂数据处理。
 
 ---
 
@@ -43,10 +43,10 @@ To be updated ...
 
 ```bash
 # 安装
-pip install mkdocs mkdocs-material
+./build.sh
 
 # 本地预览
-mkdocs serve
+python -m mkdocs serve -a 127.0.0.1:9000
 
 # 部署（已配置自动部署）
 mkdocs gh-deploy
