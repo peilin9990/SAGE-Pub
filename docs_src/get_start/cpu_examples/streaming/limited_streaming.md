@@ -1,4 +1,4 @@
-# 有界流处理 (Limited Streaming)
+# 有界流处理 (Finite Stream)
 
 > 处理固定大小的数据集，适合离线批量分析和一次性计算任务。
 

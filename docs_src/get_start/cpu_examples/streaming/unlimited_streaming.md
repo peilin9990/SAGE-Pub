@@ -1,4 +1,4 @@
-# 无界流处理 (Unlimited Streaming)
+# 无界流处理 (Unlimited streaming)
 
 > 处理持续产生的数据流，支持实时数据分析、监控和交互式应用。
 

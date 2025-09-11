@@ -106,11 +106,13 @@ nav:
       - 开发者模式安装: get_start/developer.md
       - 快速入门: 
           - 概览: get_start/quickstart.md
+          - Hello SAGE: get_start/cpu_examples/hello_sage.md
+          - Finite / Infinite Stream:
+              - Finite Stream: get_start/cpu_examples/streaming/limited_streaming.md
+              - Infinite Stream: get_start/cpu_examples/streaming/unlimited_streaming.md
+          - Micro Service: get_start/cpu_examples/micro_service.md
           - LLM QA: get_start/llm_qa/llm_qa.md
-          - 中间件Service: get_start/middleware_service/middleware_quick_start.md
-          - 有界流与无界流:
-              - 有界流案例: get_start/streaming/limited_streaming.md
-              - 无界流案例: get_start/streaming/unlimited_streaming.md
+
           - 分布式流处理:
               - SAGE 分布式简介: get_start/remote_mode/sage_remote.md
               - 远程提交任务: get_start/remote_mode/remote_job_submit.md
