@@ -10,7 +10,10 @@
 
 **CPU 负载相关** 指的是无需使用显卡（GPU）即可完成的示例。这类示例只依赖 CPU 计算，更适合在没有配置 GPU 的环境下进行快速尝试和学习。
 
-
+1. **Hello SAGE**：简单的 SAGE Hello World 示例，了解 SAGE 基本编程接口 → [示例链接](cpu_examples/hello_sage.md)
+2. **Finite / Infinite Stream**：有无界数据流示例，了解 SAGE 的基本数据源接口 → [示例链接](cpu_examples/streaming/limited_streaming.md)
+3. **Micro Service**：简单的 SAGE Micro Service示例，了解 SAGE 的外部服务接口 → [示例链接](cpu_examples/micro_service.md)
+4. **One Handle Pipeline**：特殊数据处理 Pipeline ，利用信号机制实现 Pipeline *同一时间只有一个数据被处理* → [示例链接](cpu_examples/onebyone.md)
 
 ---
 

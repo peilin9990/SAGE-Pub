@@ -111,6 +111,7 @@ nav:
               - Finite Stream: get_start/cpu_examples/streaming/limited_streaming.md
               - Infinite Stream: get_start/cpu_examples/streaming/unlimited_streaming.md
           - Micro Service: get_start/cpu_examples/micro_service.md
+          - One Handle Pipeline: get_start/cpu_examples/onebyone.md
           - LLM QA: get_start/llm_qa/llm_qa.md
 
           - 分布式流处理:

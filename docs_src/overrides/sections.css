@@ -681,12 +681,25 @@
 }
 
 .team-card {
+    position: relative; /* 让内部元素可绝对定位 */
     background: rgba(255, 255, 255, 0.1);
-    padding: 2.5rem;
+    padding: 2.5rem 2.5rem 1.5rem;
     border-radius: 20px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+.team-photo {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 200px;      /* 只控制宽度 */
+    height: auto;      /* 高度自适应 */
+    border-radius: 12px;
+    object-fit: cover; /* 依然保证填充效果 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
 
 .team-icon {
     width: 60px;
@@ -703,12 +716,12 @@
 .team-card h3 {
     font-size: 1.4rem;
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .team-details {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -716,7 +729,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0rem;
     opacity: 0.9;
 }
 
