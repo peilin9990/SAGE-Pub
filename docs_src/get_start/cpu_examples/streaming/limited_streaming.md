@@ -62,15 +62,13 @@ class PrintResult(SinkFunction):
         self.counts = {}
 
     def execute(self, data):
-        if data is None:
-            # 上游结束时输出结果
-            print("WordCount 结果：")
-            for word, count in self.counts.items():
-                print(f"{word}: {count}")
-            return
-
         word, cnt = data
         self.counts[word] = self.counts.get(word, 0) + cnt
+    
+    def close(self):
+        print("WordCount 结果：")
+        for word, count in self.counts.items():
+            print(f"{word}: {count}")
 
 def main():
     env = LocalEnvironment("WordCount")
@@ -147,20 +145,18 @@ class PrintResult(SinkFunction):
         self.counts = {}
 
     def execute(self, data):
-        if data is None:
-            # 上游结束时输出结果
-            print("WordCount 结果：")
-            for word, count in self.counts.items():
-                print(f"{word}: {count}")
-            return
-
         word, cnt = data
         self.counts[word] = self.counts.get(word, 0) + cnt
+    
+    def close(self):
+        print("WordCount 结果：")
+        for word, count in self.counts.items():
+            print(f"{word}: {count}")
 ```
 
  **说明：**
 
- * 与 `Hello SAGE` 不同，这里通过 `if data is None:` 进行汇总输出。
+ * 与 `Hello SAGE` 不同，这里通过 `close()` 函数进行汇总输出。
  * 在任务结束之后，会把任务情况给输出出来。
 
 ---
