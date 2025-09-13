@@ -1,6 +1,7 @@
 import os
-import requests
 from pathlib import Path
+
+import requests
 
 # 输出路径
 TARGET = Path("docs_src/about.md")
@@ -20,10 +21,7 @@ if not token:
 # GitHub API 请求 URL
 url = f"https://api.github.com/repos/{REPO}/contents/{FILE_PATH}?ref={BRANCH}"
 
-headers = {
-    "Authorization": f"token {token}",
-    "Accept": "application/vnd.github.v3.raw"
-}
+headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3.raw"}
 
 print(f"📡 正在从 {url} 拉取 README.md ...")
 
