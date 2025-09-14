@@ -220,7 +220,16 @@ nav:
             - 使用SAGE基于chroma构建RAG: librarys/rag/examples/RAG.md
             - 使用SAGE基于milvus构建RAG: librarys/rag/examples/RAG_milvus.md
     #   - RAG 应用: librarys/rag.md
-      - Agent: librarys/agents.md
+      - Agent: 
+        - 组件:
+            - Profile: librarys/agents/components/profile.md
+            - Action: librarys/agents/components/action.md
+            - Planner: librarys/agents/components/planner.md
+            - Runtime: librarys/agents/components/runtime.md
+            - MCP-server: librarys/agents/components/mcp_server.md
+            - Memory: librarys/agents/components/memory.md
+        - 例子:
+            - 使用SAGE构建Agent: librarys/agents/examples/agent.md
       - IO 模块: librarys/io.md
       # - Context 管理: librarys/context.md
       # - Embedding 服务: librarys/embedding.md
