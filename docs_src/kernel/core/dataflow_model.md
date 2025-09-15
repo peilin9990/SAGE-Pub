@@ -1,406 +1,446 @@
-# 数据流编程模型
+# SAGE Core 数据流编程模型深度解析
 
-SAGE Core 采用数据流编程模型，将计算逻辑表示为有向无环图（DAG），其中节点代表计算操作，边代表数据流动。这种模型特别适合大语言模型推理场景，能够有效处理复杂的数据依赖和异步执行需求。
+SAGE Core 采用先进的数据流编程模型，将计算逻辑表示为有向无环图（DAG），其中节点代表计算操作，边代表数据流动。这种模型特别适合大语言模型推理场景，能够有效处理复杂的数据依赖和异步执行需求。
 
-## 🎯 核心理念
+## 🎯 核心理念与优势
 
-### 声明式编程
-用户专注于描述**要做什么**，而不是**怎么做**：
+### 声明式 vs 命令式编程
+
+| 特性 | 声明式编程 (SAGE) | 命令式编程 (传统) |
+|------|-------------------|------------------|
+| **关注点** | 描述"做什么" | 描述"如何做" |
+| **代码风格** | 链式调用，简洁优雅 | 顺序语句，详细步骤 |
+| **优化空间** | 自动优化执行计划 | 手动优化代码逻辑 |
+| **可维护性** | 高层抽象，易于理解 | 底层细节，维护复杂 |
+| **并行化** | 自动并行优化 | 手动线程管理 |
 
 ```python
-# 声明式：描述数据处理逻辑
+# 声明式编程示例 - 专注于业务逻辑
 result = (env
     .from_source(input_source)
-    .map(preprocess)      # 预处理
-    .map(embedding)       # 向量化
-    .map(retrieval)       # 检索
-    .map(generation)      # 生成
-    .sink(output_sink)    # 输出
+    .map(preprocess)          # 数据预处理
+    .map(embedding)           # 向量嵌入计算
+    .map(retrieval)           # 向量检索
+    .map(generation)          # 文本生成
+    .sink(output_sink)        # 结果输出
 )
 
-# 命令式：描述执行步骤
-data = read_from_source(input_source)
-for item in data:
-    processed = preprocess(item)
-    embedded = embedding(processed)
-    retrieved = retrieval(embedded)
-    generated = generation(retrieved)
-    write_to_sink(generated, output_sink)
+# 命令式编程示例 - 需要管理执行细节
+def process_data():
+    data = read_from_source(input_source)
+    results = []
+    for item in data:
+        processed = preprocess(item)        # 手动循环处理
+        embedded = embedding(processed)    # 显式状态管理
+        retrieved = retrieval(embedded)     # 手动错误处理
+        generated = generation(retrieved)   # 复杂的流程控制
+        results.append(generated)
+    write_to_sink(results, output_sink)    # 结果输出管理
 ```
 
-### 数据驱动执行
-计算的触发完全由数据可用性驱动，而非程序控制流：
+### 数据驱动执行模型
 
-```python
-# 数据到达触发计算
-source → map1 → filter → map2 → sink
-  ↑       ↑       ↑       ↑      ↑
- 数据    处理    过滤    处理   输出
-```
-
-## 📊 数据流图结构
-
-### 基本组件
-
-#### 🔄 算子 (Operators)
-算子是数据流图的节点，执行具体的计算逻辑：
-
-```python
-class MapOperator(BaseOperator):
-    def __init__(self, func):
-        self.func = func
-    
-    def process(self, input_data):
-        return self.func(input_data)
-
-class FilterOperator(BaseOperator):
-    def __init__(self, predicate):
-        self.predicate = predicate
-    
-    def process(self, input_data):
-        return input_data if self.predicate(input_data) else None
-```
-
-#### 🔗 数据流 (DataStreams)
-数据流是算子之间的连接，定义数据传输路径：
-
-```python
-class DataStream:
-    def __init__(self, source_op, target_op):
-        self.source = source_op
-        self.target = target_op
-        self.buffer = Queue()  # 缓冲区
-    
-    def send(self, data):
-        self.buffer.put(data)
-    
-    def receive(self):
-        return self.buffer.get()
-```
-
-### 图类型
-
-#### 线性流水线
-最简单的数据流模式，数据按顺序流经各个算子：
+SAGE Core 的执行完全由数据可用性驱动，实现了高效的异步处理：
 
 ```mermaid
-graph LR
-    A[Source] --> B[Map] --> C[Filter] --> D[Sink]
+flowchart TD
+    A[数据源 Source] --> B[预处理 Map]
+    B --> C[质量过滤 Filter]
+    C --> D[向量计算 Map]
+    D --> E[结果输出 Sink]
+    
+    subgraph 数据驱动执行
+        F[数据到达] --> G[触发处理]
+        G --> H[异步传递]
+        H --> I[继续下一阶段]
+    end
+    
+    style F fill:#e1f5fe
+    style G fill:#bbdefb
+    style H fill:#90caf9
+    style I fill:#64b5f6
 ```
 
-```python
-# 线性流水线示例
-pipeline = (env
-    .from_source(TextSource)
-    .map(tokenizer)           # 分词
-    .map(embedding_model)     # 嵌入
-    .filter(quality_filter)   # 质量过滤
-    .sink(vector_store)       # 存储
-)
-```
+## 📊 数据流图结构与组件体系
 
-#### 分支合并流
-支持数据流的分支和合并：
+### 核心架构组件
 
 ```mermaid
-graph LR
-    A[Source] --> B[Split]
-    B --> C[Branch 1]
-    B --> D[Branch 2]
-    C --> E[Merge]
-    D --> E
-    E --> F[Sink]
-```
-
-```python
-# 分支合并示例
-main_stream = env.from_source(QuerySource)
-
-# 分支1：检索
-retrieval_stream = main_stream.map(EmbeddingEncoder).map(VectorRetriever)
-
-# 分支2：缓存查询
-cache_stream = main_stream.map(CacheQuery)
-
-# 两个分支可以分别处理并输出到不同的sink
-retrieval_stream.map(ResponseGenerator).sink(ResponseSink)
-cache_stream.sink(CacheSink)
-```
-
-### 连接流
-多个数据流的协同处理：
-
-```mermaid
-graph LR
-    A[Stream 1] --> C[Connect]
-    B[Stream 2] --> C
-    C --> D[CoMap] --> E[Sink]
-```
-
-```python
-# 连接流示例
-query_stream = env.from_source(QuerySource)
-context_stream = env.from_source(ContextSource)
-
-# 连接两个流进行协同处理
-connected = query_stream.connect(context_stream)
-result = connected.comap(rag_processor).sink(ResponseSink)
-```
-
-## 🔧 API 设计原则
-
-### 链式调用
-支持方法链式调用，提升代码可读性：
-
-```python
-# 良好的链式设计
-result = (stream
-    .map(func1)
-    .filter(pred1)
-    .map(func2)
-    .keyby(key_selector)
-    .map(aggregator)
-    .sink(output)
-)
-```
-
-### 类型安全
-基于Python类型提示提供编译时类型检查：
-
-```python
-from typing import TypeVar, Generic
-
-T = TypeVar('T')
-U = TypeVar('U')
-
-class DataStream(Generic[T]):
-    def map(self, func: Callable[[T], U]) -> 'DataStream[U]':
-        return DataStream[U](MapOperator(func))
+classDiagram
+    class BaseOperator {
+        +String name
+        +Integer parallelism
+        +process(input_data)
+        +open()
+        +close()
+    }
     
-    def filter(self, predicate: Callable[[T], bool]) -> 'DataStream[T]':
-        return DataStream[T](FilterOperator(predicate))
-```
-
-### 延迟执行
-构建阶段只定义计算图，执行阶段才开始计算：
-
-```python
-# 构建阶段：定义计算图
-pipeline = (env
-    .from_source(source)
-    .map(processor)
-    .sink(output)
-)  # 此时还没有执行任何计算
-
-# 执行阶段：启动计算
-env.submit()  # 开始执行流水线
-```
-
-## 🏃 执行模型
-
-### 异步执行
-算子之间异步执行，提高资源利用率：
-
-```python
-class AsyncOperator:
-    async def process(self, data):
-        result = await self.async_operation(data)
-        return result
+    class DataStream {
+        -List~BaseOperator~ operators
+        -Map~String, Object~ config
+        +map(func)
+        +filter(predicate)
+        +keyby(key_selector)
+        +sink(sink_func)
+    }
     
-    async def run(self):
-        while True:
-            data = await self.input_queue.get()
-            result = await self.process(data)
-            await self.output_queue.put(result)
-```
-
-### 背压处理
-自动处理上下游处理速度差异：
-
-```python
-class BackpressureQueue:
-    def __init__(self, max_size=1000):
-        self.queue = asyncio.Queue(maxsize=max_size)
+    class SourceOperator {
+        +read()
+        +assign_timestamps()
+        +create_watermarks()
+    }
     
-    async def put(self, item):
-        if self.queue.full():
-            # 背压信号：通知上游减缓发送
-            await self.notify_backpressure()
-        await self.queue.put(item)
-```
-
-### 状态管理
-算子可以在处理过程中维护内部状态：
-
-```python
-import time
-from sage.core.api.function.base_function import BaseFunction
-
-class CounterFunction(BaseFunction):
-    def __init__(self):
-        super().__init__()
-        self.counter = 0  # 内部状态
+    class TransformOperator {
+        +process_element()
+        +on_timer()
+    }
     
-    def process(self, data):
-        self.counter += 1
-        return {
-            'data': data,
-            'count': self.counter,
-            'timestamp': time.time()
-        }
+    class SinkOperator {
+        +write()
+        +flush()
+        +commit()
+    }
+    
+    BaseOperator <|-- SourceOperator
+    BaseOperator <|-- TransformOperator
+    BaseOperator <|-- SinkOperator
+    DataStream *-- BaseOperator
 ```
 
-## 🎨 常用模式
+### 算子类型详解
 
-### Map 模式
-一对一的数据转换：
-
+#### 1. 数据源算子 (Source Operators)
 ```python
-# 文本预处理
-text_stream = (env
-    .from_source(TextSource)
-    .map(lambda x: x.lower())          # 转小写
-    .map(lambda x: x.strip())          # 去空格
-    .map(tokenize)                     # 分词
-)
+class KafkaSourceOperator(SourceOperator):
+    def __init__(self, bootstrap_servers, topics, group_id):
+        self.consumer = KafkaConsumer(
+            bootstrap_servers=bootstrap_servers,
+            topics=topics,
+            group_id=group_id
+        )
+    
+    def read(self):
+        """从Kafka持续读取数据"""
+        while self.running:
+            records = self.consumer.poll(timeout_ms=100)
+            for record in records:
+                yield record.value
+    
+    def assign_timestamps(self, record):
+        """分配时间戳用于事件时间处理"""
+        return record.timestamp if hasattr(record, 'timestamp') else time.time()
 ```
 
-### Filter 模式
-数据过滤：
-
+#### 2. 转换算子 (Transformation Operators)
 ```python
-# 质量过滤
-quality_stream = (env
-    .from_source(DataSource)
-    .filter(lambda x: len(x.text) > 10)     # 长度过滤
-    .filter(lambda x: x.score > 0.8)        # 分数过滤
-    .filter(is_valid_format)                 # 格式过滤
-)
+class SmartMapOperator(TransformOperator):
+    def __init__(self, user_func, config=None):
+        self.user_func = user_func
+        self.config = config or {}
+        self.metrics = {}  # 性能指标收集
+        
+    def process_element(self, value, ctx):
+        start_time = time.time()
+        try:
+            result = self.user_func(value)
+            # 记录处理延迟
+            self.metrics['latency'] = time.time() - start_time
+            self.metrics['processed_count'] += 1
+            return result
+        except Exception as e:
+            self.metrics['error_count'] += 1
+            ctx.output_error(value, e)  # 错误处理
+            return None
 ```
 
-### FlatMap 模式
-一对多的数据转换：
-
+#### 3. 数据汇算子 (Sink Operators)
 ```python
-# 文档分块
-chunk_stream = (env
-    .from_source(DocumentSource)
-    .flatmap(lambda doc: split_into_chunks(doc))  # 分块
-    .map(create_embedding)                         # 向量化
-)
+class ElasticsearchSinkOperator(SinkOperator):
+    def __init__(self, hosts, index_name, batch_size=1000):
+        self.es_client = Elasticsearch(hosts)
+        self.index_name = index_name
+        self.batch_size = batch_size
+        self.buffer = []
+        
+    def write(self, record):
+        """批量写入优化"""
+        self.buffer.append(record)
+        if len(self.buffer) >= self.batch_size:
+            self.flush()
+            
+    def flush(self):
+        """批量提交数据"""
+        if self.buffer:
+            bulk_data = [
+                {"index": {"_index": self.index_name}}
+                for record in self.buffer
+            ]
+            self.es_client.bulk(bulk_data)
+            self.buffer.clear()
 ```
 
-### KeyBy 模式
-按键分组数据：
+## 🔧 高级数据流模式
 
+### 1. 复杂事件处理模式
 ```python
-# 用户事件分组
-grouped_stream = (env
-    .from_source(EventSource)
-    .keyby(lambda event: event.user_id)     # 按用户分组
-    .map(user_event_processor)              # 处理用户事件
-)
-```
-
-### Connect 模式
-多流连接：
-
-```python
-# 用户查询与上下文连接
-connected_stream = query_stream.connect(context_stream)
-result = connected_stream.comap(merge_query_context)    # 合并逻辑
-```
-
-## ⚡ 性能优化
-
-### 执行图优化
-SAGE Core在执行前会对数据流图进行优化：
-
-```python
-# 链式map操作会被自动优化
-stream.map(func1).map(func2).map(func3)
-
-# 编译器会分析并优化执行计划
-env.submit()  # 优化在提交时自动进行
-```
-
-### 并行执行
-支持算子并行执行：
-
-```python
-# 通过环境配置并行度
-env.config['parallelism'] = 4  # 设置全局并行度
-stream.map(expensive_operation)
-```
-
-### 数据处理
-SAGE Core提供了基础的批量处理能力：
-
-```python
-# 批量数据处理
-stream.map(operation_function)
-```
-
-## 🛠️ 调试与监控
-
-### 日志记录
-SAGE Core提供了内置的日志记录功能：
-
-```python
-# 通过print方法查看数据流
-stream.map(processor).print("调试输出").sink(output)
-
-# 设置日志等级
-env.set_console_log_level("DEBUG")
-```
-
-## 📋 最佳实践
-
-### 1. 函数设计
-- 保持函数纯净性，避免副作用
-- 优先使用不可变数据结构
-- 合理设置超时时间
-
-```python
-# 良好的函数设计
-def process_text(text: str) -> ProcessedText:
-    # 纯函数，无副作用
-    return ProcessedText(
-        content=text.strip().lower(),
-        word_count=len(text.split()),
-        timestamp=datetime.now()
+# 复杂事件检测流水线
+cep_pipeline = (env
+    .from_source(EventSource("user-events"))
+    .assign_timestamps_and_watermarks(
+        WatermarkStrategy.for_bounded_out_of_orderness(Duration.of_seconds(5))
     )
+    .key_by(lambda event: event.user_id)
+    .window(SlidingEventTimeWindows.of(Duration.of_minutes(10), Duration.of_minutes(1)))
+    .process(ComplexEventProcessor(), name="complex-event-detector")
+    .sink(AlertSink("alerts-topic"))
+)
+
+class ComplexEventProcessor(ProcessWindowFunction):
+    def process(self, key, context, events):
+        # 检测复杂事件模式
+        pattern = self.detect_pattern(events)
+        if pattern:
+            yield {
+                "user_id": key,
+                "pattern_type": pattern.type,
+                "timestamp": context.window().end(),
+                "events_count": len(events)
+            }
 ```
 
-### 2. 错误处理
-- 使用try-catch包装可能失败的操作
-- 设置合理的重试策略
-- 提供回退机制
-
+### 2. 状态流处理模式
 ```python
-def robust_processor(data):
-    try:
-        return expensive_operation(data)
-    except ProcessingError as e:
-        # 记录错误
-        logger.error(f"Processing failed: {e}")
-        # 返回默认值或None
-        return None
+# 有状态流处理示例
+stateful_pipeline = (env
+    .from_source(UserBehaviorSource())
+    .key_by(lambda x: x["user_id"])
+    .map(UserSessionAggregator(), name="session-aggregator")
+    .map(BehaviorAnalyzer(), name="behavior-analyzer")
+    .sink(ProfileUpdaterSink())
+)
+
+class UserSessionAggregator(MapFunction):
+    def __init__(self):
+        self.session_state = None
+        
+    def open(self, context):
+        # 初始化状态描述符
+        state_descriptor = ValueStateDescriptor(
+            "user_session", 
+            Types.POJO(UserSession)
+        )
+        self.session_state = context.get_keyed_state(state_descriptor)
+        
+    def map(self, event):
+        current_session = self.session_state.value() or UserSession(event.user_id)
+        current_session.update(event)
+        self.session_state.update(current_session)
+        return current_session
 ```
 
-### 3. 资源管理
-- 合理设置环境配置
-- 及时释放不再需要的资源
-- 通过环境配置管理外部连接
-
+### 3. 机器学习推理流水线
 ```python
-# 环境配置
-env.config.update({
-    'buffer_size': 1000,
-    'timeout': 5000,
-    'max_memory': "2GB"
-})
+# 大语言模型推理流水线
+llm_pipeline = (env
+    .from_source(QuerySource("user-queries"))
+    .map(QueryPreprocessor(), name="query-preprocessor")
+    .map(EmbeddingGenerator("model/embedding"), 
+         name="embedding-generator")
+    .map(ContextRetriever("vector-db"), 
+         name="context-retriever")
+    .map(LLMInferenceEngine("model/llm"), 
+         name="llm-inference")
+    .map(ResponsePostprocessor(), 
+         name="response-postprocessor")
+    .sink(ResponseSink("response-topic"))
+)
+
+class LLMInferenceEngine(MapFunction):
+    def __init__(self, model_path):
+        self.model_path = model_path
+        self.model = None
+        self.batch_size = 32
+        
+    def open(self, context):
+        # 延迟加载模型
+        self.model = load_llm_model(self.model_path)
+        
+    def map(self, input_batch):
+        # 批量推理优化
+        if isinstance(input_batch, list):
+            return self.model.generate_batch(input_batch)
+        else:
+            return self.model.generate(input_batch)
 ```
+
+## ⚡ 性能优化策略
+
+### 执行优化技术对比
+
+| 优化技术 | 适用场景 | 
+|---------|---------|---------|
+| **算子融合** | 相邻无状态算子 | 
+| **数据本地化** | 数据密集型应用 | 
+| **批量处理** | 高吞吐场景 | 
+| **异步I/O** | I/O密集型应用 | 
+| **状态分区** | 有状态计算 | 
+
+### 优化配置示例
+```python
+# 高性能流水线配置
+optimized_env = StreamExecutionEnvironment.create(
+    execution_mode=ExecutionMode.PIPELINED,
+    parallelism=16,  # 根据CPU核心数调整
+    buffer_timeout=50,  # 毫秒
+    object_reuse=True,
+    state_backend=StateBackend.ROCKSDB,
+    checkpoint_config=CheckpointConfig(
+        interval=30000,  # 30秒
+        timeout=60000,
+        min_pause_between_checkpoints=5000
+    )
+)
+
+# 内存优化配置
+memory_config = {
+    'taskmanager.memory.process.size': '4gb',
+    'taskmanager.memory.network.min': '64mb',
+    'taskmanager.memory.network.max': '1gb',
+    'taskmanager.memory.managed.fraction': '0.4'
+}
+```
+
+## 🛠️ 调试与监控最佳实践
+
+### 1. 分布式追踪集成
+```python
+# OpenTelemetry集成示例
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+
+def setup_tracing():
+    tracer_provider = TracerProvider()
+    trace.set_tracer_provider(tracer_provider)
+    
+    # 添加导出器
+    otlp_exporter = OTLPSpanExporter()
+    span_processor = BatchSpanProcessor(otlp_exporter)
+    tracer_provider.add_span_processor(span_processor)
+    
+    return trace.get_tracer("sage-pipeline")
+
+class TracedOperator(BaseOperator):
+    def __init__(self, name):
+        self.tracer = setup_tracing()
+        self.span_name = name
+        
+    def process(self, data):
+        with self.tracer.start_as_current_span(self.span_name) as span:
+            span.set_attribute("data.size", len(str(data)))
+            result = self._process_impl(data)
+            span.set_attribute("result.size", len(str(result)))
+            return result
+```
+
+### 2. 性能监控配置
+```yaml
+# 监控配置
+monitoring:
+  metrics:
+    reporters:
+      - type: prometheus
+        port: 9090
+        interval: 10s
+      - type: jmx
+        port: 9091
+    system_metrics: true
+    user_metrics: true
+    
+  logging:
+    level: INFO
+    format: json
+    exporters:
+      - type: elasticsearch
+        hosts: ["http://elk:9200"]
+        index: "sage-logs"
+        
+  alerting:
+    rules:
+      - metric: throughput
+        condition: < 1000 records/s for 5m
+        severity: WARNING
+      - metric: latency_p99
+        condition: > 500ms for 2m
+        severity: CRITICAL
+```
+
+## 📋 生产环境最佳实践
+
+### 1. 容错设计
+```python
+# 容错配置
+fault_tolerance_config = {
+    'restart-strategy': 'exponential-delay',
+    'restart-strategy.exponential-delay.initial-backoff': '10s',
+    'restart-strategy.exponential-delay.max-backoff': '5m',
+    'restart-strategy.exponential-delay.backoff-multiplier': '2.0',
+    'checkpointing': 'exactly_once',
+    'checkpointing.interval': '30s',
+    'checkpointing.timeout': '5m',
+    'checkpointing.min-pause': '10s'
+}
+
+# 状态后端配置
+state_backend_config = {
+    'backend': 'rocksdb',
+    'rocksdb.localdir': '/tmp/rocksdb',
+    'rocksdb.compaction.style': 'universal',
+    'rocksdb.writebuffer.size': '64MB',
+    'rocksdb.max.write.buffer.number': '4'
+}
+```
+
+### 2. 安全配置
+```python
+# 安全配置示例
+security_config = {
+    'ssl.enabled': True,
+    'ssl.keystore.path': '/path/to/keystore',
+    'ssl.keystore.password': 'changeit',
+    'ssl.truststore.path': '/path/to/truststore',
+    'ssl.truststore.password': 'changeit',
+    'authentication.type': 'kerberos',
+    'authorization.enabled': True
+}
+
+# 数据加密
+class EncryptedSinkOperator(SinkOperator):
+    def __init__(self, inner_sink, encryption_key):
+        self.inner_sink = inner_sink
+        self.encryption_key = encryption_key
+        
+    def write(self, record):
+        encrypted_data = self.encrypt(record, self.encryption_key)
+        self.inner_sink.write(encrypted_data)
+        
+    def encrypt(self, data, key):
+        # 实现加密逻辑
+        cipher = AES.new(key, AES.MODE_GCM)
+        ciphertext, tag = cipher.encrypt_and_digest(data.encode())
+        return cipher.nonce + tag + ciphertext
+```
+
+---
+
+**下一步学习方向**:
+- <!-- ./state_management.md -->
+深入理解状态管理 - 掌握有状态计算的核心概念
+- <!-- ./performance_tuning.md -->
+性能调优实战 - 学习生产环境性能优化技巧
+- <!-- ./deployment_guide.md -->
+分布式部署指南 - 了解集群部署和管理
+
+通过深入掌握SAGE Core的数据流编程模型，您将能够构建高性能、可扩展的大语言模型推理流水线，满足各种复杂的业务场景需求。
 
 ---
 
