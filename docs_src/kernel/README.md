@@ -379,3 +379,12 @@ env.submit()
 - **🛠️ 工具完善**: 完整的CLI工具链和监控体系
 - **🏢 企业级**: 提供商业版高级功能
 
+## 📞 获取帮助
+
+- [GitHub Issues](https://github.com/intellistream/SAGE/issues) - 报告问题
+- [讨论区](https://github.com/intellistream/SAGE/discussions) - 社区讨论
+- [官方文档](https://intellistream.github.io/SAGE-Pub/) - 完整文档
+
+## 📄 许可证
+
+MIT License - 详见 LICENSE 文件
